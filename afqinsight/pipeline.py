@@ -1,23 +1,32 @@
 """sklearn-compatible pipelines for AFQ data."""
 
 import inspect
-import groupyr as gpr
+from string import Template
 
-from sklearn.base import BaseEstimator, MetaEstimatorMixin, TransformerMixin
-from sklearn.base import is_classifier, is_regressor
+import groupyr as gpr
+from sklearn.base import (
+    BaseEstimator,
+    MetaEstimatorMixin,
+    TransformerMixin,
+    is_classifier,
+    is_regressor,
+)
 from sklearn.compose import TransformedTargetRegressor
-from sklearn.ensemble import BaggingClassifier, BaggingRegressor
-from sklearn.ensemble import AdaBoostClassifier, AdaBoostRegressor
+from sklearn.ensemble import (
+    AdaBoostClassifier,
+    AdaBoostRegressor,
+    BaggingClassifier,
+    BaggingRegressor,
+)
 from sklearn.impute import KNNImputer, SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import (
     MaxAbsScaler,
     MinMaxScaler,
+    PowerTransformer,
     RobustScaler,
     StandardScaler,
 )
-from sklearn.preprocessing import PowerTransformer
-from string import Template
 
 from ._serial_bagging import SerialBaggingClassifier, SerialBaggingRegressor
 
@@ -80,7 +89,8 @@ def make_base_afq_pipeline(
 
     Parameters
     ----------
-    imputer : "simple", "knn", or sklearn-compatible transformer, default="simple"
+    imputer : "simple", "knn", or sklearn-compatible transformer,
+            default="simple"
         The imputer for missing data. String arguments result in the use of
         specific imputers/transformers:
         "simple" yields :class:`sklearn:sklearn.impute.SimpleImputer`;
@@ -89,7 +99,8 @@ def make_base_afq_pipeline(
         allowed as long as they inherit from
         :class:`sklearn:sklearn.base.TransformerMixin`.
 
-    scaler : "standard", "minmax", "maxabs", "robust", or sklearn-compatible transformer, default="standard"
+    scaler : "standard", "minmax", "maxabs", "robust", or sklearn-compatible
+            transformer, default="standard"
         The scaler to use for the feature matrix. String arguments result in
         the use of specific transformers: "standard" yields the
         :class:`sklearn:sklearn.preprocessing.StandardScalar`; "minmax"
@@ -421,7 +432,8 @@ def make_afq_classifier_pipeline(
         allowed as long as they inherit from
         :class:`sklearn:sklearn.base.TransformerMixin`.
 
-    scaler : "standard", "minmax", "maxabs", "robust", or sklearn-compatible transformer, default="standard"
+    scaler : "standard", "minmax", "maxabs", "robust", or
+            sklearn-compatible transformer, default="standard"
         The scaler to use for the feature matrix. String arguments result in
         the use of specific transformers: "standard" yields the
         :class:`sklearn:sklearn.preprocessing.StandardScalar`; "minmax"
@@ -592,7 +604,8 @@ def make_afq_regressor_pipeline(
         allowed as long as they inherit from
         :class:`sklearn:sklearn.base.TransformerMixin`.
 
-    scaler : "standard", "minmax", "maxabs", "robust", or sklearn-compatible transformer, default="standard"
+    scaler : "standard", "minmax", "maxabs", "robust", or
+            sklearn-compatible transformer, default="standard"
         The scaler to use for the feature matrix. String arguments result in
         the use of specific transformers: "standard" yields the
         :class:`sklearn:sklearn.preprocessing.StandardScalar`; "minmax"
