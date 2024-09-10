@@ -47,7 +47,7 @@ def _fit_and_score_ckpt(
 
     This function wraps
     :func:`sklearn:sklearn.model_selection._validation._fit_and_score`,
-    while also saving checkpoint files containing the estimator, paramters,
+    while also saving checkpoint files containing the estimator, parameters,
     This is useful if fitting and scoring is costly or if it is being
     performed within a large cross-validation experiment.
 
