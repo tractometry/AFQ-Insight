@@ -1,10 +1,11 @@
 import os
-import pytest
 import shutil
 import tempfile
 
+import pytest
 from sklearn import datasets, linear_model
 from sklearn.model_selection import KFold
+
 from afqinsight import cross_validate_checkpoint
 
 

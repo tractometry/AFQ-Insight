@@ -1,12 +1,12 @@
 """Test functions in the match module"""
 
-import afqinsight.match as aim
 import numpy as np
 import pandas as pd
-from sklearn.utils._testing import assert_array_almost_equal, assert_array_equal
-from scipy.spatial.distance import mahalanobis
 import pytest
+from scipy.spatial.distance import mahalanobis
+from sklearn.utils._testing import assert_array_almost_equal, assert_array_equal
 
+import afqinsight.match as aim
 
 test_features = np.asarray([[1, 2, 3, 4], [4, 2, 1, 3], [1, 4, 5, 6]])
 

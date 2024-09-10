@@ -3,11 +3,11 @@
 import copy
 import hashlib
 import json
-import numpy as np
 import os
 import pickle
 
-from joblib import delayed, Parallel
+import numpy as np
+from joblib import Parallel, delayed
 from sklearn.base import clone, is_classifier
 from sklearn.metrics import check_scoring
 from sklearn.metrics._scorer import _check_multimetric_scoring
@@ -20,7 +20,7 @@ from sklearn.model_selection._validation import (
 from sklearn.pipeline import Pipeline
 from sklearn.utils import indexable
 
-from .h5io import save, load
+from .h5io import load, save
 
 __all__ = ["cross_validate_checkpoint"]
 

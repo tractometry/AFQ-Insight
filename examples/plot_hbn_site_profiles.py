@@ -36,13 +36,14 @@ differences have been removed.
    doi: https://doi.org/10.1016/j.neuroimage.2017.08.047
 
 """
-import numpy as np
 
-from afqinsight import AFQDataset
-from afqinsight.plot import plot_tract_profiles
+import numpy as np
 from neurocombat_sklearn import CombatModel
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
+
+from afqinsight import AFQDataset
+from afqinsight.plot import plot_tract_profiles
 
 #############################################################################
 # Fetch the HBN data
