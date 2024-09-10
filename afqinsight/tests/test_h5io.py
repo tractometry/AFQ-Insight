@@ -35,13 +35,14 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-import numpy as np
 import os
+from contextlib import contextmanager
+from tempfile import NamedTemporaryFile
+
+import numpy as np
 import pandas as pd
 
 from afqinsight import h5io
-from contextlib import contextmanager
-from tempfile import NamedTemporaryFile
 
 try:
     from types import SimpleNamespace
@@ -149,12 +150,12 @@ def test_numpy_string_array():
 
 def test_dictionary():
     with tmp_filename() as fn:
-        d = dict(
-            a=100,
-            b="this is a string",
-            c=np.ones(5),
-            sub=dict(a=200, b="another string", c=np.random.randn(3, 4)),
-        )
+        d = {
+            "a": 100,
+            "b": "this is a string",
+            "c": np.ones(5),
+            "sub": {"a": 200, "b": "another string", "c": np.random.randn(3, 4)},
+        }
 
         d1 = reconstruct(fn, d)
 
@@ -191,7 +192,18 @@ def test_softlinks_recursion():
         A = np.random.randn(3, 3)
         df = pd.DataFrame({"int": np.arange(3), "name": ["zero", "one", "two"]})
         AA = 4
-        s = dict(A=A, B=A, c=A, d=A, f=A, g=[A, A, A], AA=AA, h=AA, df=df, df2=df)
+        s = {
+            "A": A,
+            "B": A,
+            "c": A,
+            "d": A,
+            "f": A,
+            "g": [A, A, A],
+            "AA": AA,
+            "h": AA,
+            "df": df,
+            "df2": df,
+        }
         s["g"].append(s)
         n = reconstruct(fn, s)
         assert n["g"][0] is n["A"]
@@ -237,7 +249,7 @@ def test_pickle_recursion():
         f = {4: 78}
         f["rec"] = f
         g = [23.4, f]
-        h = dict(f=f, g=g)
+        h = {"f": f, "g": g}
         h2 = reconstruct(fn, h)
         assert h2["g"][0] == 23.4
         assert h2["g"][1] is h2["f"]["rec"] is h2["f"]
@@ -261,7 +273,7 @@ def test_list_recursion():
 
 def test_list():
     with tmp_filename() as fn:
-        x = [100, "this is a string", np.ones(3), dict(foo=100)]
+        x = [100, "this is a string", np.ones(3), {"foo": 100}]
 
         x1 = reconstruct(fn, x)
 
@@ -274,7 +286,7 @@ def test_list():
 
 def test_tuple():
     with tmp_filename() as fn:
-        x = (100, "this is a string", np.ones(3), dict(foo=100))
+        x = (100, "this is a string", np.ones(3), {"foo": 100})
 
         x1 = reconstruct(fn, x)
 
@@ -329,7 +341,7 @@ def test_array_scalar():
 
 def test_load_group():
     with tmp_filename() as fn:
-        x = dict(one=np.ones(10), two="string")
+        x = {"one": np.ones(10), "two": "string"}
         h5io.save(fn, x)
 
         one = h5io.load(fn, "/one")
@@ -344,7 +356,7 @@ def test_load_group():
 
 def test_load_multiple_groups():
     with tmp_filename() as fn:
-        x = dict(one=np.ones(10), two="string", three=200)
+        x = {"one": np.ones(10), "two": "string", "three": 200}
         h5io.save(fn, x)
 
         one, three = h5io.load(fn, ["/one", "/three"])
@@ -359,7 +371,7 @@ def test_load_multiple_groups():
 def test_load_slice():
     with tmp_filename() as fn:
         x = np.arange(3 * 4 * 5).reshape((3, 4, 5))
-        h5io.save(fn, dict(x=x))
+        h5io.save(fn, {"x": x})
 
         s = slice(None, 2)
         xs = h5io.load(fn, "/x", sel=s)
@@ -379,8 +391,8 @@ def test_load_slice():
 
 def test_force_pickle1():
     with tmp_filename() as fn:
-        x = dict(one=dict(two=np.arange(10)), three="string")
-        xf = dict(one=dict(two=x["one"]["two"]), three=x["three"])
+        x = {"one": {"two": np.arange(10)}, "three": "string"}
+        xf = {"one": {"two": x["one"]["two"]}, "three": x["three"]}
 
         h5io.save(fn, xf)
         xs = h5io.load(fn)
@@ -409,8 +421,8 @@ def test_force_pickle2():
     with tmp_filename() as fn:
         x = {0: "zero", 1: "one", 2: "two"}
         fx = h5io.ForcePickle(x)
-        d = dict(foo=x, bar=100)
-        fd = dict(foo=fx, bar=100)
+        d = {"foo": x, "bar": 100}
+        fd = {"foo": fx, "bar": 100}
         d1 = reconstruct(fn, fd)
         assert d == d1
 
