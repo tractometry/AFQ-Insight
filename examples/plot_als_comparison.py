@@ -19,16 +19,16 @@ tract (the left corticospinal tract) and in one feature (FA).
    DOI: 10.1002/hbm.23412
 
 """
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
-from afqinsight import AFQDataset
+from sklearn.impute import SimpleImputer
 from statsmodels.api import OLS
 from statsmodels.stats.anova import anova_lm
 from statsmodels.stats.multitest import multipletests
 
-from sklearn.impute import SimpleImputer
+from afqinsight import AFQDataset
 
 #############################################################################
 # Fetch data from Sarica et al.
@@ -93,7 +93,7 @@ for ii, column in enumerate(lcst_fa.columns):
 # --------------------------------
 # Because we conducted 100 comparisons, we need to correct the p-values that
 # we obtained for the potential for a false discovery. There are multiple
-# ways to conduct multuple comparison correction, and we will not get into
+# ways to conduct multiple comparison correction, and we will not get into
 # the considerations in selecting a method here. For the example, we chose the
 # Benjamini/Hochberg FDR controlling method. This returns a boolean array for
 # the p-values that are rejected at a specified alpha level (after correction),

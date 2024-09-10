@@ -1,16 +1,16 @@
-{{index}}  # noqa: F821
-{{summary}}  # noqa: F821
-{{extended_summary}}  # noqa: F821
-{{parameters}}  # noqa: F821
-{{returns}}  # noqa: F821
-{{yields}}  # noqa: F821
-{{other_parameters}}  # noqa: F821
-{{attributes}}  # noqa: F821
-{{raises}}  # noqa: F821
-{{warns}}  # noqa: F821
-{{warnings}}  # noqa: F821
-{{see_also}}  # noqa: F821
-{{notes}}  # noqa: F821
-{{references}}  # noqa: F821
-{{examples}}  # noqa: F821
-{{methods}}  # noqa: F821
+{{index}}
+{{summary}}
+{{extended_summary}}
+{{parameters}}
+{{returns}}
+{{yields}}
+{{other_parameters}}
+{{attributes}}
+{{raises}}
+{{warns}}
+{{warnings}}
+{{see_also}}
+{{notes}}
+{{references}}
+{{examples}}
+{{methods}}
