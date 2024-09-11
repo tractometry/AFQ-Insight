@@ -3,6 +3,12 @@ name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
 on: push
 jobs:
   build-n-publish:
+    permissions:
+      id-token: write
+    environment:
+      name: release
+      url: https://pypi.org/p/${{ github.repository }}
+
     name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ubuntu-latest
     steps:
@@ -10,7 +16,7 @@ jobs:
     - name: Set up Python 3.10
       uses: actions/setup-python@v5
       with:
-        python-version: "3.10"
+        python-version: 3.10
     - name: Install pep517
       run: >-
         python -m
@@ -29,11 +35,11 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
-        password: ${{ secrets.TEST_PYPI_PASSWORD }}
-        repository_url: https://test.pypi.org/legacy/
+        password: ${{ secrets.test_pypi_password }}
+        repository-url: https://test.pypi.org/legacy/
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.event.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
-        password: ${{ secrets.PYPI_PASSWORD }}
+        password: ${{ secrets.pypi_password }}
