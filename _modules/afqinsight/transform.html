@@ -1,0 +1,923 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>afqinsight.transform &#8212; AFQ-Insight 0.5.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/afqinsight.css?v=d1d1afb3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=b9afe91b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/copybutton.js?v=26522df0"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/afqinsight/transform';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">AFQ-Insight 0.5.1 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+    General examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting_help.html">
+    Getting help using AFQ-Insight
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../contributing.html">
+    Contributing to AFQ-Insight
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/tractometry/AFQ-Insight">
+    AFQ-Insight on GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+    General examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting_help.html">
+    Getting help using AFQ-Insight
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contributing.html">
+    Contributing to AFQ-Insight
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/tractometry/AFQ-Insight">
+    AFQ-Insight on GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">afqinsight.transform</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for afqinsight.transform</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Transform AFQ data.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">sklearn_pandas</span> <span class="kn">import</span> <span class="n">DataFrameMapper</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">CANONICAL_TRACT_NAMES</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;AFQDataFrameMapper&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;multicol2sets&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;multicol2dicts&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sort_features&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;beta_hat_by_groups&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;unfold_beta_hat_by_metrics&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="AFQDataFrameMapper">
+<a class="viewcode-back" href="../../api.html#afqinsight.AFQDataFrameMapper">[docs]</a>
+<span class="k">class</span> <span class="nc">AFQDataFrameMapper</span><span class="p">(</span><span class="n">DataFrameMapper</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map pandas dataframe to sklearn feature matrix.</span>
+
+<span class="sd">    This object first converts an AFQ nodes.csv dataframe into a feature</span>
+<span class="sd">    matrix with rows corresponding to subjects and columns corresponding to</span>
+<span class="sd">    tract profile values. It interpolates along tracts to fill missing values</span>
+<span class="sd">    and then maps the dataframe onto a 2D feature matrix for ingestion into</span>
+<span class="sd">    sklearn-compatible estimators. It also maintains attributes for the</span>
+<span class="sd">    subject index, feature names, and groups of features.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df_mapper_params : kwargs, default=dict(features=[], default=None)</span>
+<span class="sd">        Keyword arguments passed to sklearn_pandas.DataFrameMapper. You will</span>
+<span class="sd">        probably not need to change these defaults.</span>
+
+<span class="sd">    pd_interpolate_params : kwargs,</span>
+<span class="sd">        default=dict(method=&quot;linear&quot;, limit_direction=&quot;both&quot;, limit_area=&quot;inside&quot;)</span>
+<span class="sd">        Keyword arguments passed to pandas.DataFrame.interpolate. Missing</span>
+<span class="sd">        values are interpolated within the tract profile so that no data is</span>
+<span class="sd">        used from other subjects, tracts, or metrics, minimizing the chance</span>
+<span class="sd">        of train/test leakage. You will probably not need to change these</span>
+<span class="sd">        defaults.</span>
+
+<span class="sd">    bundle_agg_func : function, str, list or dict, optional</span>
+<span class="sd">        If provided, a function to use for aggregating the nodes in each tract.</span>
+<span class="sd">        If a function, must either work when passed a DataFrame or when passed</span>
+<span class="sd">        to DataFrame.apply.</span>
+
+<span class="sd">        Accepted combinations are:</span>
+
+<span class="sd">        - function</span>
+
+<span class="sd">        - string function name</span>
+
+<span class="sd">        - list of functions and/or function names, e.g. [np.sum, &#39;mean&#39;]</span>
+
+<span class="sd">        By default, this mapper will not aggregate but will return values at</span>
+<span class="sd">        each node.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subjects_ : list</span>
+<span class="sd">        List of subject IDs retrieved from pandas dataframe index.</span>
+
+<span class="sd">    groups_ : list of numpy.ndarray</span>
+<span class="sd">        List of arrays of non-overlapping indices for each group. For</span>
+<span class="sd">        example, if nine features are grouped into equal contiguous groups of</span>
+<span class="sd">        three, then groups would be ``[array([0, 1, 2]), array([3, 4, 5]),</span>
+<span class="sd">        array([6, 7, 8])]``.</span>
+
+<span class="sd">    feature_names_ : list of tuples</span>
+<span class="sd">        List of feature column names.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pd_interpolate_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">bundle_agg_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">concat_subject_session</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">dataframe_mapper_kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subjects_</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">groups_</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">concat_subject_session</span> <span class="o">=</span> <span class="n">concat_subject_session</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pd_interpolate_kwargs</span> <span class="o">=</span> <span class="n">pd_interpolate_kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bundle_agg_func</span> <span class="o">=</span> <span class="n">bundle_agg_func</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;features&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dataframe_mapper_kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_bundle_agg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">agg_func</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;sessionID&quot;</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">concat_subject_session</span><span class="p">:</span>
+            <span class="n">X</span><span class="o">.</span><span class="n">subjectID</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">subjectID</span> <span class="o">+</span> <span class="n">X</span><span class="o">.</span><span class="n">sessionID</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;sessionID&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+
+        <span class="n">features</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">X</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;subjectID&quot;</span><span class="p">,</span> <span class="s2">&quot;tractID&quot;</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">agg_func</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;nodeID&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="s2">&quot;tractID&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">set_attributes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subjects_</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">groups_</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">idx</span><span class="p">])</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">columns</span><span class="p">))]</span>
+
+        <span class="k">return</span> <span class="n">features</span>
+
+    <span class="k">def</span> <span class="nf">_preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># We&#39;d like to interpolate the missing values, but first we need to</span>
+        <span class="c1"># structure the data frame so that it does not interpolate from other</span>
+        <span class="c1"># subjects, tracts, or metrics. It should only interpolate from nearby</span>
+        <span class="c1"># nodes. So we want the nodeID as the row index and all the other</span>
+        <span class="c1"># stuff as columns . After that we can interpolate along each column.</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;sessionID&quot;</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">concat_subject_session</span><span class="p">:</span>
+            <span class="n">X</span><span class="o">.</span><span class="n">subjectID</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">subjectID</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">+</span> <span class="n">X</span><span class="o">.</span><span class="n">sessionID</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;sessionID&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+
+        <span class="n">by_node_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;subjectID&quot;</span><span class="p">,</span> <span class="s2">&quot;tractID&quot;</span><span class="p">,</span> <span class="s2">&quot;nodeID&quot;</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;metric&quot;</span><span class="p">),</span>
+            <span class="n">index</span><span class="o">=</span><span class="s2">&quot;nodeID&quot;</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;metric&quot;</span><span class="p">,</span> <span class="s2">&quot;tractID&quot;</span><span class="p">,</span> <span class="s2">&quot;subjectID&quot;</span><span class="p">],</span>
+            <span class="n">values</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Interpolate the missing values, using self.pd_interpolate_kwargs</span>
+        <span class="n">interp_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;limit_direction&quot;</span><span class="p">:</span> <span class="s2">&quot;both&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;limit_area&quot;</span><span class="p">:</span> <span class="s2">&quot;inside&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pd_interpolate_kwargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">interp_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pd_interpolate_kwargs</span><span class="p">)</span>
+        <span class="n">interpolated</span> <span class="o">=</span> <span class="n">by_node_idx</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="o">**</span><span class="n">interp_kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Now we have the NaN values filled in, we want to structure the nodes</span>
+        <span class="c1"># dataframe as a feature matrix with one row per subject and one</span>
+        <span class="c1"># column for each combination of metric, tractID, and nodeID</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">interpolated</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="s2">&quot;subjectID&quot;</span><span class="p">,</span> <span class="s2">&quot;tractID&quot;</span><span class="p">,</span> <span class="s2">&quot;metric&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;metric&quot;</span><span class="p">,</span> <span class="s2">&quot;tractID&quot;</span><span class="p">,</span> <span class="s2">&quot;nodeID&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># We&#39;re almost there. It&#39;d be nice if the multi-indexed columns were</span>
+        <span class="c1"># ordered well. So let&#39;s reorder the columns</span>
+        <span class="n">new_columns</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span>
+            <span class="n">features</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">levels</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;metric&quot;</span><span class="p">,</span> <span class="s2">&quot;tractID&quot;</span><span class="p">,</span> <span class="s2">&quot;nodeID&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">features</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">new_columns</span><span class="p">]</span>
+
+        <span class="c1"># Lastly, there may still be some NaN values. After interpolating</span>
+        <span class="c1"># above, the only NaN values left should be the ones created after</span>
+        <span class="c1"># stacking and unstacking due to a subject missing an entire tract. In</span>
+        <span class="c1"># this case, we do not fill these values and instead recommend that</span>
+        <span class="c1"># users use an imputer from sklearn.impute</span>
+
+        <span class="k">if</span> <span class="n">set_attributes</span><span class="p">:</span>
+            <span class="c1"># Construct bundle group membership</span>
+            <span class="n">metric_level</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;metric&quot;</span><span class="p">)</span>
+            <span class="n">tract_level</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;tractID&quot;</span><span class="p">)</span>
+            <span class="n">n_tracts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">tract_level</span><span class="p">])</span>
+            <span class="n">bundle_group_membership</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="n">features</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">codes</span><span class="p">[</span><span class="n">metric_level</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_tracts</span>
+                <span class="o">+</span> <span class="n">features</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">codes</span><span class="p">[</span><span class="n">tract_level</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Done, now let&#39;s extract the subject IDs from the index</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subjects_</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">groups_</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">bundle_group_membership</span> <span class="o">==</span> <span class="n">gid</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">bundle_group_membership</span><span class="p">)</span>
+            <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">features</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit a transform from the given dataframe.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : pandas.DataFrame</span>
+<span class="sd">            The data to fit</span>
+
+<span class="sd">        y : array-like of shape (n_samples,) or (n_samples, n_targets), optional</span>
+<span class="sd">            Target values. Unused in this transformer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bundle_agg_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle_agg</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bundle_agg_func</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transform the input data.</span>
+
+<span class="sd">        This assumes that ``fit`` or ``fit_transform`` has already been called.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : pandas.DataFrame</span>
+<span class="sd">            The data to transform</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bundle_agg_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle_agg</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">agg_func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bundle_agg_func</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit a transform from the given dataframe and apply directly to given data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : pandas.DataFrame</span>
+<span class="sd">            The data to fit</span>
+
+<span class="sd">        y : array-like of shape (n_samples,) or (n_samples, n_targets), optional</span>
+<span class="sd">            Target values. Unused in this transformer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bundle_agg_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle_agg</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">agg_func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bundle_agg_func</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">feature_names_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the feature names.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformed_names_</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">isiterable</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if obj is an iterable, False otherwise.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>  <span class="c1"># noqa F841</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">def</span> <span class="nf">multicol2sets</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">tract_symmetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a pandas MultiIndex to an array of sets.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    columns : pandas.MultiIndex</span>
+<span class="sd">        multi-indexed columns used to generate the result</span>
+
+<span class="sd">    tract_symmetry : boolean, optional</span>
+<span class="sd">        If True, then another tract item will be added to each set</span>
+<span class="sd">        if the set contains a tract containing &quot;Left&quot; or &quot;Right.&quot;</span>
+<span class="sd">        The added tract will be the more general (i.e. symmetrized) name.</span>
+<span class="sd">        Default: True</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    col_sets : numpy.ndarray</span>
+<span class="sd">        An array of sets containing the tuples of the input MultiIndex</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">col_vals</span> <span class="o">=</span> <span class="n">columns</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">tract_symmetry</span><span class="p">:</span>
+        <span class="n">tract_idx</span> <span class="o">=</span> <span class="n">columns</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;tractID&quot;</span><span class="p">)</span>
+
+        <span class="n">bilateral_symmetry</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">tract</span><span class="p">:</span> <span class="n">tract</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Left&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Right&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">tract</span> <span class="ow">in</span> <span class="n">columns</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">tract_idx</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="n">col_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">bilateral_symmetry</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">tract_idx</span><span class="p">]],)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">col_vals</span><span class="p">])</span>
+
+    <span class="n">col_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">tuple</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">tup</span><span class="p">])</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">col_vals</span><span class="p">])</span>
+    <span class="n">col_sets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">col_vals</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">col_sets</span>
+
+
+<span class="k">def</span> <span class="nf">multicol2dicts</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">tract_symmetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a pandas MultiIndex to an array of dicts.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    columns : pandas.MultiIndex</span>
+<span class="sd">        multi-indexed columns used to generate the result</span>
+
+<span class="sd">    tract_symmetry : boolean, optional</span>
+<span class="sd">        If True, then another tract item will be added to each set</span>
+<span class="sd">        if the set contains a tract containing &quot;Left&quot; or &quot;Right.&quot;</span>
+<span class="sd">        The added tract will be the more general (i.e. symmetrized) name.</span>
+<span class="sd">        Default: True</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    col_dicts : list</span>
+<span class="sd">        An array of dicts containing the tuples of the input MultiIndex</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">col_vals</span> <span class="o">=</span> <span class="n">columns</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="n">col_names</span> <span class="o">=</span> <span class="n">columns</span><span class="o">.</span><span class="n">names</span>
+
+    <span class="k">if</span> <span class="n">tract_symmetry</span><span class="p">:</span>
+        <span class="n">tract_idx</span> <span class="o">=</span> <span class="n">columns</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;tractID&quot;</span><span class="p">)</span>
+
+        <span class="n">bilateral_symmetry</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">tract</span><span class="p">:</span> <span class="n">tract</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Left&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Right&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">tract</span> <span class="ow">in</span> <span class="n">columns</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">tract_idx</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="n">col_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">bilateral_symmetry</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">tract_idx</span><span class="p">]],)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">col_vals</span><span class="p">])</span>
+
+        <span class="n">col_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">col_names</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;symmetrized_tractID&quot;</span><span class="p">]</span>
+
+    <span class="n">col_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">tuple</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">tup</span><span class="p">])</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">col_vals</span><span class="p">])</span>
+    <span class="n">col_dicts</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">col_names</span><span class="p">,</span> <span class="n">vals</span><span class="p">))</span> <span class="k">for</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">col_vals</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">col_dicts</span>
+
+
+<span class="k">def</span> <span class="nf">sort_features</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">scores</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort features by importance.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    features : sequence of features</span>
+<span class="sd">        Sequence of features, can be the returned values from multicol2sets</span>
+<span class="sd">        or multicol2dicts</span>
+
+<span class="sd">    scores : sequence of scores</span>
+<span class="sd">        importance scores for each feature</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list</span>
+<span class="sd">        Sorted list of columns and scores</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="nb">zip</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">scores</span><span class="p">),</span>
+        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">res</span>
+
+
+<span class="k">def</span> <span class="nf">beta_hat_by_groups</span><span class="p">(</span><span class="n">beta_hat</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">drop_zeros</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform one-dimensional beta_hat array into OrderedDict.</span>
+
+<span class="sd">    Organize by tract-metric groups</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    beta_hat : np.ndarray</span>
+<span class="sd">        one-dimensional array of feature coefficients</span>
+
+<span class="sd">    columns : pd.MultiIndex</span>
+<span class="sd">        MultiIndex columns of the feature matrix</span>
+
+<span class="sd">    drop_zeros : bool, default=False</span>
+<span class="sd">        If True, only include betas for which there are non-zero values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    OrderedDict</span>
+<span class="sd">        Two-level ordered dict with beta_hat coefficients, ordered first</span>
+<span class="sd">        by tract and then by metric</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    AFQFeatureTransformer</span>
+<span class="sd">        Transforms AFQ csv files into feature matrix. Use this to create</span>
+<span class="sd">        the `columns` input.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">betas</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">label_sets</span> <span class="o">=</span> <span class="n">multicol2sets</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">tract_symmetry</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">tract</span> <span class="ow">in</span> <span class="n">columns</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">columns</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;tractID&quot;</span><span class="p">)]:</span>
+        <span class="n">tract_mask</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tract</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">label_sets</span>
+        <span class="n">all_metrics</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">beta_hat</span><span class="p">[</span><span class="n">tract_mask</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">drop_zeros</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">all_metrics</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">betas</span><span class="p">[</span><span class="n">tract</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">columns</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">columns</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;metric&quot;</span><span class="p">)]:</span>
+                <span class="n">metric_mask</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">tract</span><span class="p">,</span> <span class="n">metric</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">label_sets</span>  <span class="c1"># noqa C405</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">beta_hat</span><span class="p">[</span><span class="n">metric_mask</span><span class="p">])</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">drop_zeros</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">x</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">betas</span><span class="p">[</span><span class="n">tract</span><span class="p">][</span><span class="n">metric</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+
+    <span class="k">return</span> <span class="n">betas</span>
+
+
+<span class="k">def</span> <span class="nf">unfold_beta_hat_by_metrics</span><span class="p">(</span><span class="n">beta_hat</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">tract_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform one-dimensional beta_hat array into OrderedDict.</span>
+
+<span class="sd">    Organize by tract-metric groups</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    beta_hat : np.ndarray</span>
+<span class="sd">        one-dimensional array of feature coefficients</span>
+
+<span class="sd">    columns : pd.MultiIndex</span>
+<span class="sd">        MultiIndex columns of the feature matrix</span>
+
+<span class="sd">    tract_names : list or None, default=None</span>
+<span class="sd">        Names of the tracts. If None, use utils.CANONICAL_TRACT_NAMES</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    OrderedDict</span>
+<span class="sd">        Single-level ordered dict with beta_hat coefficients.</span>
+<span class="sd">        The keys are the metrics and the values are the unfolded beta_hat</span>
+<span class="sd">        coefficients</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    AFQFeatureTransformer</span>
+<span class="sd">        Transforms AFQ csv files into feature matrix. Use this to create</span>
+<span class="sd">        the `columns` input.</span>
+
+<span class="sd">    beta_hat_by_groups</span>
+<span class="sd">        Returns a two-level ordered dict instead of &quot;unfolding&quot; the tracts</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">betas</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+    <span class="n">betas_by_groups</span> <span class="o">=</span> <span class="n">beta_hat_by_groups</span><span class="p">(</span><span class="n">beta_hat</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">drop_zeros</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tracts</span> <span class="o">=</span> <span class="n">CANONICAL_TRACT_NAMES</span> <span class="k">if</span> <span class="n">tract_names</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tract_names</span>
+
+    <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">columns</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">columns</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;metric&quot;</span><span class="p">)]:</span>
+        <span class="n">betas</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">tract</span> <span class="ow">in</span> <span class="n">tracts</span><span class="p">:</span>
+            <span class="n">betas</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">betas_by_groups</span><span class="p">[</span><span class="n">tract</span><span class="p">][</span><span class="n">metric</span><span class="p">])</span>
+
+        <span class="n">betas</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">betas</span><span class="p">[</span><span class="n">metric</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">betas</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020 -- , Adam Richie-Halford, Ariel Rokem, The University of Washington.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
