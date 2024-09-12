@@ -1,4 +1,4 @@
-v0.5.0 (September 11, 2024)
-===========================
-  * Updates documentation workflow and moves docs to docs folder. (#1)
+0.5.1 (September 12, 2024)
+==========================
+  * Push to the right PYPI url. (#2)
 
