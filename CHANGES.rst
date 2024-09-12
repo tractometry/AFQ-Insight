@@ -1,3 +1,7 @@
+v0.5.0 (September 11, 2024)
+===========================
+  * Updates documentation workflow and moves docs to docs folder. (#1)
+
 v0.4 (February 26, 2024)
 ========================
   * Upgrade Python dependencies.
