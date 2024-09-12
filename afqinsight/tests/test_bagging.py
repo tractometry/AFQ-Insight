@@ -5,35 +5,32 @@ Testing for the serial bagging ensemble module (afqinsight._serial_bagging).
 # Author: Gilles Louppe
 # License: BSD 3 clause
 
-import numpy as np
 import joblib
+import numpy as np
 import pytest
-
-from afqinsight._serial_bagging import SerialBaggingClassifier, SerialBaggingRegressor
-
+from numpy.testing import (
+    assert_array_almost_equal,
+    assert_array_equal,
+    assert_raises,
+    assert_warns,
+)
+from scipy.sparse import csc_matrix, csr_matrix
 from sklearn.base import BaseEstimator
-
-from numpy.testing import assert_array_equal
-from numpy.testing import assert_array_almost_equal
-from numpy.testing import assert_raises
-from numpy.testing import assert_warns
+from sklearn.datasets import load_diabetes, load_iris, make_hastie_10_2
+from sklearn.dummy import DummyClassifier, DummyRegressor
+from sklearn.feature_selection import SelectKBest
+from sklearn.linear_model import LogisticRegression, Perceptron
+from sklearn.model_selection import GridSearchCV, ParameterGrid, train_test_split
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import FunctionTransformer
+from sklearn.random_projection import SparseRandomProjection
+from sklearn.svm import SVC, SVR
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.utils import check_random_state
 from sklearn.utils._testing import ignore_warnings
 
-from sklearn.dummy import DummyClassifier, DummyRegressor
-from sklearn.model_selection import GridSearchCV, ParameterGrid
-from sklearn.linear_model import Perceptron, LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.svm import SVC, SVR
-from sklearn.random_projection import SparseRandomProjection
-from sklearn.pipeline import make_pipeline
-from sklearn.feature_selection import SelectKBest
-from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_diabetes, load_iris, make_hastie_10_2
-from sklearn.utils import check_random_state
-from sklearn.preprocessing import FunctionTransformer
-
-from scipy.sparse import csc_matrix, csr_matrix
+from afqinsight._serial_bagging import SerialBaggingClassifier, SerialBaggingRegressor
 
 rng = check_random_state(0)
 
@@ -143,9 +140,9 @@ def test_sparse_classification():
                 assert_array_almost_equal(sparse_results, dense_results)
 
             sparse_type = type(X_train_sparse)
-            types = [i.data_type_ for i in sparse_classifier.estimators_]
+            types = [i.data_type_ for i in sparse_classifier.estimators_]  # noqa C416
 
-            assert all([t == sparse_type for t in types])
+            assert all([t == sparse_type for t in types])  # noqa C416
 
 
 def test_regression():
@@ -231,7 +228,7 @@ def test_sparse_regression():
             types = [i.data_type_ for i in sparse_classifier.estimators_]
 
             assert_array_almost_equal(sparse_results, dense_results)
-            assert all([t == sparse_type for t in types])
+            assert all([t == sparse_type for t in types])  # noqa C416
             assert_array_almost_equal(sparse_results, dense_results)
 
 
@@ -664,7 +661,7 @@ def test_warm_start(random_state=42):
     )
     clf_no_ws.fit(X, y)
 
-    assert set([tree.random_state for tree in clf_ws]) == set(
+    assert set([tree.random_state for tree in clf_ws]) == set(  # noqa C416
         [tree.random_state for tree in clf_no_ws]
     )
 

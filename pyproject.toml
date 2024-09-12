@@ -2,32 +2,30 @@
 requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4"]
 build-backend = "setuptools.build_meta"
 
-[tools.setuptools_scm]
+[tool.setuptools_scm]
+write_to = "_version.py"
 
-[tool.black]
-line-length = 88
-target-version = ['py310']
-extend-exclude = '''
+[tool.ruff]
+target-version = "py310"
 
-(
-  /(
-      \.eggs
-    | \.git
-    | \.github
-    | \.idea
-    | \.ipynb_checkpoints
-    | \.hg
-    | \.pytest_cache
-    | \.tox
-    | \.venv
-    | afqinsight.egg-info
-    | doc
-    | examples
-    | build
-    | dist
-  )/
-  | foo.py  # also separately exclude a file named foo.py in the
-            # root of the project. This file doesn't exists but
-            # we leave this here as a hint to our future selves.
-)
-'''
+[tool.ruff.lint]
+select = [
+  "F",
+  "E",
+  "C",
+  "W",
+  "B",
+  "I",
+]
+ignore = [
+  "B905",
+  "C901",
+  "E203",
+  "F821"
+]
+
+[tool.ruff.lint.per-file-ignores]
+"docs/_templates/numpydoc_docstring.py" = ["F821", "B018"]
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"

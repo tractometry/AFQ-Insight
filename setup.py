@@ -1,9 +1,7 @@
-"""Statistical learning for tractometry data, especially within the AFQ software ecosystem."""
+import os.path as op
+import string
 
 from setuptools import setup
-import string
-import os.path as op
-import glob
 from setuptools_scm import get_version
 
 
@@ -22,15 +20,12 @@ def local_version(version):
         return ""
 
 
-opts = dict(
-    use_scm_version={
-        "root": ".",
-        "relative_to": __file__,
+opts = {
+    "use_scm_version": {
         "write_to": op.join("afqinsight", "_version.py"),
         "local_scheme": local_version,
-    },
-    scripts=[op.join("bin", op.split(f)[-1]) for f in glob.glob("bin/*")],
-)
+    }
+}
 
 
 if __name__ == "__main__":

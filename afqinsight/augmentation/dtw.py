@@ -12,8 +12,9 @@ augmentation for time series classification with neural networks," PLOS ONE
 16(7): e0254841. DOI: https://doi.org/10.1371/journal.pone.0254841
 """
 
-import numpy as np
 import sys
+
+import numpy as np
 
 RETURN_VALUE = 0
 RETURN_PATH = 1
@@ -186,7 +187,8 @@ def draw_graph2d(cost, DTW, path, prototype, sample):
     import matplotlib.pyplot as plt
 
     plt.figure(figsize=(12, 8))
-    # plt.subplots_adjust(left=.02, right=.98, bottom=.001, top=.96, wspace=.05, hspace=.01)
+    # plt.subplots_adjust(left=.02, right=.98,
+    #                     bottom=.001, top=.96, wspace=.05, hspace=.01)
 
     # cost
     plt.subplot(2, 3, 1)
@@ -229,7 +231,8 @@ def draw_graph1d(cost, DTW, path, prototype, sample):
     import matplotlib.pyplot as plt
 
     plt.figure(figsize=(12, 8))
-    # plt.subplots_adjust(left=.02, right=.98, bottom=.001, top=.96, wspace=.05, hspace=.01)
+    # plt.subplots_adjust(left=.02, right=.98,
+    #                     bottom=.001, top=.96, wspace=.05, hspace=.01)
     p_steps = np.arange(prototype.shape[0])
     s_steps = np.arange(sample.shape[0])
 
