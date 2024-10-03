@@ -20,7 +20,7 @@ else:
 
 class mlp4(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
-        super(mlp4_torch, self).__init__()
+        super(mlp4, self).__init__()
         self.flatten = nn.flatten()
         self.dropout_1 = nn.Dropout(0.1)
         self.dropout_2 = nn.Dropout(0.2)
@@ -33,6 +33,7 @@ class mlp4(nn.Module):
         self.l4 = nn.softmax(500,n_classes)
 
         self.relu = nn.relu()
+        self.linear = nn.linear()
         
         if output_activation == torch.softmax:
             self.output = nn.softmax()
@@ -40,17 +41,25 @@ class mlp4(nn.Module):
     def forward(self, x):
         x = self.flatten(x)
         x = self.dropout_1(x)
+        x = self.linear(x)
         x = self.l0(x)
+        x = self.linear(x)
         x = self.l1(x)
         x = self.dropout_2(x)
+        x = self.linear(x)
         x = self.l2(x)
         x = self.dropout_2(x)
+        x = self.linear(x)
         x = self.l3(x)
         x = self.dropout_3(x)
+        x = self.linear(x)
         x = self.l4(x)
         x = self.output(x)
 
         return x
+def MLP4(input_shape, n_classes):
+    mlp4 = mlp4( input_shape, n_classes, output_activation = torch.softmax, verbose=False)
+    return mlp4
     
 class cnn_lenet(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
@@ -114,7 +123,7 @@ class cnn_vgg(nn.Module):
             conv_layers.append(
                 nn.Conv1d(
                     # what is in channels?
-                    in_channels= input_shape[i],
+                    in_channels= input_shape[1],
                     out_channels=num_filters,
                     kernel_size=3,
                     padding=1, # because padding in tensorflow is 'same' and strides = 1
@@ -122,7 +131,7 @@ class cnn_vgg(nn.Module):
             )
             conv_layers.append(nn.ReLU())
             conv_layers.append(nn.Conv1d(
-                in_channels=6 + 10 * i,
+                in_channels=num_filters,
                 out_channels=num_filters,
                 kernel_size=3,
                 padding=1
@@ -130,7 +139,7 @@ class cnn_vgg(nn.Module):
             conv_layers.append(nn.ReLU())
             if i > 1:
                 conv_layers.append(nn.Conv1d(
-                    in_channels=6 + 10 * i,
+                    in_channels=num_filters,
                     out_channels=num_filters,
                     kernel_size=3,
                     padding=1
