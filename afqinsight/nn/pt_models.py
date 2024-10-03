@@ -23,7 +23,6 @@ class mlp4(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation=torch.softmax, verbose=False):
         super(mlp4, self).__init__()
         
-        # Define the sequence of layers
         self.model = nn.Sequential(
             nn.Flatten(),
             nn.Dropout(0.1),
