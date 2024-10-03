@@ -55,7 +55,7 @@ class mlp4(nn.Module):
         return x
 
 def MLP4(input_shape, n_classes):
-    mlp4 = mlp4( input_shape, n_classes, output_activation = torch.softmax, verbose=False)
+    mlp4 = mlp4(input_shape, n_classes, output_activation = torch.softmax, verbose=False)
     return mlp4
     
 class cnn_lenet(nn.Module):
