@@ -1,4 +1,5 @@
 import math
+import torch
 from dipy.utils.optpkg import optional_package
 from dipy.utils.tripwire import TripWire
 
@@ -19,44 +20,40 @@ else:
     print("test")
 
 class mlp4(nn.Module):
-    def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
+    def __init__(self, input_shape, n_classes, output_activation=torch.softmax, verbose=False):
         super(mlp4, self).__init__()
-        self.flatten = nn.flatten()
-        self.dropout_1 = nn.Dropout(0.1)
-        self.dropout_2 = nn.Dropout(0.2)
-        self.dropout_3 = nn.Dropout(0.3)
-
-        self.l0 = nn.Linear(input_shape, 500)
-        self.l1 = nn.ReLU(500,500)
-        self.l2 = nn.ReLU(500,500)
-        self.l3 = nn.ReLU(500,500)
-        self.l4 = nn.softmax(500,n_classes)
-
-        self.relu = nn.relu()
-        self.linear = nn.linear()
+        self.flatten = nn.Flatten()
+        self.dropout1 = nn.Dropout(0.1)
+        self.dropout2 = nn.Dropout(0.2)
+        self.dropout3 = nn.Dropout(0.3)
+        self.fc1 = nn.Linear(input_shape, 500)
+        self.fc2 = nn.Linear(500, 500)
+        self.fc3 = nn.Linear(500, 500)
+        self.fc4 = nn.Linear(500, n_classes)
+        self.relu = nn.ReLU()
         
         if output_activation == torch.softmax:
-            self.output = nn.softmax()
+            self.output_activation = nn.Softmax(dim=1)
+        else:
+            self.output_activation = None
 
     def forward(self, x):
         x = self.flatten(x)
-        x = self.dropout_1(x)
-        x = self.linear(x)
-        x = self.l0(x)
-        x = self.linear(x)
-        x = self.l1(x)
-        x = self.dropout_2(x)
-        x = self.linear(x)
-        x = self.l2(x)
-        x = self.dropout_2(x)
-        x = self.linear(x)
-        x = self.l3(x)
-        x = self.dropout_3(x)
-        x = self.linear(x)
-        x = self.l4(x)
-        x = self.output(x)
-
+        x = self.dropout1(x)
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.dropout2(x)
+        x = self.fc2(x)
+        x = self.relu(x)
+        x = self.dropout2(x)
+        x = self.fc3(x)
+        x = self.relu(x)
+        x = self.dropout3(x)
+        x = self.fc4(x)
+        if self.output_activation:
+            x = self.output_activation(x)
         return x
+
 def MLP4(input_shape, n_classes):
     mlp4 = mlp4( input_shape, n_classes, output_activation = torch.softmax, verbose=False)
     return mlp4
