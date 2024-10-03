@@ -22,38 +22,37 @@ else:
 class mlp4(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation=torch.softmax, verbose=False):
         super(mlp4, self).__init__()
-        self.flatten = nn.Flatten()
-        self.dropout1 = nn.Dropout(0.1)
-        self.dropout2 = nn.Dropout(0.2)
-        self.dropout3 = nn.Dropout(0.3)
-        self.fc1 = nn.Linear(input_shape, 500)
-        self.fc2 = nn.Linear(500, 500)
-        self.fc3 = nn.Linear(500, 500)
-        self.fc4 = nn.Linear(500, n_classes)
-        self.relu = nn.ReLU()
+        
+        # Define the sequence of layers
+        self.model = nn.Sequential(
+            nn.Flatten(),
+            nn.Dropout(0.1),
+            nn.Linear(input_shape, 500),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(500, 500),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(500, 500),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(500, n_classes)
+        )
         
         if output_activation == torch.softmax:
             self.output_activation = nn.Softmax(dim=1)
         else:
             self.output_activation = None
+        
+        if verbose:
+            print(self.model)
 
     def forward(self, x):
-        x = self.flatten(x)
-        x = self.dropout1(x)
-        x = self.fc1(x)
-        x = self.relu(x)
-        x = self.dropout2(x)
-        x = self.fc2(x)
-        x = self.relu(x)
-        x = self.dropout2(x)
-        x = self.fc3(x)
-        x = self.relu(x)
-        x = self.dropout3(x)
-        x = self.fc4(x)
+        x = self.model(x)
         if self.output_activation:
             x = self.output_activation(x)
         return x
-
+    
 def MLP4(input_shape, n_classes):
     mlp4 = mlp4(input_shape, n_classes, output_activation = torch.softmax, verbose=False)
     return mlp4
