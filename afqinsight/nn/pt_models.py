@@ -18,7 +18,7 @@ else:
     Input = TripWire(torch_msg)
     print("test")
 
-class mlp4_torch(nn.Module):
+class mlp4(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
         super(mlp4_torch, self).__init__()
         self.flatten = nn.flatten()
@@ -52,7 +52,7 @@ class mlp4_torch(nn.Module):
 
         return x
     
-class cnn_lenet_torch(nn.Module):
+class cnn_lenet(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
         self.n_conv_layers = int(round(math.log(input_shape[0], 2)) - 3)
         if verbose:
@@ -99,7 +99,7 @@ class cnn_lenet_torch(nn.Module):
         x = self.output(x)
         return x
 
-class cnn_vgg_torch(nn.Module):
+class cnn_vgg(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
         self.n_conv_layers = int(round(math.log(input_shape[0], 2)) - 3)
         if verbose:
