@@ -178,6 +178,7 @@ def lstm1v0(input_shape, n_classes, output_activation="softmax", verbose=False):
 
     ip = Input(shape=input_shape)
 
+    # 512 units
     l2 = LSTM(512)(ip)
     out = Dense(n_classes, activation=output_activation)(l2)
 
@@ -259,7 +260,8 @@ def blstm2(input_shape, n_classes, output_activation="softmax", verbose=False):
 
     return model
 
-
+#FCN IS FULLY CONVULUTIONAL NETWORK
+#LSTM IS LONG SHORT TERM MEMORY
 def lstm_fcn(input_shape, n_classes, output_activation="softmax", verbose=False):
     # F. Karim, S. Majumdar, H. Darabi, and S. Chen, “LSTM Fully
     # Convolutional Networks for Time Series Classification,”
@@ -270,10 +272,13 @@ def lstm_fcn(input_shape, n_classes, output_activation="softmax", verbose=False)
     # lstm part is a 1 time step multivariate as described in
     # Karim et al. Seems strange, but works I guess.
     lstm = Permute((2, 1))(ip)
+    #changes the dimensions of the input layer 
 
+    #128 units 
     lstm = LSTM(128)(lstm)
     lstm = Dropout(0.8)(lstm)
 
+    # filters, kernel size 
     conv = Conv1D(128, 8, padding="same", kernel_initializer="he_uniform")(ip)
     conv = BatchNormalization()(conv)
     conv = Activation("relu")(conv)
@@ -297,7 +302,6 @@ def lstm_fcn(input_shape, n_classes, output_activation="softmax", verbose=False)
         model.summary()
 
     return model
-
 
 def cnn_resnet(input_shape, n_classes, output_activation="softmax", verbose=False):
     # I. Fawaz, G. Forestier, J. Weber, L. Idoumghar, P-A Muller, "Data
