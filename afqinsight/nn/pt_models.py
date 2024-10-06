@@ -215,7 +215,7 @@ class lstm1v0(nn.Module):
 class lstm1(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
         self.model = nn.Sequential(
-            nn.LSTM(input_shape[1], 100, batch_first=True),
+            nn.LSTM(input_shape[1], 100),
             nn.ReLU(),
             nn.Linear(100, n_classes)
         )
@@ -238,9 +238,9 @@ class lstm1(nn.Module):
 class lstm2(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
         self.model = nn.Sequential(
-            nn.LSTM(input_shape[1], 100, batch_first=True),
+            nn.LSTM(input_shape[1], 100),
             nn.ReLU(),
-            nn.LSTM(100, 100, batch_first=True),
+            nn.LSTM(100, 100),
             nn.ReLU(),
             nn.Linear(100, n_classes)
         )
