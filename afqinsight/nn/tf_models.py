@@ -113,7 +113,6 @@ def cnn_lenet(input_shape, n_classes, output_activation="softmax", verbose=False
     model = Model([ip], [out])
     if verbose:
         model.summary()
-
     return model
 
 
