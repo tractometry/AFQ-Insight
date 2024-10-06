@@ -67,15 +67,26 @@ class cnn_lenet(nn.Module):
         conv_layers = []
 
         for i in range(self.n_conv_layers): 
-            conv_layers.append(
-                nn.Conv1d(
-                    # what is in channels?
-                    in_channels= 6 + 10 * i,
-                    out_channels=6 + 10 * i,
-                    kernel_size=3,
-                    padding=1, # because padding in tensorflow is 'same' and strides = 1
+            if i == 0:
+                conv_layers.append(
+                    nn.Conv1d(
+                        # what is in channels?
+                        in_channels= input_shape[1],
+                        out_channels=6,
+                        kernel_size=3,
+                        padding=1, # because padding in tensorflow is 'same' and strides = 1
+                    )
                 )
-            )
+            else:
+                conv_layers.append(
+                    nn.Conv1d(
+                        # what is in channels?
+                        in_channels= 6 + 10 * i,
+                        out_channels=6 + 10 * i,
+                        kernel_size=3,
+                        padding=1, # because padding in tensorflow is 'same' and strides = 1
+                    )
+                )
             conv_layers.append(nn.ReLU())
             conv_layers.append(nn.MaxPool1d(kernel_size=2))
             
@@ -89,7 +100,6 @@ class cnn_lenet(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.5),
             nn.Linear(84, n_classes),
-            nn.softmax()
         )
         
         if output_activation == torch.softmax:
@@ -120,15 +130,26 @@ class cnn_vgg(nn.Module):
 
         for i in range(self.n_conv_layers):
             num_filters = min(64 * 2 ** i, 512)
-            conv_layers.append(
-                nn.Conv1d(
-                    # what is in channels?
-                    in_channels= input_shape[1],
-                    out_channels=num_filters,
-                    kernel_size=3,
-                    padding=1, # because padding in tensorflow is 'same' and strides = 1
+            if i == 0:
+                conv_layers.append(
+                    nn.Conv1d(
+                        # what is in channels?
+                        in_channels= input_shape[1],
+                        out_channels=num_filters,
+                        kernel_size=3,
+                        padding=1, # because padding in tensorflow is 'same' and strides = 1
+                    )
                 )
-            )
+            else:
+                conv_layers.append(
+                    nn.Conv1d(
+                        # what is in channels?
+                        in_channels= num_filters,
+                        out_channels=num_filters,
+                        kernel_size=3,
+                        padding=1, # because padding in tensorflow is 'same' and strides = 1
+                    )
+                )
             conv_layers.append(nn.ReLU())
             conv_layers.append(nn.Conv1d(
                 in_channels=num_filters,
@@ -146,28 +167,27 @@ class cnn_vgg(nn.Module):
                 ))
             conv_layers.append(nn.MaxPool1d(kernel_size=2))
             
-        self.conv_layers = nn.Sequential(*conv_layers)
+        self.model = nn.Sequential(
+            *conv_layers,
+            nn.Flatten(),
+            nn.Linear(input_shape, 4096),
+            nn.ReLU(),
+            nn.Dropout(0.5),
+            nn.Linear(4096, 4096),
+            nn.ReLU(),
+            nn.Dropout(0.5),
+            nn.Linear(4096, n_classes),
+        )
         
-        self.flatten = nn.flatten()
-        self.fc1 = nn.ReLU(input_shape, 4096)
-        self.fc2 = nn.ReLU(4096, 4096)
-        self.fc3 = nn.softmax(4096, n_classes)
-        self.dropout_1 = nn.Dropout(0.5)
-        self.dropout_2 = nn.Dropout(0.5)
-
         if output_activation == torch.softmax:
-            self.output = nn.softmax()
+            self.output_activation = nn.Softmax(dim=1)
+        else:
+            self.output_activation = None
 
     def forward(self, x):
-        x = self.conv_layers(x)
-        x = self.flatten(x) 
-       
-        x = self.fc1(x)
-        x = self.dropout_1(x)
-        x = self.fc2(x)
-        x = self.dropout_2(x)
-        x = self.fc3(x)  
-        x = self.output(x)
+        x = self.model(x)
+        if self.output_activation:
+            x = self.output_activation(x)
         return x
 '''
 data = torch.Tensor(numpy_array)
