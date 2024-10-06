@@ -211,7 +211,56 @@ class lstm1v0(nn.Module):
     def lstm1v0(input_shape, n_classes):
         lstm1v0 = lstm1v0(input_shape, n_classes, output_activation = torch.softmax, verbose=False)
         return lstm1v0
+    
+class lstm1(nn.Module):
+    def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
+        self.model = nn.Sequential(
+            nn.LSTM(input_shape[1], 100, batch_first=True),
+            nn.ReLU(),
+            nn.Linear(100, n_classes)
+        )
+        
+        if output_activation == torch.softmax:
+            self.output_activation = nn.Softmax(dim=1)
+        else:
+            self.output_activation = None
+
+    def forward(self, x):
+        x = self.model(x)
+        if self.output_activation:
+            x = self.output_activation(x)
+        return x
+    
+    def lstm1(input_shape, n_classes):
+        lstm1 = lstm1(input_shape, n_classes, output_activation = torch.softmax, verbose=False)
+        return lstm1
+    
+class lstm2(nn.Module):
+    def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
+        self.model = nn.Sequential(
+            nn.LSTM(input_shape[1], 100, batch_first=True),
+            nn.ReLU(),
+            nn.LSTM(100, 100, batch_first=True),
+            nn.ReLU(),
+            nn.Linear(100, n_classes)
+        )
+        
+        if output_activation == torch.softmax:
+            self.output_activation = nn.Softmax(dim=1)
+        else:
+            self.output_activation = None
+
+    def forward(self, x):
+        x = self.model(x)
+        if self.output_activation:
+            x = self.output_activation(x)
+        return x
+    
+    def lstm2(input_shape, n_classes):
+        lstm2 = lstm2(input_shape, n_classes, output_activation = torch.softmax, verbose=False)
+        return lstm2
+
 '''
 data = torch.Tensor(numpy_array)
-data.shape == (batch, in
+data.shape == (batch, in)
 '''
