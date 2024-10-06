@@ -317,16 +317,21 @@ def blstm2(input_shape, n_classes):
 class lstm_fcn(nn.Module):  
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
         self.model = nn.Sequential(
-            nn.LSTM(input_shape[1], 100),
+            # what is the input shape, confused how permute translates
+            nn.LSTM(input_shape[0], 128),
+            nn.Dropout(0.8),
             nn.ReLU(),
-            nn.Conv1d(100, 100, 8),
+            nn.Conv1d(input_shape[1], 128, 8, padding=1),
+            nn.BatchNorm1d(128),
             nn.ReLU(),
-            nn.MaxPool1d(2),
-            nn.Conv1d(100, 100, 8),
+            nn.Conv1d(128, 256, 5, padding=1),
+            nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.MaxPool1d(2),
-            nn.Flatten(),
-            nn.Linear(100, n_classes)
+            nn.Conv1d(256, 128, 3, padding=1),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.AdaptiveAvgPool1d(1),
+            nn.Linear(256, n_classes)
         )
         
         if output_activation == torch.softmax:
@@ -344,7 +349,8 @@ def lstm_fcn(input_shape, n_classes):
     lstm_fcn = lstm_fcn(input_shape, n_classes, output_activation = torch.softmax, verbose=False)
     return lstm_fcn
 
-class cnn_resnet(nn.Modeule):
+class cnn_resnet(nn.Module):
+
 
 '''
 data = torch.Tensor(numpy_array)
