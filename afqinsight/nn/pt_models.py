@@ -104,6 +104,10 @@ class cnn_lenet(nn.Module):
             x = self.output_activation(x)
         return x
 
+    def cnn_lenet(input_shape, n_classes):
+        cnn_lenet = cnn_lenet(input_shape, n_classes, output_activation = torch.softmax, verbose=False)
+        return cnn_lenet
+
 class cnn_vgg(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
         self.n_conv_layers = int(round(math.log(input_shape[0], 2)) - 3)
