@@ -189,6 +189,28 @@ class cnn_vgg(nn.Module):
         if self.output_activation:
             x = self.output_activation(x)
         return x
+    
+class lstm1v0(nn.Module):
+    def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
+        self.model = nn.Sequential(
+            nn.LSTM(input_shape[1], 512, batch_first=True),
+            nn.Linear(512, n_classes)
+        )
+        
+        if output_activation == torch.softmax:
+            self.output_activation = nn.Softmax(dim=1)
+        else:
+            self.output_activation = None
+
+    def forward(self, x):
+        x = self.model(x)
+        if self.output_activation:
+            x = self.output_activation(x)
+        return x
+    
+    def lstm1v0(input_shape, n_classes):
+        lstm1v0 = lstm1v0(input_shape, n_classes, output_activation = torch.softmax, verbose=False)
+        return lstm1v0
 '''
 data = torch.Tensor(numpy_array)
 data.shape == (batch, in
