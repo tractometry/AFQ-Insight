@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Harmonize HBN data using ComBat &#8212; AFQ-Insight 0.5.1 documentation</title>
+    <title>Harmonize HBN data using ComBat &#8212; AFQ-Insight 0.6 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=b9afe91b"></script>
+    <script src="../_static/documentation_options.js?v=ec806d2c"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/copybutton.js?v=26522df0"></script>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">AFQ-Insight 0.5.1 documentation</p>
+    <p class="title logo__title">AFQ-Insight 0.6 documentation</p>
   
 </a></div>
     
@@ -489,63 +489,123 @@ age recorded, there are 1867 subjects in the dataset.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>subjects.tsv:   0%|          | 0.00/211k [00:00&lt;?, ?iB/s]
-subjects.tsv: 100%|██████████| 211k/211k [00:00&lt;00:00, 10.3MiB/s]
+subjects.tsv: 100%|██████████| 211k/211k [00:00&lt;00:00, 19.3MiB/s]
 
 nodes.csv:   0%|          | 0.00/543M [00:00&lt;?, ?iB/s]
-nodes.csv:   1%|▏         | 6.94M/543M [00:00&lt;00:07, 69.4MiB/s]
-nodes.csv:   3%|▎         | 17.0M/543M [00:00&lt;00:06, 87.6MiB/s]
-nodes.csv:   5%|▌         | 27.3M/543M [00:00&lt;00:05, 94.5MiB/s]
-nodes.csv:   7%|▋         | 36.7M/543M [00:00&lt;00:05, 94.2MiB/s]
-nodes.csv:   9%|▊         | 47.0M/543M [00:00&lt;00:05, 97.3MiB/s]
-nodes.csv:  11%|█         | 57.2M/543M [00:00&lt;00:04, 98.8MiB/s]
-nodes.csv:  12%|█▏        | 67.1M/543M [00:00&lt;00:05, 88.2MiB/s]
-nodes.csv:  14%|█▍        | 76.1M/543M [00:00&lt;00:05, 83.8MiB/s]
-nodes.csv:  16%|█▌        | 86.3M/543M [00:00&lt;00:05, 89.0MiB/s]
-nodes.csv:  18%|█▊        | 96.4M/543M [00:01&lt;00:04, 92.5MiB/s]
-nodes.csv:  20%|█▉        | 107M/543M [00:01&lt;00:04, 95.3MiB/s]
-nodes.csv:  22%|██▏       | 117M/543M [00:01&lt;00:04, 97.3MiB/s]
-nodes.csv:  23%|██▎       | 127M/543M [00:01&lt;00:04, 99.3MiB/s]
-nodes.csv:  25%|██▌       | 138M/543M [00:01&lt;00:04, 101MiB/s]
-nodes.csv:  27%|██▋       | 148M/543M [00:01&lt;00:03, 101MiB/s]
-nodes.csv:  29%|██▉       | 158M/543M [00:01&lt;00:03, 102MiB/s]
-nodes.csv:  31%|███       | 168M/543M [00:01&lt;00:03, 102MiB/s]
-nodes.csv:  33%|███▎      | 179M/543M [00:01&lt;00:03, 102MiB/s]
-nodes.csv:  35%|███▍      | 189M/543M [00:01&lt;00:03, 102MiB/s]
-nodes.csv:  37%|███▋      | 199M/543M [00:02&lt;00:03, 102MiB/s]
-nodes.csv:  39%|███▊      | 210M/543M [00:02&lt;00:03, 103MiB/s]
-nodes.csv:  41%|████      | 220M/543M [00:02&lt;00:03, 103MiB/s]
-nodes.csv:  42%|████▏     | 231M/543M [00:02&lt;00:03, 104MiB/s]
-nodes.csv:  44%|████▍     | 241M/543M [00:02&lt;00:02, 104MiB/s]
-nodes.csv:  46%|████▋     | 252M/543M [00:02&lt;00:02, 102MiB/s]
-nodes.csv:  48%|████▊     | 262M/543M [00:02&lt;00:02, 102MiB/s]
-nodes.csv:  50%|█████     | 273M/543M [00:02&lt;00:02, 103MiB/s]
-nodes.csv:  52%|█████▏    | 283M/543M [00:02&lt;00:02, 103MiB/s]
-nodes.csv:  54%|█████▍    | 293M/543M [00:02&lt;00:02, 104MiB/s]
-nodes.csv:  56%|█████▌    | 304M/543M [00:03&lt;00:02, 103MiB/s]
-nodes.csv:  58%|█████▊    | 314M/543M [00:03&lt;00:02, 103MiB/s]
-nodes.csv:  60%|█████▉    | 325M/543M [00:03&lt;00:02, 92.4MiB/s]
-nodes.csv:  62%|██████▏   | 335M/543M [00:03&lt;00:02, 95.3MiB/s]
-nodes.csv:  63%|██████▎   | 345M/543M [00:03&lt;00:02, 74.9MiB/s]
-nodes.csv:  65%|██████▌   | 353M/543M [00:03&lt;00:02, 78.0MiB/s]
-nodes.csv:  67%|██████▋   | 364M/543M [00:03&lt;00:02, 84.7MiB/s]
-nodes.csv:  69%|██████▉   | 374M/543M [00:03&lt;00:01, 90.3MiB/s]
-nodes.csv:  71%|███████   | 385M/543M [00:04&lt;00:01, 94.5MiB/s]
-nodes.csv:  73%|███████▎  | 395M/543M [00:04&lt;00:01, 97.5MiB/s]
-nodes.csv:  75%|███████▍  | 406M/543M [00:04&lt;00:01, 99.5MiB/s]
-nodes.csv:  77%|███████▋  | 416M/543M [00:04&lt;00:01, 101MiB/s]
-nodes.csv:  79%|███████▊  | 427M/543M [00:04&lt;00:01, 101MiB/s]
-nodes.csv:  80%|████████  | 437M/543M [00:04&lt;00:01, 102MiB/s]
-nodes.csv:  82%|████████▏ | 447M/543M [00:04&lt;00:00, 103MiB/s]
-nodes.csv:  84%|████████▍ | 458M/543M [00:04&lt;00:00, 103MiB/s]
-nodes.csv:  86%|████████▌ | 468M/543M [00:04&lt;00:00, 103MiB/s]
-nodes.csv:  88%|████████▊ | 478M/543M [00:05&lt;00:00, 74.9MiB/s]
-nodes.csv:  90%|████████▉ | 487M/543M [00:05&lt;00:00, 60.5MiB/s]
-nodes.csv:  91%|█████████ | 494M/543M [00:05&lt;00:00, 58.5MiB/s]
-nodes.csv:  93%|█████████▎| 504M/543M [00:05&lt;00:00, 67.6MiB/s]
-nodes.csv:  95%|█████████▍| 514M/543M [00:05&lt;00:00, 75.4MiB/s]
-nodes.csv:  97%|█████████▋| 525M/543M [00:05&lt;00:00, 82.2MiB/s]
-nodes.csv:  99%|█████████▊| 535M/543M [00:05&lt;00:00, 88.0MiB/s]
-nodes.csv: 100%|██████████| 543M/543M [00:05&lt;00:00, 92.5MiB/s]
+nodes.csv:   1%|          | 5.64M/543M [00:00&lt;00:09, 56.4MiB/s]
+nodes.csv:   2%|▏         | 11.3M/543M [00:00&lt;00:13, 39.9MiB/s]
+nodes.csv:   3%|▎         | 15.6M/543M [00:00&lt;00:14, 35.8MiB/s]
+nodes.csv:   4%|▎         | 19.3M/543M [00:00&lt;00:22, 22.8MiB/s]
+nodes.csv:   4%|▍         | 23.4M/543M [00:00&lt;00:23, 22.4MiB/s]
+nodes.csv:   5%|▍         | 26.0M/543M [00:01&lt;00:26, 19.4MiB/s]
+nodes.csv:   6%|▌         | 33.5M/543M [00:01&lt;00:18, 27.3MiB/s]
+nodes.csv:   7%|▋         | 40.2M/543M [00:01&lt;00:14, 34.0MiB/s]
+nodes.csv:   8%|▊         | 44.0M/543M [00:01&lt;00:15, 33.2MiB/s]
+nodes.csv:   9%|▉         | 48.6M/543M [00:01&lt;00:13, 35.6MiB/s]
+nodes.csv:  10%|▉         | 52.4M/543M [00:01&lt;00:17, 27.9MiB/s]
+nodes.csv:  10%|█         | 57.0M/543M [00:02&lt;00:20, 23.6MiB/s]
+nodes.csv:  11%|█         | 59.7M/543M [00:02&lt;00:21, 22.8MiB/s]
+nodes.csv:  12%|█▏        | 66.4M/543M [00:02&lt;00:15, 31.5MiB/s]
+nodes.csv:  13%|█▎        | 70.1M/543M [00:02&lt;00:17, 26.7MiB/s]
+nodes.csv:  14%|█▍        | 75.5M/543M [00:02&lt;00:17, 26.3MiB/s]
+nodes.csv:  15%|█▌        | 82.1M/543M [00:02&lt;00:13, 33.3MiB/s]
+nodes.csv:  16%|█▌        | 86.0M/543M [00:03&lt;00:17, 25.4MiB/s]
+nodes.csv:  17%|█▋        | 90.5M/543M [00:03&lt;00:16, 27.6MiB/s]
+nodes.csv:  17%|█▋        | 93.8M/543M [00:03&lt;00:17, 26.0MiB/s]
+nodes.csv:  18%|█▊        | 99.3M/543M [00:03&lt;00:14, 31.4MiB/s]
+nodes.csv:  19%|█▉        | 103M/543M [00:03&lt;00:15, 28.1MiB/s]
+nodes.csv:  20%|█▉        | 107M/543M [00:03&lt;00:15, 28.0MiB/s]
+nodes.csv:  20%|██        | 110M/543M [00:04&lt;00:18, 23.3MiB/s]
+nodes.csv:  21%|██▏       | 116M/543M [00:04&lt;00:25, 17.0MiB/s]
+nodes.csv:  22%|██▏       | 118M/543M [00:04&lt;00:26, 16.3MiB/s]
+nodes.csv:  23%|██▎       | 125M/543M [00:04&lt;00:16, 25.4MiB/s]
+nodes.csv:  24%|██▎       | 129M/543M [00:04&lt;00:19, 21.1MiB/s]
+nodes.csv:  24%|██▍       | 132M/543M [00:05&lt;00:18, 22.7MiB/s]
+nodes.csv:  25%|██▍       | 135M/543M [00:05&lt;00:18, 21.9MiB/s]
+nodes.csv:  26%|██▋       | 143M/543M [00:05&lt;00:13, 28.7MiB/s]
+nodes.csv:  27%|██▋       | 149M/543M [00:05&lt;00:12, 30.9MiB/s]
+nodes.csv:  28%|██▊       | 153M/543M [00:05&lt;00:16, 23.5MiB/s]
+nodes.csv:  29%|██▉       | 158M/543M [00:06&lt;00:14, 26.1MiB/s]
+nodes.csv:  30%|██▉       | 161M/543M [00:06&lt;00:17, 22.1MiB/s]
+nodes.csv:  31%|███       | 167M/543M [00:06&lt;00:12, 29.7MiB/s]
+nodes.csv:  32%|███▏      | 171M/543M [00:06&lt;00:13, 27.0MiB/s]
+nodes.csv:  32%|███▏      | 176M/543M [00:06&lt;00:13, 26.9MiB/s]
+nodes.csv:  34%|███▎      | 182M/543M [00:06&lt;00:10, 34.0MiB/s]
+nodes.csv:  34%|███▍      | 187M/543M [00:07&lt;00:16, 22.3MiB/s]
+nodes.csv:  35%|███▌      | 192M/543M [00:07&lt;00:12, 27.5MiB/s]
+nodes.csv:  36%|███▌      | 196M/543M [00:07&lt;00:14, 24.3MiB/s]
+nodes.csv:  37%|███▋      | 201M/543M [00:07&lt;00:14, 24.0MiB/s]
+nodes.csv:  38%|███▊      | 208M/543M [00:07&lt;00:11, 28.2MiB/s]
+nodes.csv:  39%|███▉      | 211M/543M [00:08&lt;00:13, 24.8MiB/s]
+nodes.csv:  40%|████      | 218M/543M [00:08&lt;00:10, 30.1MiB/s]
+nodes.csv:  42%|████▏     | 226M/543M [00:08&lt;00:08, 38.2MiB/s]
+nodes.csv:  43%|████▎     | 233M/543M [00:08&lt;00:08, 36.2MiB/s]
+nodes.csv:  44%|████▎     | 237M/543M [00:08&lt;00:09, 33.4MiB/s]
+nodes.csv:  45%|████▍     | 242M/543M [00:08&lt;00:08, 34.4MiB/s]
+nodes.csv:  45%|████▌     | 246M/543M [00:09&lt;00:10, 28.3MiB/s]
+nodes.csv:  46%|████▌     | 250M/543M [00:09&lt;00:11, 26.4MiB/s]
+nodes.csv:  47%|████▋     | 253M/543M [00:09&lt;00:10, 26.5MiB/s]
+nodes.csv:  48%|████▊     | 258M/543M [00:09&lt;00:09, 30.6MiB/s]
+nodes.csv:  48%|████▊     | 261M/543M [00:09&lt;00:10, 27.2MiB/s]
+nodes.csv:  49%|████▉     | 267M/543M [00:09&lt;00:08, 31.3MiB/s]
+nodes.csv:  50%|████▉     | 270M/543M [00:09&lt;00:09, 29.2MiB/s]
+nodes.csv:  50%|█████     | 274M/543M [00:10&lt;00:08, 30.9MiB/s]
+nodes.csv:  51%|█████     | 277M/543M [00:10&lt;00:12, 21.1MiB/s]
+nodes.csv:  53%|█████▎    | 285M/543M [00:10&lt;00:09, 27.7MiB/s]
+nodes.csv:  54%|█████▎    | 292M/543M [00:10&lt;00:08, 28.1MiB/s]
+nodes.csv:  54%|█████▍    | 295M/543M [00:10&lt;00:09, 25.2MiB/s]
+nodes.csv:  56%|█████▌    | 302M/543M [00:11&lt;00:07, 30.2MiB/s]
+nodes.csv:  56%|█████▌    | 305M/543M [00:11&lt;00:08, 28.9MiB/s]
+nodes.csv:  57%|█████▋    | 310M/543M [00:11&lt;00:07, 32.4MiB/s]
+nodes.csv:  58%|█████▊    | 314M/543M [00:11&lt;00:07, 29.9MiB/s]
+nodes.csv:  59%|█████▊    | 319M/543M [00:11&lt;00:07, 29.7MiB/s]
+nodes.csv:  60%|█████▉    | 325M/543M [00:11&lt;00:06, 35.6MiB/s]
+nodes.csv:  61%|██████    | 329M/543M [00:11&lt;00:06, 35.2MiB/s]
+nodes.csv:  62%|██████▏   | 336M/543M [00:12&lt;00:05, 35.8MiB/s]
+nodes.csv:  63%|██████▎   | 344M/543M [00:12&lt;00:06, 30.0MiB/s]
+nodes.csv:  65%|██████▍   | 351M/543M [00:12&lt;00:06, 31.2MiB/s]
+nodes.csv:  65%|██████▌   | 354M/543M [00:12&lt;00:07, 26.9MiB/s]
+nodes.csv:  66%|██████▌   | 359M/543M [00:13&lt;00:07, 25.7MiB/s]
+nodes.csv:  67%|██████▋   | 362M/543M [00:13&lt;00:08, 22.2MiB/s]
+nodes.csv:  68%|██████▊   | 368M/543M [00:13&lt;00:06, 27.8MiB/s]
+nodes.csv:  68%|██████▊   | 371M/543M [00:13&lt;00:06, 25.5MiB/s]
+nodes.csv:  69%|██████▉   | 376M/543M [00:13&lt;00:05, 29.2MiB/s]
+nodes.csv:  70%|██████▉   | 379M/543M [00:13&lt;00:05, 29.2MiB/s]
+nodes.csv:  71%|███████   | 386M/543M [00:13&lt;00:05, 31.2MiB/s]
+nodes.csv:  73%|███████▎  | 394M/543M [00:14&lt;00:04, 35.8MiB/s]
+nodes.csv:  74%|███████▍  | 401M/543M [00:14&lt;00:03, 37.3MiB/s]
+nodes.csv:  75%|███████▍  | 405M/543M [00:14&lt;00:04, 32.0MiB/s]
+nodes.csv:  76%|███████▌  | 411M/543M [00:14&lt;00:04, 30.0MiB/s]
+nodes.csv:  77%|███████▋  | 418M/543M [00:14&lt;00:04, 26.9MiB/s]
+nodes.csv:  78%|███████▊  | 422M/543M [00:15&lt;00:04, 29.2MiB/s]
+nodes.csv:  79%|███████▊  | 426M/543M [00:15&lt;00:03, 31.6MiB/s]
+nodes.csv:  79%|███████▉  | 430M/543M [00:15&lt;00:03, 29.6MiB/s]
+nodes.csv:  80%|████████  | 436M/543M [00:15&lt;00:03, 31.2MiB/s]
+nodes.csv:  82%|████████▏ | 443M/543M [00:15&lt;00:03, 32.8MiB/s]
+nodes.csv:  82%|████████▏ | 447M/543M [00:15&lt;00:03, 29.3MiB/s]
+nodes.csv:  83%|████████▎ | 451M/543M [00:16&lt;00:03, 30.0MiB/s]
+nodes.csv:  84%|████████▎ | 454M/543M [00:16&lt;00:03, 26.1MiB/s]
+nodes.csv:  85%|████████▍ | 460M/543M [00:16&lt;00:02, 31.2MiB/s]
+nodes.csv:  85%|████████▌ | 463M/543M [00:16&lt;00:03, 25.4MiB/s]
+nodes.csv:  86%|████████▌ | 468M/543M [00:16&lt;00:04, 18.6MiB/s]
+nodes.csv:  87%|████████▋ | 470M/543M [00:17&lt;00:03, 19.1MiB/s]
+nodes.csv:  88%|████████▊ | 478M/543M [00:17&lt;00:02, 27.0MiB/s]
+nodes.csv:  89%|████████▉ | 485M/543M [00:17&lt;00:02, 25.8MiB/s]
+nodes.csv:  90%|████████▉ | 488M/543M [00:17&lt;00:02, 23.2MiB/s]
+nodes.csv:  91%|█████████ | 493M/543M [00:17&lt;00:01, 25.2MiB/s]
+nodes.csv:  91%|█████████▏| 496M/543M [00:17&lt;00:01, 24.6MiB/s]
+nodes.csv:  92%|█████████▏| 502M/543M [00:18&lt;00:01, 31.7MiB/s]
+nodes.csv:  93%|█████████▎| 506M/543M [00:18&lt;00:01, 30.7MiB/s]
+nodes.csv:  94%|█████████▍| 510M/543M [00:18&lt;00:01, 32.4MiB/s]
+nodes.csv:  95%|█████████▍| 513M/543M [00:18&lt;00:00, 30.8MiB/s]
+nodes.csv:  95%|█████████▌| 518M/543M [00:18&lt;00:00, 31.0MiB/s]
+nodes.csv:  96%|█████████▌| 522M/543M [00:18&lt;00:00, 27.2MiB/s]
+nodes.csv:  97%|█████████▋| 527M/543M [00:19&lt;00:00, 24.0MiB/s]
+nodes.csv:  98%|█████████▊| 530M/543M [00:19&lt;00:00, 19.9MiB/s]
+nodes.csv:  99%|█████████▊| 535M/543M [00:19&lt;00:00, 22.7MiB/s]
+nodes.csv:  99%|█████████▉| 538M/543M [00:19&lt;00:00, 20.9MiB/s]
+nodes.csv: 100%|█████████▉| 542M/543M [00:19&lt;00:00, 24.9MiB/s]
+nodes.csv: 100%|██████████| 543M/543M [00:19&lt;00:00, 27.6MiB/s]
 AFQDataset(n_samples=1867, n_features=4800, n_targets=3, targets=[&#39;age&#39;, &#39;sex&#39;, &#39;scan_site_id&#39;])
 </pre></div>
 </div>
@@ -589,352 +649,352 @@ and metric, optionally grouped by a categorical or continuous variable.</p>
 </ul>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|          | 0/2 [00:00&lt;?, ?it/s]
 
-  0%|          | 0/24 [00:00&lt;?, ?it/s]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+  0%|          | 0/24 [00:00&lt;?, ?it/s]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
-  4%|▍         | 1/24 [00:03&lt;01:30,  3.93s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+  4%|▍         | 1/24 [00:03&lt;01:22,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
-  8%|▊         | 2/24 [00:07&lt;01:26,  3.94s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+  8%|▊         | 2/24 [00:07&lt;01:18,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 12%|█▎        | 3/24 [00:11&lt;01:22,  3.95s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 12%|█▎        | 3/24 [00:10&lt;01:15,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 17%|█▋        | 4/24 [00:15&lt;01:18,  3.93s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 17%|█▋        | 4/24 [00:14&lt;01:11,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 21%|██        | 5/24 [00:19&lt;01:14,  3.93s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 21%|██        | 5/24 [00:17&lt;01:08,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 25%|██▌       | 6/24 [00:23&lt;01:10,  3.92s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 25%|██▌       | 6/24 [00:21&lt;01:04,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 29%|██▉       | 7/24 [00:27&lt;01:06,  3.92s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 29%|██▉       | 7/24 [00:25&lt;01:01,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 33%|███▎      | 8/24 [00:31&lt;01:02,  3.92s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 33%|███▎      | 8/24 [00:28&lt;00:57,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 38%|███▊      | 9/24 [00:35&lt;00:58,  3.92s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 38%|███▊      | 9/24 [00:32&lt;00:53,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 42%|████▏     | 10/24 [00:39&lt;00:54,  3.91s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 42%|████▏     | 10/24 [00:35&lt;00:50,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 46%|████▌     | 11/24 [00:43&lt;00:50,  3.89s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 46%|████▌     | 11/24 [00:39&lt;00:46,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 50%|█████     | 12/24 [00:46&lt;00:46,  3.88s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 50%|█████     | 12/24 [00:43&lt;00:43,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 54%|█████▍    | 13/24 [00:50&lt;00:42,  3.87s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 54%|█████▍    | 13/24 [00:46&lt;00:39,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 58%|█████▊    | 14/24 [00:54&lt;00:38,  3.89s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 58%|█████▊    | 14/24 [00:50&lt;00:36,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 62%|██████▎   | 15/24 [00:58&lt;00:35,  3.89s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 62%|██████▎   | 15/24 [00:54&lt;00:32,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 67%|██████▋   | 16/24 [01:02&lt;00:31,  3.89s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 67%|██████▋   | 16/24 [00:57&lt;00:28,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 71%|███████   | 17/24 [01:06&lt;00:27,  3.98s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 71%|███████   | 17/24 [01:01&lt;00:25,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 75%|███████▌  | 18/24 [01:10&lt;00:23,  3.96s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 75%|███████▌  | 18/24 [01:04&lt;00:21,  3.63s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 79%|███████▉  | 19/24 [01:14&lt;00:19,  3.94s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 79%|███████▉  | 19/24 [01:08&lt;00:18,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 83%|████████▎ | 20/24 [01:18&lt;00:15,  3.92s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 83%|████████▎ | 20/24 [01:12&lt;00:14,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 88%|████████▊ | 21/24 [01:22&lt;00:11,  3.91s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 88%|████████▊ | 21/24 [01:15&lt;00:10,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 92%|█████████▏| 22/24 [01:26&lt;00:07,  3.89s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 92%|█████████▏| 22/24 [01:19&lt;00:07,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 96%|█████████▌| 23/24 [01:29&lt;00:03,  3.89s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 96%|█████████▌| 23/24 [01:23&lt;00:03,  3.63s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
-100%|██████████| 24/24 [01:33&lt;00:00,  3.87s/it]
-100%|██████████| 24/24 [01:33&lt;00:00,  3.91s/it]
+100%|██████████| 24/24 [01:26&lt;00:00,  3.63s/it]
+100%|██████████| 24/24 [01:26&lt;00:00,  3.61s/it]
 
- 50%|█████     | 1/2 [01:34&lt;01:34, 94.82s/it]
+ 50%|█████     | 1/2 [01:27&lt;01:27, 87.58s/it]
 
-  0%|          | 0/24 [00:00&lt;?, ?it/s]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
-
-The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
-
-  _ = sns.lineplot(
-
-
-  4%|▍         | 1/24 [00:03&lt;01:29,  3.88s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+  0%|          | 0/24 [00:00&lt;?, ?it/s]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
-  8%|▊         | 2/24 [00:07&lt;01:26,  3.93s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+  4%|▍         | 1/24 [00:03&lt;01:23,  3.63s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 12%|█▎        | 3/24 [00:11&lt;01:22,  3.92s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+  8%|▊         | 2/24 [00:07&lt;01:19,  3.63s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 17%|█▋        | 4/24 [00:15&lt;01:17,  3.89s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 12%|█▎        | 3/24 [00:10&lt;01:15,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 21%|██        | 5/24 [00:19&lt;01:13,  3.86s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 17%|█▋        | 4/24 [00:14&lt;01:12,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 25%|██▌       | 6/24 [00:23&lt;01:09,  3.84s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 21%|██        | 5/24 [00:18&lt;01:08,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 29%|██▉       | 7/24 [00:26&lt;01:04,  3.82s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 25%|██▌       | 6/24 [00:21&lt;01:05,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 33%|███▎      | 8/24 [00:30&lt;01:01,  3.83s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 29%|██▉       | 7/24 [00:25&lt;01:01,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 38%|███▊      | 9/24 [00:34&lt;00:57,  3.83s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 33%|███▎      | 8/24 [00:28&lt;00:57,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 42%|████▏     | 10/24 [00:38&lt;00:53,  3.82s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 38%|███▊      | 9/24 [00:32&lt;00:53,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 46%|████▌     | 11/24 [00:42&lt;00:49,  3.84s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 42%|████▏     | 10/24 [00:36&lt;00:50,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 50%|█████     | 12/24 [00:46&lt;00:46,  3.85s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 46%|████▌     | 11/24 [00:39&lt;00:46,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 54%|█████▍    | 13/24 [00:50&lt;00:42,  3.86s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 50%|█████     | 12/24 [00:43&lt;00:43,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 58%|█████▊    | 14/24 [00:54&lt;00:38,  3.88s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 54%|█████▍    | 13/24 [00:46&lt;00:39,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 62%|██████▎   | 15/24 [00:57&lt;00:35,  3.90s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 58%|█████▊    | 14/24 [00:50&lt;00:36,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 67%|██████▋   | 16/24 [01:02&lt;00:31,  3.99s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 62%|██████▎   | 15/24 [00:54&lt;00:32,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 71%|███████   | 17/24 [01:06&lt;00:27,  3.95s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 67%|██████▋   | 16/24 [00:57&lt;00:28,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 75%|███████▌  | 18/24 [01:09&lt;00:23,  3.94s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 71%|███████   | 17/24 [01:01&lt;00:25,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 79%|███████▉  | 19/24 [01:13&lt;00:19,  3.93s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 75%|███████▌  | 18/24 [01:05&lt;00:21,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 83%|████████▎ | 20/24 [01:17&lt;00:15,  3.93s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 79%|███████▉  | 19/24 [01:08&lt;00:18,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 88%|████████▊ | 21/24 [01:21&lt;00:11,  3.93s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 83%|████████▎ | 20/24 [01:12&lt;00:14,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 92%|█████████▏| 22/24 [01:25&lt;00:07,  3.92s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 88%|████████▊ | 21/24 [01:15&lt;00:10,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 96%|█████████▌| 23/24 [01:29&lt;00:03,  3.90s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 92%|█████████▏| 22/24 [01:19&lt;00:07,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
-100%|██████████| 24/24 [01:33&lt;00:00,  3.91s/it]
-100%|██████████| 24/24 [01:33&lt;00:00,  3.89s/it]
+ 96%|█████████▌| 23/24 [01:23&lt;00:03,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
-100%|██████████| 2/2 [03:09&lt;00:00, 94.61s/it]
-100%|██████████| 2/2 [03:09&lt;00:00, 94.64s/it]
+The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
+
+  _ = sns.lineplot(
+
+
+100%|██████████| 24/24 [01:26&lt;00:00,  3.63s/it]
+100%|██████████| 24/24 [01:26&lt;00:00,  3.62s/it]
+
+100%|██████████| 2/2 [02:55&lt;00:00, 87.80s/it]
+100%|██████████| 2/2 [02:55&lt;00:00, 87.77s/it]
 </pre></div>
 </div>
 </section>
@@ -984,362 +1044,362 @@ job.</p>
 <li><img src="../_images/sphx_glr_plot_hbn_site_profiles_003.png" srcset="../_images/sphx_glr_plot_hbn_site_profiles_003.png" alt="IFOL, UNCL, UNCR, IFOR, ATRL, CSTL, CSTR, ATRR, ARCL, SLFL, SLFR, ARCR, ILFL, CGCL, CGCR, ILFR, Orbital, AntFrontal, SupFrontal, Motor, SupParietal, Temporal, PostParietal, Occipital" class = "sphx-glr-multi-img"/></li>
 <li><img src="../_images/sphx_glr_plot_hbn_site_profiles_004.png" srcset="../_images/sphx_glr_plot_hbn_site_profiles_004.png" alt="IFOL, UNCL, UNCR, IFOR, ATRL, CSTL, CSTR, ATRR, ARCL, SLFL, SLFR, ARCR, ILFL, CGCL, CGCR, ILFR, Orbital, AntFrontal, SupFrontal, Motor, SupParietal, Temporal, PostParietal, Occipital" class = "sphx-glr-multi-img"/></li>
 </ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/sklearn/preprocessing/_encoders.py:828: FutureWarning: `sparse` was renamed to `sparse_output` in version 1.2 and will be removed in 1.4. `sparse_output` is ignored unless you leave `sparse` to its default value.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/sklearn/preprocessing/_encoders.py:828: FutureWarning: `sparse` was renamed to `sparse_output` in version 1.2 and will be removed in 1.4. `sparse_output` is ignored unless you leave `sparse` to its default value.
   warnings.warn(
-/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/sklearn/preprocessing/_encoders.py:828: FutureWarning: `sparse` was renamed to `sparse_output` in version 1.2 and will be removed in 1.4. `sparse_output` is ignored unless you leave `sparse` to its default value.
+/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/sklearn/preprocessing/_encoders.py:828: FutureWarning: `sparse` was renamed to `sparse_output` in version 1.2 and will be removed in 1.4. `sparse_output` is ignored unless you leave `sparse` to its default value.
   warnings.warn(
 
   0%|          | 0/2 [00:00&lt;?, ?it/s]
 
-  0%|          | 0/24 [00:00&lt;?, ?it/s]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+  0%|          | 0/24 [00:00&lt;?, ?it/s]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
-  4%|▍         | 1/24 [00:03&lt;01:29,  3.88s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+  4%|▍         | 1/24 [00:03&lt;01:23,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
-  8%|▊         | 2/24 [00:07&lt;01:24,  3.85s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+  8%|▊         | 2/24 [00:07&lt;01:19,  3.63s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 12%|█▎        | 3/24 [00:11&lt;01:20,  3.82s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 12%|█▎        | 3/24 [00:10&lt;01:15,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 17%|█▋        | 4/24 [00:15&lt;01:16,  3.81s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 17%|█▋        | 4/24 [00:14&lt;01:12,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 21%|██        | 5/24 [00:19&lt;01:12,  3.82s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 21%|██        | 5/24 [00:18&lt;01:08,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 25%|██▌       | 6/24 [00:22&lt;01:08,  3.82s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 25%|██▌       | 6/24 [00:21&lt;01:05,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 29%|██▉       | 7/24 [00:26&lt;01:05,  3.83s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 29%|██▉       | 7/24 [00:25&lt;01:01,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 33%|███▎      | 8/24 [00:30&lt;01:01,  3.85s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 33%|███▎      | 8/24 [00:28&lt;00:57,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 38%|███▊      | 9/24 [00:34&lt;00:57,  3.85s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 38%|███▊      | 9/24 [00:32&lt;00:53,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 42%|████▏     | 10/24 [00:38&lt;00:54,  3.86s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 42%|████▏     | 10/24 [00:36&lt;00:50,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 46%|████▌     | 11/24 [00:42&lt;00:50,  3.87s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 46%|████▌     | 11/24 [00:39&lt;00:46,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 50%|█████     | 12/24 [00:46&lt;00:46,  3.88s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 50%|█████     | 12/24 [00:43&lt;00:43,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 54%|█████▍    | 13/24 [00:50&lt;00:42,  3.88s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 54%|█████▍    | 13/24 [00:46&lt;00:39,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 58%|█████▊    | 14/24 [00:54&lt;00:38,  3.89s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 58%|█████▊    | 14/24 [00:50&lt;00:36,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 62%|██████▎   | 15/24 [00:57&lt;00:35,  3.90s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 62%|██████▎   | 15/24 [00:54&lt;00:32,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 67%|██████▋   | 16/24 [01:01&lt;00:31,  3.90s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 67%|██████▋   | 16/24 [00:57&lt;00:28,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 71%|███████   | 17/24 [01:06&lt;00:28,  4.01s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 71%|███████   | 17/24 [01:01&lt;00:25,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 75%|███████▌  | 18/24 [01:10&lt;00:23,  3.98s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 75%|███████▌  | 18/24 [01:04&lt;00:21,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 79%|███████▉  | 19/24 [01:13&lt;00:19,  3.93s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 79%|███████▉  | 19/24 [01:08&lt;00:17,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 83%|████████▎ | 20/24 [01:17&lt;00:15,  3.89s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 83%|████████▎ | 20/24 [01:11&lt;00:14,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 88%|████████▊ | 21/24 [01:21&lt;00:11,  3.86s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 88%|████████▊ | 21/24 [01:15&lt;00:10,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 92%|█████████▏| 22/24 [01:25&lt;00:07,  3.84s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 92%|█████████▏| 22/24 [01:19&lt;00:07,  3.58s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 96%|█████████▌| 23/24 [01:28&lt;00:03,  3.82s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 96%|█████████▌| 23/24 [01:22&lt;00:03,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
-100%|██████████| 24/24 [01:32&lt;00:00,  3.81s/it]
-100%|██████████| 24/24 [01:32&lt;00:00,  3.86s/it]
+100%|██████████| 24/24 [01:26&lt;00:00,  3.59s/it]
+100%|██████████| 24/24 [01:26&lt;00:00,  3.60s/it]
 
- 50%|█████     | 1/2 [01:33&lt;01:33, 93.76s/it]
+ 50%|█████     | 1/2 [01:27&lt;01:27, 87.52s/it]
 
-  0%|          | 0/24 [00:00&lt;?, ?it/s]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
-
-The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
-
-  _ = sns.lineplot(
-
-
-  4%|▍         | 1/24 [00:03&lt;01:28,  3.85s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+  0%|          | 0/24 [00:00&lt;?, ?it/s]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
-  8%|▊         | 2/24 [00:07&lt;01:23,  3.81s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+  4%|▍         | 1/24 [00:03&lt;01:22,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 12%|█▎        | 3/24 [00:11&lt;01:20,  3.81s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+  8%|▊         | 2/24 [00:07&lt;01:19,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 17%|█▋        | 4/24 [00:15&lt;01:15,  3.79s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 12%|█▎        | 3/24 [00:10&lt;01:15,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 21%|██        | 5/24 [00:18&lt;01:11,  3.78s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 17%|█▋        | 4/24 [00:14&lt;01:12,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 25%|██▌       | 6/24 [00:22&lt;01:08,  3.78s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 21%|██        | 5/24 [00:18&lt;01:08,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 29%|██▉       | 7/24 [00:26&lt;01:04,  3.78s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 25%|██▌       | 6/24 [00:21&lt;01:06,  3.71s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 33%|███▎      | 8/24 [00:30&lt;01:00,  3.78s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 29%|██▉       | 7/24 [00:25&lt;01:02,  3.68s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 38%|███▊      | 9/24 [00:34&lt;00:56,  3.78s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 33%|███▎      | 8/24 [00:29&lt;00:58,  3.66s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 42%|████▏     | 10/24 [00:37&lt;00:52,  3.77s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 38%|███▊      | 9/24 [00:32&lt;00:54,  3.64s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 46%|████▌     | 11/24 [00:41&lt;00:49,  3.78s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 42%|████▏     | 10/24 [00:36&lt;00:50,  3.63s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 50%|█████     | 12/24 [00:45&lt;00:45,  3.79s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 46%|████▌     | 11/24 [00:39&lt;00:47,  3.62s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 54%|█████▍    | 13/24 [00:49&lt;00:41,  3.80s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 50%|█████     | 12/24 [00:43&lt;00:43,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 58%|█████▊    | 14/24 [00:53&lt;00:37,  3.80s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 54%|█████▍    | 13/24 [00:47&lt;00:39,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 62%|██████▎   | 15/24 [00:56&lt;00:34,  3.80s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 58%|█████▊    | 14/24 [00:50&lt;00:36,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 67%|██████▋   | 16/24 [01:00&lt;00:30,  3.80s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 62%|██████▎   | 15/24 [00:54&lt;00:32,  3.61s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 71%|███████   | 17/24 [01:04&lt;00:26,  3.79s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 67%|██████▋   | 16/24 [00:57&lt;00:28,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 75%|███████▌  | 18/24 [01:08&lt;00:22,  3.79s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 71%|███████   | 17/24 [01:01&lt;00:25,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 79%|███████▉  | 19/24 [01:12&lt;00:18,  3.79s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 75%|███████▌  | 18/24 [01:05&lt;00:21,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 83%|████████▎ | 20/24 [01:15&lt;00:15,  3.79s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 79%|███████▉  | 19/24 [01:08&lt;00:17,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 88%|████████▊ | 21/24 [01:19&lt;00:11,  3.78s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 83%|████████▎ | 20/24 [01:12&lt;00:14,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 92%|█████████▏| 22/24 [01:23&lt;00:07,  3.79s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 88%|████████▊ | 21/24 [01:15&lt;00:10,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
- 96%|█████████▌| 23/24 [01:27&lt;00:03,  3.93s/it]/opt/hostedtoolcache/Python/3.10.14/x64/lib/python3.10/site-packages/afqinsight/plot.py:269: FutureWarning:
+ 92%|█████████▏| 22/24 [01:19&lt;00:07,  3.60s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
 The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
 
   _ = sns.lineplot(
 
 
-100%|██████████| 24/24 [01:31&lt;00:00,  3.89s/it]
-100%|██████████| 24/24 [01:31&lt;00:00,  3.81s/it]
+ 96%|█████████▌| 23/24 [01:23&lt;00:03,  3.59s/it]/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/afqinsight/plot.py:269: FutureWarning:
 
-100%|██████████| 2/2 [03:06&lt;00:00, 92.99s/it]
-100%|██████████| 2/2 [03:06&lt;00:00, 93.10s/it]
+The `ci` parameter is deprecated. Use `errorbar=(&#39;ci&#39;, 95.0)` for the same effect.
+
+  _ = sns.lineplot(
+
+
+100%|██████████| 24/24 [01:26&lt;00:00,  3.59s/it]
+100%|██████████| 24/24 [01:26&lt;00:00,  3.61s/it]
+
+100%|██████████| 2/2 [02:55&lt;00:00, 87.54s/it]
+100%|██████████| 2/2 [02:55&lt;00:00, 87.54s/it]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (6 minutes 44.653 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (6 minutes 31.532 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-hbn-site-profiles-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/59b2ef974e8631cfc6f5cd750f2eebbd/plot_hbn_site_profiles.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_hbn_site_profiles.ipynb</span></code></a></p>

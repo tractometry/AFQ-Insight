@@ -200,8 +200,8 @@ the data from this study and initialize an object for us from this data.
     File /home/runner/.cache/afq-insight/sarica/subjects.csv exists.
     File /home/runner/.cache/afq-insight/sarica/nodes.csv exists.
     Mean train score: 1.000
-    Mean test score:  0.733
-    Mean fit time:    10.81s
+    Mean test score:  0.809
+    Mean fit time:     9.39s
     Mean score time:   0.01s
 
 
@@ -210,7 +210,7 @@ the data from this study and initialize an object for us from this data.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 54.712 seconds)
+   **Total running time of the script:** (0 minutes 47.577 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_als_classification.py:

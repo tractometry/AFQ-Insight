@@ -93,8 +93,8 @@ about this format, see also the `AFQ-Browser documentation
 
  .. code-block:: none
 
-    subjects.csv:   0%|          | 0.00/938 [00:00<?, ?iB/s]    subjects.csv: 3.31kiB [00:00, 10.1MiB/s]                
-    nodes.csv:   0%|          | 0.00/5.81M [00:00<?, ?iB/s]    nodes.csv: 6.77MiB [00:00, 67.7MiB/s]                      nodes.csv: 14.4MiB [00:00, 72.5MiB/s]    nodes.csv: 16.3MiB [00:00, 72.3MiB/s]
+    subjects.csv:   0%|          | 0.00/938 [00:00<?, ?iB/s]    subjects.csv: 3.31kiB [00:00, 14.7MiB/s]                
+    nodes.csv:   0%|          | 0.00/5.81M [00:00<?, ?iB/s]    nodes.csv: 7.91MiB [00:00, 79.1MiB/s]                      nodes.csv: 16.3MiB [00:00, 85.2MiB/s]
 
 
 
@@ -206,9 +206,9 @@ Create an analysis pipeline
 
  .. code-block:: none
 
-    Mean train score: 0.863
-    Mean test score:  -0.536
-    Mean fit time:    17.20s
+    Mean train score: 0.740
+    Mean test score:  -0.512
+    Mean fit time:    11.59s
     Mean score time:   0.00s
 
 
@@ -217,7 +217,7 @@ Create an analysis pipeline
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 27.036 seconds)
+   **Total running time of the script:** (0 minutes 59.505 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_age_regression.py:
