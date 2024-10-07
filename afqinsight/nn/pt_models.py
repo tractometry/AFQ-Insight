@@ -120,6 +120,7 @@ class cnn_lenet(nn.Module):
 
 class cnn_vgg(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
+        super(cnn_vgg, self).__init__()
         self.n_conv_layers = int(round(math.log(input_shape[0], 2)) - 3)
         if verbose:
             print(f"Pooling layers: {self.n_conv_layers}")
@@ -196,6 +197,7 @@ def cnn_vgg(input_shape, n_classes):
     
 class lstm1v0(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
+        super(lstm1v0, self).__init__()
         self.model = nn.Sequential(
             nn.LSTM(input_shape[1], 512, batch_first=True),
             nn.Linear(512, n_classes)
@@ -217,7 +219,8 @@ def lstm1v0(input_shape, n_classes):
     return lstm1v0
     
 class lstm1(nn.Module):
-    def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
+    def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):   
+        super(lstm1, self).__init__()
         self.model = nn.Sequential(
             nn.LSTM(input_shape[1], 100),
             nn.ReLU(),
@@ -241,6 +244,7 @@ def lstm1(input_shape, n_classes):
     
 class lstm2(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
+        super(lstm2, self).__init__()
         self.model = nn.Sequential(
             nn.LSTM(input_shape[1], 100),
             nn.ReLU(),
@@ -266,6 +270,7 @@ def lstm2(input_shape, n_classes):
     
 class blstm1(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
+        super(blstm1, self).__init__()
         self.model = nn.Sequential(
             nn.LSTM(input_shape[1], 100, bidirectional=True),
             nn.ReLU(),
@@ -291,6 +296,7 @@ def blstm1(input_shape, n_classes):
     
 class blstm2(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
+        super(blstm2, self).__init__()
         self.model = nn.Sequential(
             nn.LSTM(input_shape[1], 100, bidirectional=True),
             nn.ReLU(),
@@ -316,6 +322,8 @@ def blstm2(input_shape, n_classes):
 
 class lstm_fcn(nn.Module):  
     def __init__(self, input_shape, n_classes, output_activation = torch.softmax, verbose=False):
+        super(lstm_fcn, self).__init__()
+
         self.model = nn.Sequential(
             # what is the input shape, confused how permute translates
             nn.LSTM(input_shape[0], 128),
@@ -340,6 +348,7 @@ class lstm_fcn(nn.Module):
             self.output_activation = None
 
     def forward(self, x):
+        x = x.permute(0,2,1)
         x = self.model(x)
         if self.output_activation:
             x = self.output_activation(x)
@@ -350,7 +359,35 @@ def lstm_fcn(input_shape, n_classes):
     return lstm_fcn
 
 class cnn_resnet(nn.Module):
+    def __init__(self, input_shape, n_classes, output_activation='softmax'):
+        super(cnn_resnet, self).__init__()
+        steps, features = input_shape 
 
+        self.model = nn.Sequential(
+            for i, nb_nodes in enumerate([64, 128, 128]):
+                nn.Conv1d(input_shape[1], 128, 8, padding=1),
+                nn.BatchNorm1d(128),
+                nn.ReLU(),
+           
+
+            nn.AdaptiveAvgPool1d(1),
+            nn.Flatten(),
+
+            nn.Linear(128, n_classes),
+        )
+
+        if output_activation == 'softmax':
+            self.output_activation = nn.Softmax(dim=1)
+        elif output_activation == 'sigmoid':
+            self.output_activation = nn.Sigmoid()
+        else:
+            self.output_activation = nn.Identity()
+
+    def forward(self, x):
+        x = x.permute(0,2,1)
+        x = self.model(x)
+        x = self.output_activation(x)
+        return x
 
 '''
 data = torch.Tensor(numpy_array)
