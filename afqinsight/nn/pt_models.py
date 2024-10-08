@@ -391,7 +391,8 @@ class cnn_resnet(nn.Module):
 
     def forward(self, x):
         x = self.model(x)
-        x = self.output_activation(x)
+        if self.output_activation:
+            x = self.output_activation(x)        
         return x
 
 '''
