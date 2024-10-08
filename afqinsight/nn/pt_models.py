@@ -361,30 +361,35 @@ def lstm_fcn(input_shape, n_classes):
 class cnn_resnet(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation='softmax'):
         super(cnn_resnet, self).__init__()
-        steps, features = input_shape 
+        conv_layers = []   
+        in_channel = input_shape[1]
+
+        for i, nb_nodes in enumerate([64, 128, 128]):
+                conv_layers.append(nn.Conv1d(in_channel, nb_nodes, 8, padding=1))
+                in_channel = nb_nodes
+                conv_layers.append(nn.BatchNorm1d(128))
+                conv_layers.append(nn.ReLU())
+                conv_layers.append(nn.Conv1d(in_channel, nb_nodes, 5, padding=1))
+                conv_layers.append(nn.BatchNorm1d(128))
+                conv_layers.append(nn.ReLU())
+                conv_layers.append(nn.Conv1d(in_channel, nb_nodes, 3, padding=1))
+                conv_layers.append(nn.BatchNorm1d(128))
+                conv_layers.append(nn.ReLU())
+                if i < 2:
+                    conv_layers.append(nn.Conv1d(in_channel, nb_nodes, 1, padding=1))
+                conv_layers.append(nn.BatchNorm1d(128))
+                conv_layers.append(nn.ReLU())
 
         self.model = nn.Sequential(
-            for i, nb_nodes in enumerate([64, 128, 128]):
-                nn.Conv1d(input_shape[1], 128, 8, padding=1),
-                nn.BatchNorm1d(128),
-                nn.ReLU(),
-           
-
+            *conv_layers,
             nn.AdaptiveAvgPool1d(1),
-            nn.Flatten(),
-
             nn.Linear(128, n_classes),
         )
 
         if output_activation == 'softmax':
             self.output_activation = nn.Softmax(dim=1)
-        elif output_activation == 'sigmoid':
-            self.output_activation = nn.Sigmoid()
-        else:
-            self.output_activation = nn.Identity()
 
     def forward(self, x):
-        x = x.permute(0,2,1)
         x = self.model(x)
         x = self.output_activation(x)
         return x
