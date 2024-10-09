@@ -5,7 +5,7 @@ AFQ-Insight is a Python library for statistical learning of tractometry data.
 
 Tractometry assesses the tissue properties of the major white matter connections
 between different brain regions. AFQ-Insight inter-operates with the results of
-tractometry produced by the `pyAFQ <https://yeatmanlab.github.io/pyAFQ>`_
+tractometry produced by the `pyAFQ <https://tractometry.github.io/pyAFQ>`_
 software library. However, you can also use the output of other tractometry
 pipelines if you convert them into the format produced by pyAFQ.
 
@@ -20,7 +20,7 @@ pipelines if you convert them into the format produced by pyAFQ.
    getting_help
    api
    contributing
-   AFQ-Insight on GitHub <https://github.com/richford/AFQ-Insight>
+   AFQ-Insight on GitHub <https://github.com/tractometry/AFQ-Insight>
 
 `Getting started <quick_start.html>`_
 -------------------------------------
@@ -47,7 +47,7 @@ Citing *AFQ-Insight*
 
 If you use *AFQ-Insight* in a scientific publication, we would appreciate
 citations. Please see our `citation instructions
-<https://github.com/richford/AFQ-Insight#citing-AFQ-Insight>`_ for the latest
+<https://github.com/tractometry/AFQ-Insight#citing-AFQ-Insight>`_ for the latest
 reference and a bibtex entry.
 
 Acknowledgements

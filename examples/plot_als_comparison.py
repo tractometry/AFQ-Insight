@@ -26,6 +26,13 @@ from afqinsight import AFQDataset
 from afqinsight.parametric import node_wise_regression
 from afqinsight.plot import plot_regression_profiles
 
+import numpy as np
+import pandas as pd
+from sklearn.impute import SimpleImputer
+from statsmodels.api import OLS
+from statsmodels.stats.anova import anova_lm
+from statsmodels.stats.multitest import multipletests
+
 #############################################################################
 # Fetch data from Sarica et al.
 # -----------------------------

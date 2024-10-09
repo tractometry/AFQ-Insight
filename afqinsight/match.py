@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import linear_sum_assignment
 
-
 __all__ = ["mahalonobis_dist_match"]
 
 
@@ -96,7 +95,7 @@ def mahalonobis_dist_match(
             filtered_test_ind.append(row_idx)
             filtered_ctrl_ind.append(col_idx)
 
-    # contstruct dataframe if no dataframe is provided
+    # construct dataframe if no dataframe is provided
     if data is None:
         data = {}
         filtered_test = test[filtered_test_ind]

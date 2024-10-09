@@ -1,5 +1,4 @@
-v0.3.5 (August 02, 2022)
-========================
-  * Use the new from_dataset method to initialize objects in examples.  (#123)
-  * Add HBN (#121)
+0.5.1 (September 12, 2024)
+==========================
+  * Push to the right PYPI url. (#2)
 

@@ -20,23 +20,19 @@ For more details on this approach in a research setting, please see [2]_.
    DOI: 10.1002/hbm.23412
 
 .. [2]  Adam Richie-Halford, Jason Yeatman, Noah Simon, and Ariel Rokem
-   "Multidimensional analysis and detection of informative features in human brain white matter"
-   PLOS Computational Biology, 2021
+   "Multidimensional analysis and detection of informative features in
+   human brain white matter" PLOS Computational Biology, 2021
    DOI: 10.1371/journal.pcbi.1009136
 
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-from afqinsight import AFQDataset
-from afqinsight import make_afq_classifier_pipeline
-
 from groupyr.decomposition import GroupPCA
-
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import cross_validate
 
+from afqinsight import AFQDataset, make_afq_classifier_pipeline
 
 #############################################################################
 # Fetch data from Sarica et al.
@@ -53,7 +49,8 @@ afqdata = AFQDataset.from_study("sarica")
 
 # Examine the data
 # ----------------
-# ``afqdata`` is an ``AFQDataset`` object, with properties corresponding to the tractometry features and phenotypic targets.
+# ``afqdata`` is an ``AFQDataset`` object, with properties corresponding to
+# the tractometry features and phenotypic targets.
 
 X = afqdata.X
 y = afqdata.y.astype(float)  # SGL expects float targets
@@ -103,10 +100,10 @@ pipe = make_afq_classifier_pipeline(
     scaler="standard",  # Standard scale the features before regression
     groups=(
         groups_pca if do_group_pca else groups
-    ),  # SGL will use the original feature groups or the PCA feature groups depending on the choice above
+    ),  # SGL will use the original feature groups or the PCA feature groups depending on the choice above # noqa E501
     verbose=0,  # Be quiet!
     pipeline_verbosity=False,  # No really, be quiet!
-    tuning_strategy="bayes",  # Use BayesSearchCV to determine the optimal hyperparameters
+    tuning_strategy="bayes",  # Use BayesSearchCV to determine optimal hyperparameters
     n_bayes_iter=20,  # Consider only this many points in hyperparameter space
     cv=3,  # Use three CV splits to evaluate each hyperparameter combination
     l1_ratio=[0.0, 1.0],  # Explore the entire range of ``l1_ratio``

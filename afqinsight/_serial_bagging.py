@@ -12,26 +12,25 @@ private module. @richford
 
 import itertools
 import numbers
-import numpy as np
 from warnings import warn
 
+import numpy as np
 from sklearn.ensemble import BaggingClassifier, BaggingRegressor
 from sklearn.ensemble._bagging import (
-    _parallel_predict_proba,
-    _parallel_predict_log_proba,
     _parallel_decision_function,
+    _parallel_predict_log_proba,
+    _parallel_predict_proba,
     _parallel_predict_regression,
 )
 from sklearn.ensemble._base import _partition_estimators
-from sklearn.utils import check_random_state, check_array, indices_to_mask, resample
-from sklearn.utils.random import sample_without_replacement
+from sklearn.utils import check_array, check_random_state, indices_to_mask, resample
 from sklearn.utils.metaestimators import if_delegate_has_method
+from sklearn.utils.random import sample_without_replacement
 from sklearn.utils.validation import (
-    check_is_fitted,
     _check_sample_weight,
+    check_is_fitted,
     has_fit_parameter,
 )
-
 
 __all__ = ["SerialBaggingClassifier"]
 
@@ -428,7 +427,8 @@ class SerialBaggingClassifier(BaggingClassifier):
         elif n_more_estimators == 0:
             warn(
                 "Warm-start fitting without increasing n_estimators does not "
-                "fit new trees."
+                "fit new trees.",
+                stacklevel=2,
             )
             return self
 
@@ -942,7 +942,8 @@ class SerialBaggingRegressor(BaggingRegressor):
         elif n_more_estimators == 0:  # pragma: no cover
             warn(
                 "Warm-start fitting without increasing n_estimators does not "
-                "fit new trees."
+                "fit new trees.",
+                stacklevel=2,
             )
             return self
 

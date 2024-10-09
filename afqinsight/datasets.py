@@ -1,16 +1,16 @@
 """Generate samples of synthetic data sets or extract AFQ data."""
 
 import hashlib
-import numpy as np
 import os
 import os.path as op
+from collections import namedtuple
+from glob import glob
+
+import numpy as np
 import pandas as pd
 import requests
-
-from collections import namedtuple
 from dipy.utils.optpkg import optional_package
 from dipy.utils.tripwire import TripWire
-from glob import glob
 from groupyr.transform import GroupAggregator
 from sklearn.preprocessing import LabelEncoder
 from tqdm.auto import tqdm
@@ -178,7 +178,7 @@ def load_afq_data(
         If True, standardize subject IDs to start with the prefix "sub-".
         This is useful, for example, if the subject IDs in the nodes.csv file
         have the sub prefix but the subject IDs in the subjects.csv file do
-        not. Default is True in order to comform to the BIDS standard.
+        not. Default is True in order to conform to the BIDS standard.
 
     Returns
     -------
@@ -384,8 +384,11 @@ class AFQDataset:
     >>> AFQDataset(X=np.random.rand(50, 1000), y=np.random.rand(50))
     AFQDataset(n_samples=50, n_features=1000, n_targets=1)
 
-    You can keep track of the names of the target variables with the `target_cols` parameter.
-    >>> AFQDataset(X=np.random.rand(50, 1000), y=np.random.rand(50), target_cols=["age"])
+    You can keep track of the names of the target variables with the
+    `target_cols` parameter.
+
+    >>> AFQDataset(X=np.random.rand(50, 1000),
+    ...            y=np.random.rand(50), target_cols=["age"])
     AFQDataset(n_samples=50, n_features=1000, n_targets=1, targets=['age'])
 
     Source Datasets:
@@ -422,7 +425,8 @@ class AFQDataset:
     functions. For example
 
     >>> from sklearn.model_selection import train_test_split
-    >>> train_data, test_data = train_test_split(dataset, test_size=0.3, stratify=dataset.y)
+    >>> train_data, test_data = train_test_split(dataset, test_size=0.3,
+    ...                                          stratify=dataset.y)
     >>> train_data
     AFQDataset(n_samples=33, n_features=4000, n_targets=1, targets=['class'])
     >>> test_data
@@ -553,7 +557,7 @@ class AFQDataset:
             If True, standardize subject IDs to start with the prefix "sub-".
             This is useful, for example, if the subject IDs in the nodes.csv file
             have the sub prefix but the subject IDs in the subjects.csv file do
-            not. Default is True in order to comform to the BIDS standard.
+            not. Default is True in order to conform to the BIDS standard.
 
         Returns
         -------
@@ -649,25 +653,25 @@ class AFQDataset:
                 f"study must be one of {downloaders.keys()}. Got {study} instead."
             )
 
-        download_kwargs = dict()
+        download_kwargs = {}
         if verbose is not None:
             download_kwargs["verbose"] = verbose
 
         data_dir = downloaders[study.lower()](**download_kwargs)
         fn_subs = glob(op.join(data_dir, "subjects.?sv"))[0]
         dataset_kwargs = {
-            "sarica": dict(
-                dwi_metrics=["md", "fa"],
-                target_cols=["class"],
-                label_encode_cols=["class"],
-            ),
-            "weston-havens": dict(dwi_metrics=["md", "fa"], target_cols=["Age"]),
-            "hbn": dict(
-                dwi_metrics=["dki_md", "dki_fa"],
-                target_cols=["age", "sex", "scan_site_id"],
-                label_encode_cols=["sex", "scan_site_id"],
-                index_col="subject_id",
-            ),
+            "sarica": {
+                "dwi_metrics": ["md", "fa"],
+                "target_cols": ["class"],
+                "label_encode_cols": ["class"],
+            },
+            "weston-havens": {"dwi_metrics": ["md", "fa"], "target_cols": ["Age"]},
+            "hbn": {
+                "dwi_metrics": ["dki_md", "dki_fa"],
+                "target_cols": ["age", "sex", "scan_site_id"],
+                "label_encode_cols": ["sex", "scan_site_id"],
+                "index_col": "subject_id",
+            },
         }
 
         return AFQDataset.from_files(

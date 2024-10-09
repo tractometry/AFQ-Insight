@@ -35,17 +35,18 @@ or that tensorflow has been separately installed with::
    10.1371/journal.pcbi.1009136
 
 """
-import afqinsight.nn.tf_models as nn
+
 import os.path as op
+
 import tensorflow as tf
-
-from afqinsight.datasets import download_weston_havens
-from afqinsight import AFQDataset
-
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Lasso
 from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
+
+import afqinsight.nn.tf_models as nn
+from afqinsight import AFQDataset
+from afqinsight.datasets import download_weston_havens
 
 ##########################################################################
 # Fetch example data

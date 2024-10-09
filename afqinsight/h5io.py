@@ -35,11 +35,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-import numpy as np
 import warnings
-from scipy import sparse
-from dipy.utils.optpkg import optional_package
 
+import numpy as np
+from dipy.utils.optpkg import optional_package
+from scipy import sparse
 
 tables_msg = (
     "To use AFQ-Insight's h5io classes, you will need to have tables "
@@ -175,7 +175,8 @@ def _get_compression_filters(compression="default"):
                 (
                     "(afqinsight.h5io.save) Missing compression method {}: "
                     "no compression will be used."
-                ).format(compression)
+                ).format(compression),
+                stacklevel=2,
             )
             ff = None
     return ff
@@ -239,6 +240,7 @@ def _save_pickled(handler, group, level, name=None):
             "3) and should ideally be avoided"
         ).format(level),
         DeprecationWarning,
+        stacklevel=2,
     )
     node = handler.create_vlarray(group, name, tables.ObjectAtom())
     node.append(level)
@@ -531,7 +533,7 @@ def _load_nonlink_level(handler, level, pathtable, pathname):
     elif isinstance(level, tables.Array):
         if "zeroarray_dtype" in level._v_attrs:
             # Unpack zero-size arrays (shape is stored in an HDF5 array and
-            # type is stored in the attibute 'zeroarray_dtype')
+            # type is stored in the attribute 'zeroarray_dtype')
             dtype = level._v_attrs.zeroarray_dtype
             sh = level[:]
             return np.zeros(tuple(sh), dtype=dtype)
@@ -757,7 +759,8 @@ def load(path, group=None, sel=None, unpack=False):
                 warnings.warn(
                     "This file was saved with a newer version of "
                     "afqinsight.h5io. Please upgrade to make sure it loads "
-                    "correctly."
+                    "correctly.",
+                    stacklevel=2,
                 )
 
             # Attributes can't be unpacked with the method above, so fall back
