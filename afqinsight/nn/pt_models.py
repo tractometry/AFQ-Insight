@@ -309,8 +309,6 @@ class BLSTM1(nn.Module):
         self.model = nn.Sequential(
             nn.LSTM(input_shape[1], 100, bidirectional=True),
             nn.ReLU(),
-            nn.LSTM(100, 100, bidirectional=True),
-            nn.ReLU(),
             nn.Linear(100, n_classes),
         )
 
