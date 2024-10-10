@@ -1,12 +1,10 @@
 # _AFQ-Insight_ Python based statistical learning for tractometry
 
 [![Build Status](https://github.com/richford/AFQ-Insight/workflows/Build/badge.svg)](https://github.com/richford/AFQ-Insight/workflows/Build/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/richford/AFQ-Insight/badge.svg?branch=main&service=github)](https://coveralls.io/github/richford/AFQ-Insight?branch=main&service=github)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3585942.svg)](https://doi.org/10.5281/zenodo.3585942)
 
-See <https://yeatmanlab.github.io/AFQ-Browser/> for documentation of the AFQ data format
+See <https://tractometry.org/AFQ-Browser/> for documentation of the AFQ data format
 
 This is a work in progress.
 
@@ -50,4 +48,4 @@ well as
 [NIMH BRAIN Initiative grant 1RF1MH121868-01](https://projectreporter.nih.gov/project_info_details.cfm?aid=9886761&icde=46874320&ddparam=&ddvalue=&ddsub=&cr=2&csb=default&cs=ASC&pball=)
 to Ariel Rokem (University of Washington).
 
-[link_afqinsight_preprint]: https://doi.org/10.1101/2019.12.19.882928 
+[link_afqinsight_preprint]: https://doi.org/10.1101/2019.12.19.882928

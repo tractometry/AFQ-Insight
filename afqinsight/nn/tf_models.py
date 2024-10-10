@@ -1,4 +1,5 @@
 import math
+
 from dipy.utils.optpkg import optional_package
 from dipy.utils.tripwire import TripWire
 
@@ -12,18 +13,23 @@ keras_msg = (
 tf, has_tf, _ = optional_package("tensorflow", trip_msg=keras_msg)
 
 if has_tf:
-    from tensorflow.keras.models import Model
-    from tensorflow.keras.layers import Dense, Flatten, Dropout, Input
-    from tensorflow.keras.layers import MaxPooling1D, Conv1D
-    from tensorflow.keras.layers import LSTM, Bidirectional
     from tensorflow.keras.layers import (
-        BatchNormalization,
-        GlobalAveragePooling1D,
-        Permute,
-        concatenate,
+        LSTM,
         Activation,
+        BatchNormalization,
+        Bidirectional,
+        Conv1D,
+        Dense,
+        Dropout,
+        Flatten,
+        GlobalAveragePooling1D,
+        Input,
+        MaxPooling1D,
+        Permute,
         add,
+        concatenate,
     )
+    from tensorflow.keras.models import Model
 else:
     # Since all model building functions start with Input, we make Input the
     # tripwire instance for cases where tensorflow is not installed.
@@ -31,7 +37,9 @@ else:
 
 
 def mlp4(input_shape, n_classes, output_activation="softmax", verbose=False):
-    # Z. Wang, W. Yan, T. Oates, "Time Series Classification from Scratch with Deep Neural Networks: A Strong Baseline," Int. Joint Conf. Neural Networks, 2017, pp. 1578-1585
+    # Z. Wang, W. Yan, T. Oates, "Time Series Classification from Scratch with
+    # Deep Neural Networks: A Strong Baseline," Int. Joint Conf.
+    # Neural Networks, 2017, pp. 1578-1585
     ip = Input(shape=input_shape)
     fc = Flatten()(ip)
     fc = Dropout(0.1)(fc)
@@ -55,7 +63,9 @@ def mlp4(input_shape, n_classes, output_activation="softmax", verbose=False):
 
 
 def cnn_lenet(input_shape, n_classes, output_activation="softmax", verbose=False):
-    # Y. Lecun, L. Bottou, Y. Bengio, and P. Haffner, “Gradient-based learning applied to document recognition,” Proceedings of the IEEE, vol. 86, no. 11, pp. 2278–2324, 1998.
+    # Y. Lecun, L. Bottou, Y. Bengio, and P. Haffner, “Gradient-based learning
+    # applied to document recognition,” Proceedings of the IEEE, vol. 86, no.
+    # 11, pp. 2278–2324, 1998.
 
     ip = Input(shape=input_shape)
     conv = ip
@@ -92,7 +102,8 @@ def cnn_lenet(input_shape, n_classes, output_activation="softmax", verbose=False
 
 
 def cnn_vgg(input_shape, n_classes, output_activation="softmax", verbose=False):
-    # K. Simonyan and A. Zisserman, "Very deep convolutional networks for large-scale image recognition," arXiv preprint arXiv:1409.1556, 2014.
+    # K. Simonyan and A. Zisserman, "Very deep convolutional networks for
+    # large-scale image recognition," arXiv preprint arXiv:1409.1556, 2014.
 
     ip = Input(shape=input_shape)
     conv = ip
@@ -146,7 +157,8 @@ def cnn_vgg(input_shape, n_classes, output_activation="softmax", verbose=False):
 
 def lstm1v0(input_shape, n_classes, output_activation="softmax", verbose=False):
     # Original proposal:
-    # S. Hochreiter and J. Schmidhuber, “Long Short-Term Memory,” Neural Computation, vol. 9, no. 8, pp. 1735–1780, Nov. 1997.
+    # S. Hochreiter and J. Schmidhuber, “Long Short-Term Memory,”
+    # Neural Computation, vol. 9, no. 8, pp. 1735–1780, Nov. 1997.
 
     ip = Input(shape=input_shape)
 
@@ -162,10 +174,13 @@ def lstm1v0(input_shape, n_classes, output_activation="softmax", verbose=False):
 
 def lstm1(input_shape, n_classes, output_activation="softmax", verbose=False):
     # Original proposal:
-    # S. Hochreiter and J. Schmidhuber, “Long Short-Term Memory,” Neural Computation, vol. 9, no. 8, pp. 1735–1780, Nov. 1997.
+    # S. Hochreiter and J. Schmidhuber, “Long Short-Term Memory,”
+    # Neural Computation, vol. 9, no. 8, pp. 1735–1780, Nov. 1997.
 
     # Hyperparameter choices:
-    # N. Reimers and I. Gurevych, "Optimal hyperparameters for deep lstm-networks for sequence labeling tasks," arXiv, preprint arXiv:1707.06799, 2017
+    # N. Reimers and I. Gurevych, "Optimal hyperparameters for deep
+    # lstm-networks for sequence labeling tasks,"
+    # arXiv, preprint arXiv:1707.06799, 2017
 
     ip = Input(shape=input_shape)
 
@@ -195,10 +210,14 @@ def lstm2(input_shape, n_classes, output_activation="softmax", verbose=False):
 
 def blstm1(input_shape, n_classes, output_activation="softmax", verbose=False):
     # Original proposal:
-    # M. Schuster and K. K. Paliwal, “Bidirectional recurrent neural networks,” IEEE Transactions on Signal Processing, vol. 45, no. 11, pp. 2673–2681, 1997.
+    # M. Schuster and K. K. Paliwal, “Bidirectional recurrent neural
+    # networks,” IEEE Transactions on Signal Processing,
+    # vol. 45, no. 11, pp. 2673–2681, 1997.
 
     # Hyperparameter choices:
-    # N. Reimers and I. Gurevych, "Optimal hyperparameters for deep lstm-networks for sequence labeling tasks," arXiv, preprint arXiv:1707.06799, 2017
+    # N. Reimers and I. Gurevych, "Optimal hyperparameters for deep
+    # lstm-networks for sequence labeling tasks,"
+    # arXiv, preprint arXiv:1707.06799, 2017
     ip = Input(shape=input_shape)
 
     l2 = Bidirectional(LSTM(100))(ip)
@@ -226,11 +245,14 @@ def blstm2(input_shape, n_classes, output_activation="softmax", verbose=False):
 
 
 def lstm_fcn(input_shape, n_classes, output_activation="softmax", verbose=False):
-    # F. Karim, S. Majumdar, H. Darabi, and S. Chen, “LSTM Fully Convolutional Networks for Time Series Classification,” IEEE Access, vol. 6, pp. 1662–1669, 2018.
+    # F. Karim, S. Majumdar, H. Darabi, and S. Chen, “LSTM Fully
+    # Convolutional Networks for Time Series Classification,”
+    # IEEE Access, vol. 6, pp. 1662–1669, 2018.
 
     ip = Input(shape=input_shape)
 
-    # lstm part is a 1 time step multivariate as described in Karim et al. Seems strange, but works I guess.
+    # lstm part is a 1 time step multivariate as described in
+    # Karim et al. Seems strange, but works I guess.
     lstm = Permute((2, 1))(ip)
 
     lstm = LSTM(128)(lstm)
@@ -262,7 +284,10 @@ def lstm_fcn(input_shape, n_classes, output_activation="softmax", verbose=False)
 
 
 def cnn_resnet(input_shape, n_classes, output_activation="softmax", verbose=False):
-    # I. Fawaz, G. Forestier, J. Weber, L. Idoumghar, P-A Muller, "Data augmentation using synthetic data for time series classification with deep residual networks," International Workshop on Advanced Analytics and Learning on Temporal Data ECML/PKDD, 2018
+    # I. Fawaz, G. Forestier, J. Weber, L. Idoumghar, P-A Muller, "Data
+    # augmentation using synthetic data for time series classification with
+    # deep residual networks," International Workshop on Advanced
+    # Analytics and Learning on Temporal Data ECML/PKDD, 2018
 
     ip = Input(shape=input_shape)
     residual = ip

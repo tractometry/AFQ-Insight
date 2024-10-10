@@ -1,11 +1,12 @@
-import afqinsight.augmentation as aug
-import numpy as np
 import os.path as op
-import pytest
-
-from afqinsight.datasets import bundles2channels, download_sarica, AFQDataset
 from inspect import signature
+
+import numpy as np
+import pytest
 from sklearn.impute import SimpleImputer
+
+import afqinsight.augmentation as aug
+from afqinsight.datasets import AFQDataset, bundles2channels, download_sarica
 
 
 @pytest.fixture

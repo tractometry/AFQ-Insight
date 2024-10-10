@@ -1,17 +1,27 @@
 import groupyr as gpr
 import pytest
-
-from afqinsight import make_afq_classifier_pipeline, make_afq_regressor_pipeline
-from afqinsight.pipeline import make_base_afq_pipeline
-from afqinsight._serial_bagging import SerialBaggingClassifier, SerialBaggingRegressor
 from sklearn.base import is_classifier
-from sklearn.ensemble import BaggingClassifier, BaggingRegressor
-from sklearn.ensemble import AdaBoostClassifier, AdaBoostRegressor
+from sklearn.ensemble import (
+    AdaBoostClassifier,
+    AdaBoostRegressor,
+    BaggingClassifier,
+    BaggingRegressor,
+)
 from sklearn.impute import KNNImputer, SimpleImputer
 from sklearn.impute._iterative import IterativeImputer
-from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler
-from sklearn.preprocessing import RobustScaler, StandardScaler
-from sklearn.preprocessing import Normalizer, PowerTransformer, QuantileTransformer
+from sklearn.preprocessing import (
+    MaxAbsScaler,
+    MinMaxScaler,
+    Normalizer,
+    PowerTransformer,
+    QuantileTransformer,
+    RobustScaler,
+    StandardScaler,
+)
+
+from afqinsight import make_afq_classifier_pipeline, make_afq_regressor_pipeline
+from afqinsight._serial_bagging import SerialBaggingClassifier, SerialBaggingRegressor
+from afqinsight.pipeline import make_base_afq_pipeline
 
 scaler_args = [
     ("standard", StandardScaler),

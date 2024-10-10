@@ -24,14 +24,15 @@ more thorough search of the hyperparameter space. For more details, please see
    10.1371/journal.pcbi.1009136
 
 """
-import matplotlib.pyplot as plt
-import numpy as np
+
 import os.path as op
 
-from afqinsight.datasets import download_weston_havens, load_afq_data
-from afqinsight import make_afq_regressor_pipeline
-
+import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.model_selection import cross_validate
+
+from afqinsight import make_afq_regressor_pipeline
+from afqinsight.datasets import download_weston_havens, load_afq_data
 
 ##########################################################################
 # Fetch example data
@@ -84,7 +85,7 @@ pipe = make_afq_regressor_pipeline(
     groups=groups,
     verbose=0,  # Be quiet!
     pipeline_verbosity=False,  # No really, be quiet!
-    tuning_strategy="bayes",  # Use BayesSearchCV to determine the optimal hyperparameters
+    tuning_strategy="bayes",  # Use BayesSearchCV to determine optimal hyperparameters
     n_bayes_iter=10,  # Consider only this many points in hyperparameter space
     cv=3,  # Use three CV splits to evaluate each hyperparameter combination
     l1_ratio=[0.0, 1.0],  # Explore the entire range of ``l1_ratio``
