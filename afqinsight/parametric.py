@@ -3,7 +3,6 @@
 import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
-
 from sklearn.impute import SimpleImputer
 from statsmodels.api import OLS
 from statsmodels.stats.multitest import multipletests
@@ -20,10 +19,8 @@ def node_wise_regression(
 ):
     """Model group differences using node-wise regression along the length of the tract.
 
-       Returns a list of beta-weights, confidence intervals, p-values, and rejection criteria
-       based on multiple-comparison correction.
-
-       Based on this example: https://github.com/yeatmanlab/AFQ-Insight/blob/main/examples/plot_als_comparison.py
+       Returns a list of beta-weights, confidence intervals, p-values, and
+       rejection criteria based on multiple-comparison correction.
 
     Parameters
     ----------
@@ -45,9 +42,9 @@ def node_wise_regression(
         Boolean specifying whether to fit a linear mixed-effects model
 
     rand_eff: str, default='subjectID'
-        String specifying the random effect grouping structure for linear mixed-effects
-        models. If using anything other than the default value, this column must be present
-        in the 'target_cols' of the AFQDataset object
+        String specifying the random effect grouping structure for linear
+        mixed-effects models. If using anything other than the default value,
+        this column must be present in the 'target_cols' of the AFQDataset object
 
 
     Returns
@@ -68,28 +65,32 @@ def node_wise_regression(
             The tract described by this dictionary
 
         reference_coefs: list of floats
-            A list of beta-weights representing the average diffusion metric for the
-            reference group on a diffusion metric at a given location along the tract
+            A list of beta-weights representing the average diffusion metric
+            for the reference group on a diffusion metric at a given location
+            along the tract
 
         group_coefs: list of floats
-            A list of beta-weights representing the average group effect metric for the
-            treatment group on a diffusion metric at a given location along the tract
+            A list of beta-weights representing the average group effect metric
+            for the treatment group on a diffusion metric at a given location
+            along the tract
 
         reference_CI: np.array of np.array
-            A numpy array containing a series of numpy arrays indicating the 95% confidence interval
-            around the estimated beta-weight of the reference category at a given location along the tract
+            A numpy array containing a series of numpy arrays indicating the
+            95% confidence interval around the estimated beta-weight of the
+            reference category at a given location along the tract
 
         group_CI: np.array of np.array
-            A numpy array containing a series of numpy arrays indicating the 95% confidence interval
-            around the estimated beta-weight of the treatment effect at a given location along the tract
+            A numpy array containing a series of numpy arrays indicating the
+            95% confidence interval around the estimated beta-weight of the
+            treatment effect at a given location along the tract
 
         pvals: list of floats
-            A list of p-values testing whether or not the beta-weight of the group effect is
-            different from 0
+            A list of p-values testing whether or not the beta-weight of the
+            group effect is different from 0
 
         reject_idx: list of Booleans
-            A list of node indices where the null hypothesis is rejected after multiple-comparison
-            corrections
+            A list of node indices where the null hypothesis is rejected after
+            multiple-comparison corrections
 
         model_fits: list of statsmodels objects
             A list of the statsmodels object fit along the length of the nodes
@@ -113,10 +114,8 @@ def node_wise_regression(
 
     # Loop through each node and fit model
     for ii, column in enumerate(tract_data.columns):
-
         # fit linear mixed-effects model
         if lme:
-
             this = pd.DataFrame(afq_dataset.y, columns=afq_dataset.target_cols)
             this[metric] = tract_data[column]
 
@@ -130,7 +129,6 @@ def node_wise_regression(
 
         # fit OLS model
         else:
-
             _, _, _ = column
             this = pd.DataFrame(afq_dataset.y, columns=afq_dataset.target_cols)
             this[metric] = tract_data[column]
