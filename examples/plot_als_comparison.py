@@ -26,13 +26,6 @@ from afqinsight import AFQDataset
 from afqinsight.parametric import node_wise_regression
 from afqinsight.plot import plot_regression_profiles
 
-import numpy as np
-import pandas as pd
-from sklearn.impute import SimpleImputer
-from statsmodels.api import OLS
-from statsmodels.stats.anova import anova_lm
-from statsmodels.stats.multitest import multipletests
-
 #############################################################################
 # Fetch data from Sarica et al.
 # -----------------------------
@@ -66,7 +59,7 @@ tracts = ["Left Arcuate", "Right Arcuate", "Left Corticospinal", "Right Corticos
 #
 # Because we conducted 100 comparisons, we need to correct the p-values that
 # we obtained for the potential for a false discovery. There are multiple
-# ways to conduct multuple comparison correction, and we will not get into
+# ways to conduct multiple comparison correction, and we will not get into
 # the considerations in selecting a method here. The function `node_wise_regression`
 # uses Benjamini/Hochberg FDR controlling method. This returns a boolean array for
 # the p-values that are rejected at a specified alpha level (after correction),
@@ -80,7 +73,6 @@ fig, axes = plt.subplots(nrows=2, ncols=num_cols, figsize=(10, 6))
 
 # Loop through the data and generate plots
 for i, tract in enumerate(tracts):
-
     # fit node-wise regression for each tract based on model formula
     tract_dict = node_wise_regression(afqdata, tract, "fa", "fa ~ C(group)")
 
@@ -91,9 +83,11 @@ for i, tract in enumerate(tracts):
 
     # Visualize
     # ----------
-    # We can visualize the results with the `plot_regression_profiles` function.
-    # Each subplot shows the tract profiles of the two groups while controlling for
-    # any covariates, with stars indicating the nodes at which the null hypothesis is rejected.
+    # We can visualize the results with the `plot_regression_profiles`
+    # function. Each subplot shows the tract profiles of the two groups,
+    # while controlling for any covariates, with stars indicating the nodes
+    # at which the null hypothesis is rejected.
+
     plot_regression_profiles(tract_dict, axes[row][col])
 
 # Adjust layout to prevent overlap

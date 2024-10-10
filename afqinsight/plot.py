@@ -347,8 +347,8 @@ def plot_regression_profiles(model_dict, ax):
     Parameters
     ----------
     model_dict: dict
-        Dictionary returned by parametric.node_wise_regression containing information about
-        parametric model fits over the length of a tract
+        Dictionary returned by parametric.node_wise_regression containing
+        information about parametric model fits over the length of a tract
 
     ax: matplotlib.axes
         A matplotlib axes for a subplot where the tract profiles will be plotted
