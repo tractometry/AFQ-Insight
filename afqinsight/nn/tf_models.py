@@ -11,7 +11,6 @@ keras_msg = (
 )
 
 tf, has_tf, _ = optional_package("tensorflow", trip_msg=keras_msg)
-
 if has_tf:
     from tensorflow.keras.layers import (
         LSTM,
@@ -30,20 +29,34 @@ if has_tf:
         concatenate,
     )
     from tensorflow.keras.models import Model
+    print("woo")
 else:
     # Since all model building functions start with Input, we make Input the
     # tripwire instance for cases where tensorflow is not installed.
     Input = TripWire(keras_msg)
+    print("test")
 
 
 def mlp4(input_shape, n_classes, output_activation="softmax", verbose=False):
     # Z. Wang, W. Yan, T. Oates, "Time Series Classification from Scratch with
     # Deep Neural Networks: A Strong Baseline," Int. Joint Conf.
     # Neural Networks, 2017, pp. 1578-1585
+    
+    #shape is an shape tuple, shape = 32 means that the input will
+    # be batches of 32 dimensional vectors
+    #Input instantiates a keras tensor and returns a keras tensor
     ip = Input(shape=input_shape)
+
+    #doesn't change batch size but flattens it so if the shape is (10,64), flatten will be (None, 640)
     fc = Flatten()(ip)
+
+    #randomly sets input units to 0 with a frequency of rate at each step during training time to prevent overfitting
     fc = Dropout(0.1)(fc)
 
+    #Dense(units, activation is element wise activation function, relu 
+    #is rectified linear unit) 
+    # softmax activation function is used to normalize the ouptut 
+    # of a network to a probability distribution of K outcomes 
     fc = Dense(500, activation="relu")(fc)
     fc = Dropout(0.2)(fc)
 
@@ -74,6 +87,9 @@ def cnn_lenet(input_shape, n_classes, output_activation="softmax", verbose=False
     if verbose:
         print("pooling layers: %d" % n_conv_layers)
 
+    # filters, kernel size, stride, padding, activation function, kernel initializer
+    # strides is default one so padding is one in the "same" direction so
+    #one in each direction 
     for i in range(n_conv_layers):
         conv = Conv1D(
             6 + 10 * i,
@@ -162,6 +178,7 @@ def lstm1v0(input_shape, n_classes, output_activation="softmax", verbose=False):
 
     ip = Input(shape=input_shape)
 
+    # 512 units
     l2 = LSTM(512)(ip)
     out = Dense(n_classes, activation=output_activation)(l2)
 
@@ -243,7 +260,8 @@ def blstm2(input_shape, n_classes, output_activation="softmax", verbose=False):
 
     return model
 
-
+#FCN IS FULLY CONVULUTIONAL NETWORK
+#LSTM IS LONG SHORT TERM MEMORY
 def lstm_fcn(input_shape, n_classes, output_activation="softmax", verbose=False):
     # F. Karim, S. Majumdar, H. Darabi, and S. Chen, “LSTM Fully
     # Convolutional Networks for Time Series Classification,”
@@ -254,10 +272,13 @@ def lstm_fcn(input_shape, n_classes, output_activation="softmax", verbose=False)
     # lstm part is a 1 time step multivariate as described in
     # Karim et al. Seems strange, but works I guess.
     lstm = Permute((2, 1))(ip)
+    #changes the dimensions of the input layer 
 
+    #128 units 
     lstm = LSTM(128)(lstm)
     lstm = Dropout(0.8)(lstm)
 
+    # filters, kernel size 
     conv = Conv1D(128, 8, padding="same", kernel_initializer="he_uniform")(ip)
     conv = BatchNormalization()(conv)
     conv = Activation("relu")(conv)
@@ -281,7 +302,6 @@ def lstm_fcn(input_shape, n_classes, output_activation="softmax", verbose=False)
         model.summary()
 
     return model
-
 
 def cnn_resnet(input_shape, n_classes, output_activation="softmax", verbose=False):
     # I. Fawaz, G. Forestier, J. Weber, L. Idoumghar, P-A Muller, "Data
