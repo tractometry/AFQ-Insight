@@ -67,7 +67,7 @@ tracts = ["Left Arcuate", "Right Arcuate", "Left Corticospinal", "Right Corticos
 
 num_cols = 2
 
-# Define the figure and its grid
+# Define the figure and grid
 fig, axes = plt.subplots(nrows=2, ncols=num_cols, figsize=(10, 6))
 
 
