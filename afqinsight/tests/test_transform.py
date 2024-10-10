@@ -1,16 +1,17 @@
 import json
-import numpy as np
 import os.path as op
+
+import numpy as np
 import pandas as pd
 import pytest
 
 import afqinsight as afqi
-from afqinsight import AFQDataFrameMapper
 from afqinsight import (
+    AFQDataFrameMapper,
+    beta_hat_by_groups,
     multicol2dicts,
     multicol2sets,
     sort_features,
-    beta_hat_by_groups,
     unfold_beta_hat_by_metrics,
 )
 from afqinsight.transform import isiterable
@@ -70,9 +71,9 @@ def test_AFQDataFrameMapper_mean(concat_subject_session):
         .to_numpy()
     )
     groups_ref = [np.array([idx]) for idx in range(X.shape[1])]
-    cols_ref = set(
+    cols_ref = set(  # noqa ignore=C403
         [
-            tuple([item[0], item[1]])
+            tuple([item[0], item[1]])  # noqa ignore=C403
             for item in np.load(op.join(test_data_path, "test_transform_cols.npy"))
         ]
     )
@@ -80,9 +81,7 @@ def test_AFQDataFrameMapper_mean(concat_subject_session):
     assert np.allclose(groups, groups_ref)  # nosec
     assert set(cols) == cols_ref  # nosec
     if concat_subject_session:
-        assert set(subjects) == set(
-            (nodes.subjectID + nodes.sessionID).unique()
-        )  # nosec
+        assert set(subjects) == set((nodes.subjectID + nodes.sessionID).unique())  # nosec
     else:
         assert set(subjects) == set(nodes.subjectID.unique())  # nosec
     assert np.allclose(X, X_ref, equal_nan=True)  # nosec
@@ -138,7 +137,7 @@ def _drop_left_right(bundle):
 def _relateralize_set(_set):
     lateral_list = list(filter(_is_lateral_bundle, _set))
     if lateral_list:
-        return _set - set([_drop_left_right(lateral_list[0])])
+        return _set - set([_drop_left_right(lateral_list[0])])  # noqa ignore=C403
     else:
         return _set
 

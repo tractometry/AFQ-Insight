@@ -111,7 +111,7 @@ def node_wise_regression(
     cis_treat = np.zeros((tract_data.shape[-1], 2))
     fits = {}
 
-    # Loop through each node and fit a model
+    # Loop through each node and fit model
     for ii, column in enumerate(tract_data.columns):
 
         # fit linear mixed-effects model

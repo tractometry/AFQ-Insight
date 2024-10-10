@@ -37,13 +37,17 @@ and sign in. Here are some [instructions][link_signupinstructions].
 
 Already know what you're looking for in this guide? Jump to the following sections:
 
-- [Joining the conversation](#joining-the-conversation)
-- [Contributing through Github](#contributing-through-github)
-- [Understanding issues](#understanding-issues)
-- [Making a change](#making-a-change)
-- [Structuring contributions](#AFQ-Insight-coding-style-guide)
-- [Licensing](#licensing)
-- [Recognizing contributors](#recognizing-contributions)
+- [Contributing to _AFQ-Insight_](#contributing-to-afq-insight)
+  - [Practical guide to submitting your contribution](#practical-guide-to-submitting-your-contribution)
+  - [Joining the conversation](#joining-the-conversation)
+  - [Contributing through GitHub](#contributing-through-github)
+  - [Understanding issues](#understanding-issues)
+    - [Issue Labels](#issue-labels)
+  - [Making a change](#making-a-change)
+  - [_AFQ-Insight_ coding style guide](#afq-insight-coding-style-guide)
+    - [Documentation](#documentation)
+  - [Licensing](#licensing)
+    - [Reminder note for maintainers](#reminder-note-for-maintainers)
 
 ## Joining the conversation
 
@@ -226,7 +230,7 @@ but those accepted fastest will follow a workflow similar to the following:
    - `DOC`: new or updated documentation ([example][ex_doc])
    - `STY`: style changes ([example][ex_sty])
    - `REF`: refactoring existing code ([example][ex_ref])
-   - `CI`: updates to continous integration infrastructure ([example][ex_ci])
+   - `CI`: updates to continuous integration infrastructure ([example][ex_ci])
    - `MAINT`: general maintenance ([example][ex_maint])
    - For works-in-progress, add the `WIP` tag in addition to the descriptive prefix.
      Pull-requests tagged with `WIP:` will not be merged until the tag is removed.

@@ -34,6 +34,9 @@ __all__ = [
 ]
 
 
+# Module level constants
+SCALES = [0.5, 2.0]
+
 #    +--------------------------------------------------+
 # ---| Random transformation-based augmentation methods |---
 #    +--------------------------------------------------+
@@ -153,7 +156,7 @@ def magnitude_warp(x, sigma=0.2, knot=4):
         Sequences with shape `(batch, time_steps, n_channels)`.
 
     sigma : float
-        Standard devation of the random magnitudes.
+        Standard deviation of the random magnitudes.
 
     knot : int
         Number of knots, i.e. hills/valleys in the spline.
@@ -196,8 +199,8 @@ def magnitude_warp(x, sigma=0.2, knot=4):
 def time_warp(x, sigma=0.2, knot=4):
     """Return a random smooth time warping of the input sequences.
 
-    This function warps the time steps based on a smooth curve defined by a cubic spline.
-    See refs [1]_ and [2]_ for further details.
+    This function warps the time steps based on a smooth curve defined by a
+    cubic spline. See refs [1]_ and [2]_ for further details.
 
     Parameters
     ----------
@@ -205,7 +208,7 @@ def time_warp(x, sigma=0.2, knot=4):
         Sequences with shape `(batch, time_steps, n_channels)`.
 
     sigma : float
-        Standard devation of the random magnitudes of the warping path.
+        Standard deviation of the random magnitudes of the warping path.
 
     knot : int
         Number of knots, i.e. hills/valleys in the warping path.
@@ -320,14 +323,12 @@ def window_slice(x, reduce_ratio=0.9, warp_channels_independently=False):
     return ret
 
 
-def window_warp(
-    x, window_ratio=0.1, scales=[0.5, 2.0], warp_channels_independently=False
-):
+def window_warp(x, window_ratio=0.1, scales=SCALES, warp_channels_independently=False):
     """Randomly warp a time window by scales.
 
     Window warping takes a random window of the input sequence and stretches or
-    contracts it. See refs [1]_ and [2]_. The contraction scale is chosen randomly from the ``scales``
-    parameter.
+    contracts it. See refs [1]_ and [2]_. The contraction scale is chosen
+    randomly from the ``scales`` parameter.
 
     Parameters
     ----------
@@ -458,7 +459,7 @@ def spawner(x, labels, sigma=0.05, verbose=0):
 
     ret = np.zeros_like(x)
     for i, pat in enumerate(tqdm(x)):
-        # guarentees that same one isnt selected
+        # guarantees that same one isn't selected
         choices = np.delete(np.arange(x.shape[0]), i)
         # remove ones of different classes
         choices = np.where(_labels[choices] == _labels[i])[0]
@@ -686,7 +687,7 @@ def random_guided_warp(
 
     ret = np.zeros_like(x)
     for i, pat in enumerate(tqdm(x)):
-        # guarentees that same one isnt selected
+        # guarantees that same one isn't selected
         choices = np.delete(np.arange(x.shape[0]), i)
         # remove ones of different classes
         choices = np.where(_labels[choices] == _labels[i])[0]
@@ -806,7 +807,7 @@ def discriminative_guided_warp(
     ret = np.zeros_like(x)
     warp_amount = np.zeros(x.shape[0])
     for i, pat in enumerate(tqdm(x)):
-        # guarentees that same one isnt selected
+        # guarantees that same one isn't selected
         choices = np.delete(np.arange(x.shape[0]), i)
 
         # remove ones of different classes
@@ -833,7 +834,7 @@ def discriminative_guided_warp(
                                 slope_constraint=slope_constraint,
                                 window=window,
                             )
-                    for ns, neg_samp in enumerate(negative_prototypes):
+                    for neg_samp in negative_prototypes:
                         neg_aves[p] += (1.0 / neg_k) * dtw.shape_dtw(
                             pos_prot,
                             neg_samp,
@@ -860,7 +861,7 @@ def discriminative_guided_warp(
                                 slope_constraint=slope_constraint,
                                 window=window,
                             )
-                    for ns, neg_samp in enumerate(negative_prototypes):
+                    for neg_samp in negative_prototypes:
                         neg_aves[p] += (1.0 / neg_k) * dtw.dtw(
                             pos_prot,
                             neg_samp,

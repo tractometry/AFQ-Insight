@@ -2,7 +2,7 @@
 Installation
 ############
 
-*AFQ-Insight* requires Python >= 3.7. 
+*AFQ-Insight* requires Python >= 3.7.
 
 Installing the release version
 ------------------------------
@@ -23,14 +23,14 @@ You can install the development version using ``pip``:
 
 .. code-block:: console
 
-    pip install git+https://github.com/richford/AFQ-Insight.git 
+    pip install git+https://github.com/tractometry/AFQ-Insight.git
 
 Alternatively, you can clone the source code from the `github repository
-<https://github.com/richford/AFQ-Insight>`_:
+<https://github.com/tractometry/AFQ-Insight>`_:
 
 .. code-block:: console
 
-    $ git clone git@github.com:richford/AFQ-Insight.git
+    $ git clone git@github.com:tractometry/AFQ-Insight.git
     $ cd AFQ-Insight
     $ pip install .
 
