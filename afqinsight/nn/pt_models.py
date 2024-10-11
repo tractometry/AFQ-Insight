@@ -15,8 +15,6 @@ torch, has_torch, _ = optional_package("torch", trip_msg=torch_msg)  # noqa F811
 if has_torch:
     import torch.nn as nn
 else:
-    # Since all model building functions start with Input, we make Input the
-    # tripwire instance for cases where pytorch is not installed.
     Input = TripWire(torch_msg)
     print("test")
 
@@ -135,8 +133,6 @@ class CNN_VGG(nn.Module):
         if verbose:
             print(f"Pooling layers: {self.n_conv_layers}")
 
-        # idea is to create a list that sequential can use to
-        # create the model with the order of layers?
         conv_layers = []
 
         for i in range(self.n_conv_layers):
@@ -144,7 +140,6 @@ class CNN_VGG(nn.Module):
             if i == 0:
                 conv_layers.append(
                     nn.Conv1d(
-                        # what is in channels?
                         in_channels=input_shape[1],
                         out_channels=num_filters,
                         kernel_size=3,
