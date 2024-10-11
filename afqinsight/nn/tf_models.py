@@ -30,7 +30,6 @@ if has_tf:
     )
     from tensorflow.keras.models import Model
 
-    print("woo")
 else:
     # Since all model building functions start with Input, we make Input the
     # tripwire instance for cases where tensorflow is not installed.
