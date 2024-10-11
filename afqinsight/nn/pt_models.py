@@ -16,7 +16,6 @@ if has_torch:
     import torch.nn as nn
 else:
     Input = TripWire(torch_msg)
-    print("test")
 
 
 class MLP4(nn.Module):
