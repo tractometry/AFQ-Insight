@@ -149,7 +149,6 @@ class CNN_VGG(nn.Module):
             else:
                 conv_layers.append(
                     nn.Conv1d(
-                        # what is in channels?
                         in_channels=num_filters,
                         out_channels=num_filters,
                         kernel_size=3,
@@ -365,7 +364,6 @@ class LSTM_FCN(nn.Module):
         super(lstm_fcn, self).__init__()
 
         self.model = nn.Sequential(
-            # what is the input shape, confused how permute translates
             nn.LSTM(input_shape[0], 128),
             nn.Dropout(0.8),
             nn.ReLU(),
