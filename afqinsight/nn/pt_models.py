@@ -54,8 +54,8 @@ class MLP4(nn.Module):
         return x
 
 
-def mlp4(input_shape, n_classes):
-    mlp4_Model = mlp4(
+def mlp4_pt(input_shape, n_classes):
+    mlp4_Model = MLP4(
         input_shape, n_classes, output_activation=torch.softmax, verbose=False
     )
     return mlp4_Model
@@ -117,7 +117,7 @@ class CNN_LENET(nn.Module):
         return x
 
     def cnn_lenet(input_shape, n_classes):
-        cnn_lenet_Model = cnn_lenet(
+        cnn_lenet_Model = CNN_LENET(
             input_shape, n_classes, output_activation=torch.softmax, verbose=False
         )
         return cnn_lenet_Model
