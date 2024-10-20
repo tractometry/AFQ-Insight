@@ -1,11 +1,12 @@
-import torchvision
 import torchvision.transforms as transforms
-from pt_models import mlp4_pt
-from tf_models import mlp4
-from torch.utils.data import random_split
-from torchinfo import summary
 
-# from torchsummary import summary
+# sys.path.append('/Users/samchou/src/nrdg/AFQ-Insight/afqinsight/')
+# from datasets import AFQDataset, download_hbn
+# from ..datasets import *
+from afqinsight.datasets import (
+    AFQDataset,
+    download_hbn,
+)
 
 transform = transforms.Compose(
     [
@@ -13,19 +14,58 @@ transform = transforms.Compose(
     ]
 )
 
-dataset = torchvision.datasets.MNIST(
-    "./data", train=True, download=True, transform=transform
-)
 
-train_size = int(0.8 * len(dataset))
-test_size = len(dataset) - train_size
-train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
+def load_hbn_dataset_as_pytorch(bundles_as_channels=True, channels_last=False):
+    data_dir = download_hbn()
+
+    afq_dataset = AFQDataset.from_files(
+        fn_nodes=f"{data_dir}/nodes.csv",
+        fn_subjects=f"{data_dir}/subjects.tsv",
+        dwi_metrics=["dki_md", "dki_fa"],
+        target_cols=["age", "sex", "scan_site_id"],
+        label_encode_cols=["sex", "scan_site_id"],
+        index_col="subject_id",
+    )
+
+    return afq_dataset.as_torch_dataset(
+        bundles_as_channels=bundles_as_channels, channels_last=channels_last
+    )
 
 
-test_model = mlp4_pt(input_shape=784, n_classes=10)
-summary(test_model, input_size=(1, 784))
+def load_hbn_dataset_as_tensorflow(bundles_as_channels=True, channels_last=True):
+    data_dir = download_hbn()
 
-test_tf_model = mlp4(input_shape=(784,), n_classes=10, verbose=True)
+    afq_dataset = AFQDataset.from_files(
+        fn_nodes=f"{data_dir}/nodes.csv",
+        fn_subjects=f"{data_dir}/subjects.tsv",
+        dwi_metrics=["dki_md", "dki_fa"],
+        target_cols=["age", "sex", "scan_site_id"],
+        label_encode_cols=["sex", "scan_site_id"],
+        index_col="subject_id",
+    )
+
+    return afq_dataset.as_tensorflow_dataset(
+        bundles_as_channels=bundles_as_channels, channels_last=channels_last
+    )
+
+
+if __name__ == "__main__":
+    hbn_pytorch_dataset = load_hbn_dataset_as_pytorch()
+    hbn_tensorflow_dataset = load_hbn_dataset_as_tensorflow()
+
+    print("PyTorch Dataset:", hbn_pytorch_dataset)
+    print("TensorFlow Dataset:", hbn_tensorflow_dataset)
+
+
+# train_size = int(0.8 * len(dataset))
+# test_size = len(dataset) - train_size
+# train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
+
+
+# test_model = mlp4_pt(input_shape=784, n_classes=10)
+# summary(test_model, input_size=(1, 784))
+
+# test_tf_model = mlp4(input_shape=(784,), n_classes=10, verbose=True)
 
 # #try to find gpu, if not use cpu
 # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
