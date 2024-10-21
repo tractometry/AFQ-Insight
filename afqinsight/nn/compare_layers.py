@@ -1,6 +1,10 @@
 import tensorflow as tf
 import torch.nn as nn
+from pt_models import (
+    cnn_lenet_pt,
+)
 from tensorflow.keras import layers
+from tf_models import cnn_lenet
 
 
 # sample
@@ -142,9 +146,22 @@ def compare_models(pytorch_model, tensorflow_model):
     print("All layers match between the PyTorch and TensorFlow models.")
 
 
-pytorch_model = PyTorchModel()
-tensorflow_model = TensorFlowModel()
+# sample test
+# pytorch_model = PyTorchModel()
+# tensorflow_model = TensorFlowModel()
+# _ = tensorflow_model(tf.zeros([1, 32, 32, 3]))
 
-_ = tensorflow_model(tf.zeros([1, 32, 32, 3]))
+# compare_models(pytorch_model, tensorflow_model)
 
-compare_models(pytorch_model, tensorflow_model)
+# pytorch_mlp4 = mlp4_pt(input_shape=784, n_classes=10)
+# tensorflow_mlp4 = mlp4(input_shape=(784,), n_classes=10, verbose=True)
+# compare_models(pytorch_mlp4, tensorflow_mlp4)
+
+pytorch_cnn_lenet = cnn_lenet_pt(input_shape=(784, 1), n_classes=10)
+tensorflow_cnn_lenet = cnn_lenet(input_shape=(784, 1), n_classes=10, verbose=True)
+
+# Build TensorFlow model by passing a dummy input
+_ = tensorflow_cnn_lenet(tf.zeros([1, 784, 1]))
+
+# Now compare models
+compare_models(pytorch_cnn_lenet, tensorflow_cnn_lenet)
