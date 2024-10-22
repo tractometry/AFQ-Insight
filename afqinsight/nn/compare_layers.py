@@ -1,10 +1,8 @@
 import tensorflow as tf
 import torch.nn as nn
-from pt_models import (
-    cnn_lenet_pt,
-)
+from pt_models import cnn_lenet_pt, cnn_vgg_pt, lstm1_pt, lstm1v0_pt, mlp4_pt
 from tensorflow.keras import layers
-from tf_models import cnn_lenet
+from tf_models import cnn_lenet, cnn_vgg, lstm1, lstm1v0, mlp4
 
 
 # sample
@@ -144,24 +142,53 @@ def compare_models(pytorch_model, tensorflow_model):
         ), f"Number of parameters don't match in {pt_type}: {pt_params} vs {tf_params}."
 
     print("All layers match between the PyTorch and TensorFlow models.")
+    return True
 
 
 # sample test
 # pytorch_model = PyTorchModel()
 # tensorflow_model = TensorFlowModel()
 # _ = tensorflow_model(tf.zeros([1, 32, 32, 3]))
-
 # compare_models(pytorch_model, tensorflow_model)
 
-# pytorch_mlp4 = mlp4_pt(input_shape=784, n_classes=10)
-# tensorflow_mlp4 = mlp4(input_shape=(784,), n_classes=10, verbose=True)
-# compare_models(pytorch_mlp4, tensorflow_mlp4)
 
-pytorch_cnn_lenet = cnn_lenet_pt(input_shape=(784, 1), n_classes=10)
-tensorflow_cnn_lenet = cnn_lenet(input_shape=(784, 1), n_classes=10, verbose=True)
+# # test for mlp4
+def test_mlp4():
+    pytorch_mlp4 = mlp4_pt(input_shape=784, n_classes=10)
+    tensorflow_mlp4 = mlp4(input_shape=(784,), n_classes=10, verbose=True)
+    assert compare_models(pytorch_mlp4, tensorflow_mlp4)
 
-# Build TensorFlow model by passing a dummy input
-_ = tensorflow_cnn_lenet(tf.zeros([1, 784, 1]))
 
-# Now compare models
-compare_models(pytorch_cnn_lenet, tensorflow_cnn_lenet)
+# # test for cnn_lenet
+def test_cnn_lenet():
+    pytorch_cnn_lenet = cnn_lenet_pt(input_shape=(784, 1), n_classes=10)
+    tensorflow_cnn_lenet = cnn_lenet(input_shape=(784, 1), n_classes=10, verbose=True)
+    assert compare_models(pytorch_cnn_lenet, tensorflow_cnn_lenet)
+
+
+# # # test for cnn_vgg
+def test_cnn_vgg():
+    pytorch_cnn_vgg = cnn_vgg_pt(input_shape=(1, 784, 1), n_classes=10)
+    tensorflow_cnn_vgg = cnn_vgg(input_shape=(1, 784, 1), n_classes=10, verbose=True)
+    assert compare_models(pytorch_cnn_vgg, tensorflow_cnn_vgg)
+
+
+# # # test for LSTM1V0
+def test_lstm1v0():
+    pytorch_lstm1v0 = lstm1v0_pt(input_shape=(784, 1), n_classes=10)
+    tensorflow_lstm1v0 = lstm1v0(input_shape=(784, 1), n_classes=10, verbose=True)
+    assert compare_models(pytorch_lstm1v0, tensorflow_lstm1v0)
+
+
+# # test for LSTM1
+def test_lstm1():
+    pytorch_lstm1 = lstm1_pt(input_shape=(784, 1), n_classes=10)
+    tensorflow_lstm1 = lstm1(input_shape=(784, 1), n_classes=10, verbose=True)
+    assert compare_models(pytorch_lstm1, tensorflow_lstm1)
+
+
+test_mlp4()
+test_cnn_lenet()
+test_cnn_vgg()
+test_lstm1v0()
+test_lstm1()
