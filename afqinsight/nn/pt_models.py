@@ -134,7 +134,7 @@ class CNN_VGG(nn.Module):
     def __init__(
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
-        super(cnn_vgg_pt, self).__init__()
+        super(CNN_VGG, self).__init__()
         self.n_conv_layers = int(round(math.log(input_shape[0], 2)) - 3)
         if verbose:
             print(f"Pooling layers: {self.n_conv_layers}")
@@ -185,7 +185,7 @@ class CNN_VGG(nn.Module):
         self.model = nn.Sequential(
             *conv_layers,
             nn.Flatten(),
-            nn.Linear(input_shape, 4096),
+            nn.Linear(input_shape[0] * input_shape[1], 4096),
             nn.ReLU(),
             nn.Dropout(0.5),
             nn.Linear(4096, 4096),
@@ -217,7 +217,7 @@ class LSTM1V0(nn.Module):
     def __init__(
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
-        super(lstm1v0_pt, self).__init__()
+        super(LSTM1V0, self).__init__()
         self.model = nn.Sequential(
             nn.LSTM(input_shape[1], 512, batch_first=True), nn.Linear(512, n_classes)
         )
@@ -245,7 +245,7 @@ class LSTM1(nn.Module):
     def __init__(
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
-        super(lstm1_pt, self).__init__()
+        super(LSTM1, self).__init__()
         self.model = nn.Sequential(
             nn.LSTM(input_shape[1], 100), nn.ReLU(), nn.Linear(100, n_classes)
         )
@@ -273,7 +273,7 @@ class LSTM2(nn.Module):
     def __init__(
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
-        super(lstm2_pt, self).__init__()
+        super(LSTM2, self).__init__()
         self.model = nn.Sequential(
             nn.LSTM(input_shape[1], 100),
             nn.ReLU(),
@@ -305,7 +305,7 @@ class BLSTM1(nn.Module):
     def __init__(
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
-        super(blstm1_pt, self).__init__()
+        super(BLSTM1, self).__init__()
         self.model = nn.Sequential(
             nn.LSTM(input_shape[1], 100, bidirectional=True),
             nn.ReLU(),
@@ -335,7 +335,7 @@ class BLSTM2(nn.Module):
     def __init__(
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
-        super(blstm2_pt, self).__init__()
+        super(BLSTM2, self).__init__()
         self.model = nn.Sequential(
             nn.LSTM(input_shape[1], 100, bidirectional=True),
             nn.ReLU(),
@@ -367,7 +367,7 @@ class LSTM_FCN(nn.Module):
     def __init__(
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
-        super(lstm_fcn_pt, self).__init__()
+        super(LSTM_FCN, self).__init__()
 
         self.model = nn.Sequential(
             nn.LSTM(input_shape[0], 128),
@@ -408,7 +408,7 @@ def lstm_fcn_pt(input_shape, n_classes):
 
 class CNN_RESNET(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation="softmax"):
-        super(cnn_resnet_pt, self).__init__()
+        super(CNN_RESNET, self).__init__()
         conv_layers = []
         in_channel = input_shape[1]
 
