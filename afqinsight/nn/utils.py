@@ -1,39 +1,5 @@
-import tensorflow as tf
 import torch.nn as nn
-from pt_models import cnn_lenet_pt, cnn_vgg_pt, lstm1_pt, lstm1v0_pt, mlp4_pt
 from tensorflow.keras import layers
-from tf_models import cnn_lenet, cnn_vgg, lstm1, lstm1v0, mlp4
-
-
-# sample
-class PyTorchModel(nn.Module):
-    def __init__(self):
-        super(PyTorchModel, self).__init__()
-        self.conv = nn.Conv2d(
-            in_channels=3, out_channels=16, kernel_size=3, stride=1, padding=1
-        )
-        self.fc = nn.Linear(in_features=16 * 32 * 32, out_features=10)
-
-    def forward(self, x):
-        x = self.conv(x)
-        x = x.view(-1, 16 * 32 * 32)
-        x = self.fc(x)
-        return x
-
-
-# sample
-class TensorFlowModel(tf.keras.Model):
-    def __init__(self):
-        super(TensorFlowModel, self).__init__()
-        self.conv = layers.Conv2D(filters=16, kernel_size=3, strides=1, padding="same")
-        self.flatten = layers.Flatten()
-        self.fc = layers.Dense(units=10)
-
-    def call(self, x):
-        x = self.conv(x)
-        x = self.flatten(x)
-        x = self.fc(x)
-        return x
 
 
 def extract_layer_info_pytorch(layer):
@@ -51,6 +17,14 @@ def extract_layer_info_pytorch(layer):
         info["in_features"] = layer.in_features
         info["out_features"] = layer.out_features
         info["params"] = sum(p.numel() for p in layer.parameters())
+    elif isinstance(layer, nn.LSTM):
+        info["type"] = "LSTM"
+        info["input_size"] = layer.input_size
+        info["hidden_size"] = layer.hidden_size
+        info["num_layers"] = layer.num_layers
+        info["bidirectional"] = layer.bidirectional
+        info["params"] = sum(p.numel() for p in layer.parameters())
+
     return info
 
 
@@ -71,6 +45,34 @@ def extract_layer_info_tensorflow(layer):
         info["in_features"] = kernel_shape[0]
         info["out_features"] = kernel_shape[1]
         info["params"] = layer.count_params()
+    elif isinstance(layer, layers.LSTM):
+        info["type"] = "LSTM"
+        info["units"] = layer.units
+        info["return_sequences"] = layer.return_sequences
+        info["bidirectional"] = False
+
+        if layer.weights:
+            kernel_shape = layer.weights[0].shape
+            input_size = kernel_shape[0]
+            info["input_size"] = input_size
+        else:
+            info["input_size"] = None
+
+        info["params"] = layer.count_params()
+    elif isinstance(layer, layers.Bidirectional):
+        info["type"] = "LSTM"
+        info["units"] = layer.layer.units
+        info["return_sequences"] = layer.layer.return_sequences
+        info["bidirectional"] = True
+
+        if layer.weights:
+            kernel_shape = layer.forward_layer.weights[0].shape
+            input_size = kernel_shape[0]
+            info["input_size"] = input_size
+        else:
+            info["input_size"] = None
+
+        info["params"] = layer.count_params()
     return info
 
 
@@ -78,12 +80,13 @@ def compare_models(pytorch_model, tensorflow_model):
     pytorch_layers = [
         module
         for module in pytorch_model.modules()
-        if type(module) in [nn.Conv2d, nn.Linear]
+        if type(module) in [nn.Conv2d, nn.Linear, nn.LSTM]
     ]
     tensorflow_layers = [
         layer
         for layer in tensorflow_model.layers
-        if type(layer) in [layers.Conv2D, layers.Dense]
+        if type(layer)
+        in [layers.Conv2D, layers.Dense, layers.LSTM, layers.Bidirectional]
     ]
 
     assert len(pytorch_layers) == len(
@@ -100,6 +103,7 @@ def compare_models(pytorch_model, tensorflow_model):
 
         # Compare attributes based on layer type
         if pt_info["type"] == "Conv2D":
+            print("conv2d detected")
             pt_in_channels = pt_info["in_channels"]
             pt_out_channels = pt_info["out_channels"]
             pt_kernel_size = pt_info["kernel_size"]
@@ -122,6 +126,7 @@ def compare_models(pytorch_model, tensorflow_model):
             ), f"Conv2D stride do not match: {pt_stride} vs {tf_stride}"
             # Padding might need special handling due to different conventions
         elif pt_info["type"] == "Dense":
+            print("dense detected")
             pt_in_features = pt_info["in_features"]
             tf_in_features = tf_info["in_features"]
             pt_out_features = pt_info["out_features"]
@@ -132,6 +137,30 @@ def compare_models(pytorch_model, tensorflow_model):
             assert (
                 pt_info["out_features"] == tf_info["out_features"]
             ), f"Dense out_features don't match: {pt_out_features} vs {tf_out_features}"
+        elif pt_info["type"] == "LSTM":
+            print("lstm detected")
+            pt_input_size = pt_info["input_size"]
+            tf_input_size = tf_info.get("input_size")
+            pt_hidden_size = pt_info["hidden_size"]
+            tf_hidden_size = tf_info.get("units")
+            pt_bidirectional = pt_info["bidirectional"]
+            tf_bidirectional = tf_info["bidirectional"]
+
+            assert (
+                pt_input_size == tf_input_size
+            ), f"LSTM input sizes do not match: {pt_input_size} vs {tf_input_size}"
+            assert (
+                pt_hidden_size == tf_hidden_size
+            ), f"LSTM hidden sizes do not match: {pt_hidden_size} vs {tf_hidden_size}"
+            assert (
+                pt_bidirectional == tf_bidirectional
+            ), f"{pt_bidirectional} vs {tf_bidirectional}"
+
+        pt_params = pt_info["params"]
+        tf_params = tf_info["params"]
+        assert (
+            pt_params == tf_params
+        ), f"Number of parameters don't match in LSTM: {pt_params} vs {tf_params}."
 
         # Compare number of parameters
         pt_type = pt_info["type"]
@@ -143,52 +172,3 @@ def compare_models(pytorch_model, tensorflow_model):
 
     print("All layers match between the PyTorch and TensorFlow models.")
     return True
-
-
-# sample test
-# pytorch_model = PyTorchModel()
-# tensorflow_model = TensorFlowModel()
-# _ = tensorflow_model(tf.zeros([1, 32, 32, 3]))
-# compare_models(pytorch_model, tensorflow_model)
-
-
-# # test for mlp4
-def test_mlp4():
-    pytorch_mlp4 = mlp4_pt(input_shape=784, n_classes=10)
-    tensorflow_mlp4 = mlp4(input_shape=(784,), n_classes=10, verbose=True)
-    assert compare_models(pytorch_mlp4, tensorflow_mlp4)
-
-
-# # test for cnn_lenet
-def test_cnn_lenet():
-    pytorch_cnn_lenet = cnn_lenet_pt(input_shape=(784, 1), n_classes=10)
-    tensorflow_cnn_lenet = cnn_lenet(input_shape=(784, 1), n_classes=10, verbose=True)
-    assert compare_models(pytorch_cnn_lenet, tensorflow_cnn_lenet)
-
-
-# # # test for cnn_vgg
-def test_cnn_vgg():
-    pytorch_cnn_vgg = cnn_vgg_pt(input_shape=(1, 784, 1), n_classes=10)
-    tensorflow_cnn_vgg = cnn_vgg(input_shape=(1, 784, 1), n_classes=10, verbose=True)
-    assert compare_models(pytorch_cnn_vgg, tensorflow_cnn_vgg)
-
-
-# # # test for LSTM1V0
-def test_lstm1v0():
-    pytorch_lstm1v0 = lstm1v0_pt(input_shape=(784, 1), n_classes=10)
-    tensorflow_lstm1v0 = lstm1v0(input_shape=(784, 1), n_classes=10, verbose=True)
-    assert compare_models(pytorch_lstm1v0, tensorflow_lstm1v0)
-
-
-# # test for LSTM1
-def test_lstm1():
-    pytorch_lstm1 = lstm1_pt(input_shape=(784, 1), n_classes=10)
-    tensorflow_lstm1 = lstm1(input_shape=(784, 1), n_classes=10, verbose=True)
-    assert compare_models(pytorch_lstm1, tensorflow_lstm1)
-
-
-test_mlp4()
-test_cnn_lenet()
-test_cnn_vgg()
-test_lstm1v0()
-test_lstm1()

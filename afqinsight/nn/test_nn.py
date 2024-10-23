@@ -49,21 +49,21 @@ def load_hbn_dataset_as_tensorflow(bundles_as_channels=True, channels_last=True)
     )
 
 
-if __name__ == "__main__":
-    hbn_pytorch_dataset = load_hbn_dataset_as_pytorch()
-    hbn_tensorflow_dataset = load_hbn_dataset_as_tensorflow()
+# if __name__ == "__main__":
+#     hbn_pytorch_dataset = load_hbn_dataset_as_pytorch()
+#     hbn_tensorflow_dataset = load_hbn_dataset_as_tensorflow()
 
-    print("PyTorch Dataset:", hbn_pytorch_dataset)
-    print("TensorFlow Dataset:", hbn_tensorflow_dataset)
+#     print("PyTorch Dataset:", hbn_pytorch_dataset)
+#     print("TensorFlow Dataset:", hbn_tensorflow_dataset)
 
+
+# test_model = mlp4_pt(input_shape=784, n_classes=10)
+# summary(test_model, input_size=(1, 784))
 
 # train_size = int(0.8 * len(dataset))
 # test_size = len(dataset) - train_size
 # train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
 
-
-# test_model = mlp4_pt(input_shape=784, n_classes=10)
-# summary(test_model, input_size=(1, 784))
 
 # test_tf_model = mlp4(input_shape=(784,), n_classes=10, verbose=True)
 
