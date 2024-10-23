@@ -6,4 +6,4 @@ from .cross_validate import *  # noqa
 from .datasets import *  # noqa
 from .pipeline import *  # noqa
 from .transform import *  # noqa
-# from ._version import version as __version__  # noqa
+from ._version import version as __version__  # noqa
