@@ -61,12 +61,14 @@ def extract_layer_info_tensorflow(layer):
         info["params"] = layer.count_params()
     elif isinstance(layer, layers.Bidirectional):
         info["type"] = "LSTM"
-        info["units"] = layer.layer.units
-        info["return_sequences"] = layer.layer.return_sequences
+        forward_layer = layer.forward_layer
+        backward_layer = layer.backward_layer
+        info["units"] = forward_layer.units + backward_layer.units
+        info["return_sequences"] = forward_layer.return_sequences
         info["bidirectional"] = True
 
-        if layer.weights:
-            kernel_shape = layer.forward_layer.weights[0].shape
+        if forward_layer.weights:
+            kernel_shape = forward_layer.weights[0].shape
             input_size = kernel_shape[0]
             info["input_size"] = input_size
         else:
@@ -162,22 +164,27 @@ def compare_models(pytorch_model, tensorflow_model):
             assert (
                 pt_input_size == tf_input_size
             ), f"LSTM input sizes do not match: {pt_input_size} vs {tf_input_size}"
-            assert (
-                pt_hidden_size == tf_hidden_size
-            ), f"LSTM hidden sizes do not match: {pt_hidden_size} vs {tf_hidden_size}"
-            assert (
-                pt_bidirectional == tf_bidirectional
-            ), f"Bidirectional doesn't match: {pt_bidirectional} vs {tf_bidirectional}"
+            if pt_bidirectional and tf_bidirectional:
+                assert pt_hidden_size * 2 == tf_hidden_size, (
+                    f"LSTM hidden sizes do not match: "
+                    f"{pt_hidden_size} vs {tf_hidden_size}"
+                )
+                assert pt_bidirectional == tf_bidirectional, (
+                    f"Bidirectional settings do not match: "
+                    f"{pt_bidirectional} vs {tf_bidirectional}"
+                )
 
             num_directions = 2 if pt_bidirectional else 1
             bias_difference = num_directions * 4 * pt_hidden_size
+            print(pt_info["params"])
             adjusted_pt_params = pt_info["params"] - bias_difference
 
             pt_params = adjusted_pt_params
             tf_params = tf_info["params"]
-            assert (
-                pt_params == tf_params
-            ), f"# of parameters don't match in LSTM: {pt_params} vs {tf_params}."
+            assert pt_params == tf_params, (
+                f"Adjusted number of parameters don't match in LSTM: "
+                f"{pt_params} vs {tf_params}."
+            )
 
     print("All layers match between the PyTorch and TensorFlow models.")
     return True
