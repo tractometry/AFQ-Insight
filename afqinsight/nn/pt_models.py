@@ -307,7 +307,7 @@ class BLSTM1(nn.Module):
     ):
         super(BLSTM1, self).__init__()
         self.model = nn.Sequential(
-            nn.LSTM(input_shape[1], 200, bidirectional=True),
+            nn.LSTM(input_shape[1], 100, bidirectional=True),
             nn.ReLU(),
             nn.Linear(200, n_classes),
         )
