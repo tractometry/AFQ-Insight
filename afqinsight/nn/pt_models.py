@@ -339,9 +339,9 @@ class BLSTM2(nn.Module):
         self.model = nn.Sequential(
             nn.LSTM(input_shape[1], 100, bidirectional=True),
             nn.ReLU(),
-            nn.LSTM(100, 100, bidirectional=True),
+            nn.LSTM(200, 100, bidirectional=True),
             nn.ReLU(),
-            nn.Linear(100, n_classes),
+            nn.Linear(200, n_classes),
         )
 
         if output_activation == torch.softmax:
