@@ -1,5 +1,6 @@
 from afqinsight.nn.pt_models import (
     blstm1_pt,
+    blstm2_pt,
     cnn_lenet_pt,
     cnn_vgg_pt,
     lstm1_pt,
@@ -9,6 +10,7 @@ from afqinsight.nn.pt_models import (
 )
 from afqinsight.nn.tf_models import (
     blstm1,
+    blstm2,
     cnn_lenet,
     cnn_vgg,
     lstm1,
@@ -65,3 +67,9 @@ def test_blstm1():
     pytorch_blstm1 = blstm1_pt(input_shape=(784, 1), n_classes=10)
     tensorflow_blstm1 = blstm1(input_shape=(784, 1), n_classes=10, verbose=True)
     assert compare_models(pytorch_blstm1, tensorflow_blstm1)
+
+
+def test_blstm2():
+    pytorch_blstm2 = blstm2_pt(input_shape=(784, 1), n_classes=10)
+    tensorflow_blstm2 = blstm2(input_shape=(784, 1), n_classes=10, verbose=True)
+    assert compare_models(pytorch_blstm2, tensorflow_blstm2)
