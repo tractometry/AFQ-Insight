@@ -12,6 +12,14 @@ def extract_layer_info_pytorch(layer):
         info["stride"] = layer.stride
         info["padding"] = layer.padding
         info["params"] = sum(p.numel() for p in layer.parameters())
+    elif isinstance(layer, nn.Conv1d):
+        info["type"] = "Conv1D"
+        info["in_channels"] = layer.in_channels
+        info["out_channels"] = layer.out_channels
+        info["kernel_size"] = layer.kernel_size
+        info["stride"] = layer.stride
+        info["padding"] = layer.padding
+        info["params"] = sum(p.numel() for p in layer.parameters())
     elif isinstance(layer, nn.Linear):
         info["type"] = "Dense"
         info["in_features"] = layer.in_features
@@ -24,6 +32,12 @@ def extract_layer_info_pytorch(layer):
         info["num_layers"] = layer.num_layers
         info["bidirectional"] = layer.bidirectional
         info["params"] = sum(p.numel() for p in layer.parameters())
+    elif isinstance(layer, nn.MaxPool1d):
+        info["type"] = "MaxPooling1D"
+        info["kernel_size"] = layer.kernel_size
+        info["stride"] = layer.stride
+        info["padding"] = layer.padding
+        info["params"] = 0
 
     return info
 
@@ -35,6 +49,15 @@ def extract_layer_info_tensorflow(layer):
         kernel_shape = layer.kernel.shape
         info["in_channels"] = kernel_shape[2]
         info["out_channels"] = kernel_shape[3]
+        info["kernel_size"] = layer.kernel_size
+        info["stride"] = layer.strides
+        info["padding"] = layer.padding
+        info["params"] = layer.count_params()
+    elif isinstance(layer, layers.Conv1D):
+        info["type"] = "Conv1D"
+        kernel_shape = layer.kernel.shape
+        info["in_channels"] = kernel_shape[1]
+        info["out_channels"] = kernel_shape[2]
         info["kernel_size"] = layer.kernel_size
         info["stride"] = layer.strides
         info["padding"] = layer.padding
@@ -75,6 +98,12 @@ def extract_layer_info_tensorflow(layer):
             info["input_size"] = None
 
         info["params"] = layer.count_params()
+    elif isinstance(layer, layers.MaxPooling1D):
+        info["type"] = "MaxPooling1D"
+        info["pool_size"] = layer.pool_size
+        info["stride"] = layer.strides
+        info["padding"] = layer.padding
+        info["params"] = 0  # MaxPooling layers have no parameters
     return info
 
 
@@ -82,13 +111,19 @@ def compare_models(pytorch_model, tensorflow_model):
     pytorch_layers = [
         module
         for module in pytorch_model.modules()
-        if type(module) in [nn.Conv2d, nn.Linear, nn.LSTM]
+        if type(module) in [nn.Conv1d, nn.Conv2d, nn.Linear, nn.LSTM]
     ]
     tensorflow_layers = [
         layer
         for layer in tensorflow_model.layers
         if type(layer)
-        in [layers.Conv2D, layers.Dense, layers.LSTM, layers.Bidirectional]
+        in [
+            layers.Conv1D,
+            layers.Conv2D,
+            layers.Dense,
+            layers.LSTM,
+            layers.Bidirectional,
+        ]
     ]
 
     assert len(pytorch_layers) == len(
@@ -103,7 +138,6 @@ def compare_models(pytorch_model, tensorflow_model):
             pt_info["type"] == tf_info["type"]
         ), f"Layer types do not match: {pt_info['type']} vs {tf_info['type']}"
 
-        # Compare attributes based on layer type
         if pt_info["type"] == "Conv2D":
             print("conv2d detected")
             pt_in_channels = pt_info["in_channels"]
@@ -126,13 +160,40 @@ def compare_models(pytorch_model, tensorflow_model):
             assert (
                 pt_info["stride"] == tf_info["stride"]
             ), f"Conv2D stride do not match: {pt_stride} vs {tf_stride}"
-            # Padding might need special handling due to different conventions
             pt_type = pt_info["type"]
             pt_params = pt_info["params"]
             tf_params = tf_info["params"]
             assert (
                 pt_info["params"] == tf_info["params"]
             ), f"# of parameters don't match in {pt_type}: {pt_params} vs {tf_params}."
+        elif pt_info["type"] == "Conv1D":
+            print("Conv1D detected")
+            pt_in_channels = pt_info["in_channels"]
+            pt_out_channels = pt_info["out_channels"]
+            pt_kernel_size = pt_info["kernel_size"]
+            pt_stride = pt_info["stride"]
+            tf_in_channels = tf_info["in_channels"]
+            tf_out_channels = tf_info["out_channels"]
+            tf_kernel_size = tf_info["kernel_size"]
+            tf_stride = tf_info["stride"]
+            assert (
+                pt_in_channels == tf_in_channels
+            ), f"Conv1D in_channels do not match: {pt_in_channels} vs {tf_in_channels}"
+            assert pt_out_channels == tf_out_channels, (
+                f"Conv1D out_channels do not match"
+                f": {pt_out_channels} vs {tf_out_channels}"
+            )
+            assert (
+                pt_kernel_size == tf_kernel_size
+            ), f"Conv1D kernel_size do not match: {pt_kernel_size} vs {tf_kernel_size}"
+            assert (
+                pt_stride == tf_stride
+            ), f"Conv1D stride do not match: {pt_stride} vs {tf_stride}"
+            pt_params = pt_info["params"]
+            tf_params = tf_info["params"]
+            assert (
+                pt_params == tf_params
+            ), f"# of parameters don't match in Conv1D: {pt_params} vs {tf_params}."
         elif pt_info["type"] == "Dense":
             print("dense detected")
             pt_in_features = pt_info["in_features"]
@@ -185,6 +246,27 @@ def compare_models(pytorch_model, tensorflow_model):
                 f"Adjusted number of parameters don't match in LSTM: "
                 f"{pt_params} vs {tf_params}."
             )
+        elif pt_info["type"] == "MaxPooling1D":
+            print("MaxPooling1D detected")
+            pt_kernel_size = pt_info["kernel_size"]
+            pt_stride = pt_info["stride"]
+            pt_padding = pt_info["padding"]
+            tf_pool_size = tf_info["pool_size"]
+            tf_stride = tf_info["stride"]
+            tf_padding = tf_info["padding"]
+            assert pt_kernel_size == tf_pool_size, (
+                f"MaxPooling1D kernel_size/pool_size do not match:"
+                f"{pt_kernel_size} vs {tf_pool_size}"
+            )
+            assert (
+                pt_stride == tf_stride
+            ), f"MaxPooling1D strides do not match: {pt_stride} vs {tf_stride}"
+            assert (
+                pt_padding == tf_padding
+            ), f"MaxPooling1D padding do not match: {pt_padding} vs {tf_padding}"
+        else:
+            print(f"Unsupported layer type: {pt_info['type']}")
+            continue
 
     print("All layers match between the PyTorch and TensorFlow models.")
     return True
