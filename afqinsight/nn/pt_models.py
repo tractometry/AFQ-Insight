@@ -14,6 +14,7 @@ torch_msg = (
 torch, has_torch, _ = optional_package("torch", trip_msg=torch_msg)  # noqa F811
 if has_torch:
     import torch.nn as nn
+    import torch.nn.functional as F
 else:
     Input = TripWire(torch_msg)
 
@@ -369,22 +370,32 @@ class LSTM_FCN(nn.Module):
     ):
         super(LSTM_FCN, self).__init__()
 
-        self.model = nn.Sequential(
-            nn.LSTM(input_shape[0], 128),
-            nn.Dropout(0.8),
-            nn.ReLU(),
-            nn.Conv1d(input_shape[1], 128, 8, padding=1),
-            nn.BatchNorm1d(128),
-            nn.ReLU(),
-            nn.Conv1d(128, 256, 5, padding=1),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Conv1d(256, 128, 3, padding=1),
-            nn.BatchNorm1d(128),
-            nn.ReLU(),
-            nn.AdaptiveAvgPool1d(1),
-            nn.Linear(256, n_classes),
+        timesteps, features = input_shape
+
+        self.lstm = nn.LSTM(input_size=timesteps, hidden_size=128, batch_first=True)
+        self.dropout = nn.Dropout(0.8)
+
+        self.conv1 = nn.Conv1d(
+            in_channels=features, out_channels=128, kernel_size=8, padding=4
         )
+        self.bn1 = nn.BatchNorm1d(128)
+        self.relu1 = nn.ReLU()
+
+        self.conv2 = nn.Conv1d(
+            in_channels=128, out_channels=256, kernel_size=5, padding=2
+        )
+        self.bn2 = nn.BatchNorm1d(256)
+        self.relu2 = nn.ReLU()
+
+        self.conv3 = nn.Conv1d(
+            in_channels=256, out_channels=128, kernel_size=3, padding=1
+        )
+        self.bn3 = nn.BatchNorm1d(128)
+        self.relu3 = nn.ReLU()
+
+        self.gap = nn.AdaptiveAvgPool1d(1)
+
+        self.fc = nn.Linear(128 + 128, n_classes)
 
         if output_activation == torch.softmax:
             self.output_activation = nn.Softmax(dim=1)
@@ -392,8 +403,34 @@ class LSTM_FCN(nn.Module):
             self.output_activation = None
 
     def forward(self, x):
-        x = x.permute(0, 2, 1)
-        x = self.model(x)
+        # Process CNN branch first if that's desired
+        x_conv = x.permute(0, 2, 1)
+        x_conv = self.conv1(x_conv)
+        x_conv = self.bn1(x_conv)
+        x_conv = self.relu1(x_conv)
+
+        x_conv = self.conv2(x_conv)
+        x_conv = self.bn2(x_conv)
+        x_conv = self.relu2(x_conv)
+
+        x_conv = self.conv3(x_conv)
+        x_conv = self.bn3(x_conv)
+        x_conv = self.relu3(x_conv)
+
+        x_conv = self.gap(x_conv)
+        x_conv = x_conv.squeeze(-1)
+
+        # Process LSTM branch second if that's the arrangement
+        x_lstm = x.permute(0, 2, 1)
+        x_lstm, _ = self.lstm(x_lstm)
+        x_lstm = self.dropout(x_lstm)
+        x_lstm = x_lstm[:, -1, :]  # Select the last output of the LSTM layer
+
+        # Concatenate the outputs
+        x = torch.cat((x_conv, x_lstm), dim=1)
+
+        # Final dense layer and activation
+        x = self.fc(x)
         if self.output_activation:
             x = self.output_activation(x)
         return x
@@ -409,36 +446,70 @@ def lstm_fcn_pt(input_shape, n_classes):
 class CNN_RESNET(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation="softmax"):
         super(CNN_RESNET, self).__init__()
-        conv_layers = []
-        in_channel = input_shape[1]
 
-        for i, nb_nodes in enumerate([64, 128, 128]):
-            conv_layers.append(nn.Conv1d(in_channel, nb_nodes, 8, padding=1))
-            in_channel = nb_nodes
-            conv_layers.append(nn.BatchNorm1d(128))
-            conv_layers.append(nn.ReLU())
-            conv_layers.append(nn.Conv1d(in_channel, nb_nodes, 5, padding=1))
-            conv_layers.append(nn.BatchNorm1d(128))
-            conv_layers.append(nn.ReLU())
-            conv_layers.append(nn.Conv1d(in_channel, nb_nodes, 3, padding=1))
-            conv_layers.append(nn.BatchNorm1d(128))
-            conv_layers.append(nn.ReLU())
+        length, channels = input_shape
+
+        self.blocks = nn.ModuleList()
+        self.res_convs = nn.ModuleList()
+
+        num_filters = [64, 128, 128]
+        in_channels = channels
+
+        for i, nb_nodes in enumerate(num_filters):
+            block = nn.Sequential(
+                nn.Conv1d(in_channels, nb_nodes, kernel_size=8, padding=3),
+                nn.BatchNorm1d(nb_nodes),
+                nn.ReLU(inplace=True),
+                nn.Conv1d(nb_nodes, nb_nodes, kernel_size=5, padding=2),
+                nn.BatchNorm1d(nb_nodes),
+                nn.ReLU(inplace=True),
+                nn.Conv1d(nb_nodes, nb_nodes, kernel_size=3, padding=1),
+                nn.BatchNorm1d(nb_nodes),
+                nn.ReLU(inplace=True),
+            )
+            self.blocks.append(block)
+
             if i < 2:
-                conv_layers.append(nn.Conv1d(in_channel, nb_nodes, 1, padding=1))
-            conv_layers.append(nn.BatchNorm1d(128))
-            conv_layers.append(nn.ReLU())
+                res_conv = nn.Sequential(
+                    nn.Conv1d(in_channels, nb_nodes, kernel_size=1, padding=0),
+                    nn.BatchNorm1d(nb_nodes),
+                )
+                self.res_convs.append(res_conv)
+            else:
+                self.res_convs.append(None)
 
-        self.model = nn.Sequential(
-            *conv_layers,
-            nn.AdaptiveAvgPool1d(1),
-            nn.Linear(128, n_classes),
-        )
+            in_channels = nb_nodes
+
+        self.global_avg_pool = nn.AdaptiveAvgPool1d(1)
+
+        self.fc = nn.Linear(num_filters[-1], n_classes)
 
         if output_activation == "softmax":
             self.output_activation = nn.Softmax(dim=1)
+        else:
+            self.output_activation = None
 
     def forward(self, x):
-        x = self.model(x)
+        x = x.permute(0, 2, 1)
+        residual = x
+
+        for i, block in enumerate(self.blocks):
+            conv = block(x)
+
+            if self.res_convs[i] is not None:
+                residual = self.res_convs[i](x)
+            conv += residual
+
+            conv = F.relu(conv)
+
+            residual = conv
+            x = conv
+
+        x = self.global_avg_pool(conv)
+        x = x.squeeze(-1)
+
+        x = self.fc(x)
+
         if self.output_activation:
             x = self.output_activation(x)
         return x
