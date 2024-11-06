@@ -76,9 +76,6 @@ def cnn_lenet(input_shape, n_classes, output_activation="softmax", verbose=False
     if verbose:
         print("pooling layers: %d" % n_conv_layers)
 
-    # filters, kernel size, stride, padding, activation function, kernel initializer
-    # strides is default one so padding is one in the "same" direction so
-    # one in each direction
     for i in range(n_conv_layers):
         conv = Conv1D(
             6 + 10 * i,
@@ -167,7 +164,6 @@ def lstm1v0(input_shape, n_classes, output_activation="softmax", verbose=False):
 
     ip = Input(shape=input_shape)
 
-    # 512 units
     l2 = LSTM(512)(ip)
     out = Dense(n_classes, activation=output_activation)(l2)
 
