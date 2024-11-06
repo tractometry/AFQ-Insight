@@ -11,7 +11,6 @@ keras_msg = (
 )
 
 tf, has_tf, _ = optional_package("tensorflow", trip_msg=keras_msg)
-
 if has_tf:
     from tensorflow.keras.layers import (
         LSTM,
@@ -30,6 +29,7 @@ if has_tf:
         concatenate,
     )
     from tensorflow.keras.models import Model
+
 else:
     # Since all model building functions start with Input, we make Input the
     # tripwire instance for cases where tensorflow is not installed.
@@ -40,10 +40,12 @@ def mlp4(input_shape, n_classes, output_activation="softmax", verbose=False):
     # Z. Wang, W. Yan, T. Oates, "Time Series Classification from Scratch with
     # Deep Neural Networks: A Strong Baseline," Int. Joint Conf.
     # Neural Networks, 2017, pp. 1578-1585
-    ip = Input(shape=input_shape)
-    fc = Flatten()(ip)
-    fc = Dropout(0.1)(fc)
 
+    ip = Input(shape=input_shape)
+
+    fc = Flatten()(ip)
+
+    fc = Dropout(0.1)(fc)
     fc = Dense(500, activation="relu")(fc)
     fc = Dropout(0.2)(fc)
 
@@ -251,8 +253,6 @@ def lstm_fcn(input_shape, n_classes, output_activation="softmax", verbose=False)
 
     ip = Input(shape=input_shape)
 
-    # lstm part is a 1 time step multivariate as described in
-    # Karim et al. Seems strange, but works I guess.
     lstm = Permute((2, 1))(ip)
 
     lstm = LSTM(128)(lstm)
