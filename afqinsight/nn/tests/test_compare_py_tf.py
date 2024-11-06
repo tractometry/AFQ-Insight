@@ -69,10 +69,10 @@ def test_blstm2():
     assert compare_models(pytorch_blstm2, tensorflow_blstm2)
 
 
-# The following tests are commented out because comparing models 
-# with both FCN and LSTM components is very fiddly, but we have 
-# independently verified that these models have identical structure 
-# We are keeping these tests around, in case someone wants to come back 
+# The following tests are commented out because comparing models
+# with both FCN and LSTM components is very fiddly, but we have
+# independently verified that these models have identical structure
+# We are keeping these tests around, in case someone wants to come back
 # here and fix this up.
 # def test_lstm_fcn():
 #     pytorch_lstm_fcn = lstm_fcn_pt(input_shape=(784, 1), n_classes=10)
