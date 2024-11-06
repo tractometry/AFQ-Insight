@@ -246,8 +246,6 @@ def blstm2(input_shape, n_classes, output_activation="softmax", verbose=False):
     return model
 
 
-# FCN IS FULLY CONVULUTIONAL NETWORK
-# LSTM IS LONG SHORT TERM MEMORY
 def lstm_fcn(input_shape, n_classes, output_activation="softmax", verbose=False):
     # F. Karim, S. Majumdar, H. Darabi, and S. Chen, “LSTM Fully
     # Convolutional Networks for Time Series Classification,”
