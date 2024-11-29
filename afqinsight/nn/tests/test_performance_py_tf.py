@@ -2,6 +2,7 @@ import math
 
 import torch
 
+from afqinsight import AFQDataset
 from afqinsight.nn.performance_utils import (
     prep_pytorch_data,
     prep_tensorflow_data,
@@ -34,12 +35,13 @@ from afqinsight.nn.tf_models import (
 )
 
 if torch.backends.mps.is_available():
-    # device = torch.device("mps")
     device = torch.device("cpu")
 else:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-train_dataset, X_test, X_train, y_test, val_dataset = prep_tensorflow_data()
+dataset = AFQDataset.from_study("hbn")
+
+train_dataset, X_test, X_train, y_test, val_dataset = prep_tensorflow_data(dataset)
 torch_dataset, train_loader, test_loader, val_loader = prep_pytorch_data()
 
 
@@ -96,7 +98,8 @@ def test_cnn_vgg():
     )
     # input_shape = math.prod(torch_dataset[0][0])
     # gt_shape = torch_dataset[0][1].size()[0]
-    pt_model = cnn_vgg_pt((100, 48), 1).to(device)
+    # input_shape = torch_dataset[0][0].size()
+    pt_model = cnn_vgg_pt((100, 48), 3).to(device)
 
     test_tensorflow_model(
         tf_model, train_dataset, val_dataset, X_test, y_test, n_epochs=20
@@ -118,11 +121,6 @@ def test_lstm1v0():
     )
     pt_model = lstm1v0_pt((100, 48), 3, output_activation=False).to(device)
 
-    # for data, target in train_loader:
-    #     print(f"Data shape: {data.shape}")
-    #     data = data.permute(0, 2, 1)
-    #     print(f"Data shape: {data.shape}")  # Verify the input shape here
-    #     break
     assert test_tensorflow_model(
         tf_model, train_dataset, val_dataset, X_test, y_test, n_epochs=20
     )
@@ -260,13 +258,13 @@ def test_cnn_resnet():
     )
 
 
-test_mlp4()  # good
-# test_cnn_lenet() #good
-# test_cnn_vgg()
-# test_lstm1v0() #good
-# test_lstm1() #good
-# test_lstm2() #good
-# test_blstm1() #good
-# test_blstm2() #good
-# test_lstm_fcn() #good
-# test_cnn_resnet() #bad
+# test_mlp4()
+# test_cnn_lenet()
+test_cnn_vgg()
+# test_lstm1v0()
+# test_lstm1()
+# test_lstm2()
+# test_blstm1()
+# test_blstm2()
+# test_lstm_fcn()
+# test_cnn_resnet()
