@@ -10,8 +10,7 @@ from sklearn.model_selection import train_test_split
 from afqinsight import AFQDataset
 
 
-def prep_tensorflow_data():
-    dataset = AFQDataset.from_study("hbn")
+def prep_tensorflow_data(dataset):
     dataset.drop_target_na()
 
     # converts the input array to a tensor, fit for training
@@ -129,8 +128,8 @@ def test_tensorflow_model(
 def get_pytorch_dataset():
     dataset = AFQDataset.from_study("hbn")
     dataset.drop_target_na()
-    imputer = dataset.model_fit(SimpleImputer(strategy="median"))
-    dataset = dataset.model_transform(imputer)
+    # imputer = dataset.model_fit(SimpleImputer(strategy="median"))
+    # dataset = dataset.model_transform(imputer)
     torch_dataset = dataset.as_torch_dataset(
         bundles_as_channels=True, channels_last=False
     )
@@ -148,14 +147,8 @@ def get_pytorch_dataset():
             len(train_dataset) - int(0.8 * len(train_dataset)),
         ],
     )
-    imputer = train_dataset.model_fit(SimpleImputer(strategy="median"))
 
     return train_dataset, val_dataset, test_dataset
-
-
-def get_dataloder_from_dataset(dataset, batch_size=32):
-    data_loader = torch.utils.data.DataLoader(dataset, batch_size, shuffle=True)
-    return data_loader
 
 
 def prep_pytorch_data():
