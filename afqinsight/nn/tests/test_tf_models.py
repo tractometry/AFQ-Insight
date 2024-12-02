@@ -5,7 +5,6 @@ import pytest
 import tensorflow as tf
 
 from afqinsight import AFQDataset
-from afqinsight.nn.performance_utils import prep_tensorflow_data
 from afqinsight.nn.tf_models import (
     blstm1,
     blstm2,
@@ -18,6 +17,7 @@ from afqinsight.nn.tf_models import (
     lstm_fcn,
     mlp4,
 )
+from afqinsight.nn.utils import prep_tensorflow_data
 
 
 @pytest.fixture
