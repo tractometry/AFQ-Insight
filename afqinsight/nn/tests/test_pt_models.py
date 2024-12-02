@@ -3,7 +3,6 @@ import pytest
 import torch
 
 from afqinsight import AFQDataset
-from afqinsight.nn.performance_utils import prep_pytorch_data
 from afqinsight.nn.pt_models import (
     blstm1_pt,
     blstm2_pt,
@@ -16,6 +15,7 @@ from afqinsight.nn.pt_models import (
     lstm_fcn_pt,
     mlp4_pt,
 )
+from afqinsight.nn.utils import prep_pytorch_data
 
 
 @pytest.fixture
