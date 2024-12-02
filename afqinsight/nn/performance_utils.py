@@ -13,9 +13,8 @@ def array_to_tensor(input_array):
         (1, 2, 0),
     )
 
-    # fills in missing values with the median of the column
 
-
+# fills in missing values with the median of the column
 def prep_data(input_array, site):
     return array_to_tensor(
         CombatModel().fit_transform(
