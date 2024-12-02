@@ -474,9 +474,9 @@ class CNN_RESNET(nn.Module):
 
         self.layers = nn.ModuleList(
             [
-                ResNetBlock(in_channels, 64, kernel_sizes=[8, 5, 3]),
-                ResNetBlock(64, 128, kernel_sizes=[8, 5, 3]),
-                ResNetBlock(128, 128, kernel_sizes=[8, 5, 3]),
+                ResNetBlock(in_channels, 64),
+                ResNetBlock(64, 128),
+                ResNetBlock(128, 128),
             ]
         )
 
