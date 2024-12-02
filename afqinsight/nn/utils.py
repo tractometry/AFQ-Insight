@@ -279,19 +279,26 @@ def compare_models(pytorch_model, tensorflow_model):
 
 
 # converts the input array to a tensor, fit for training
-def array_to_tensor(input_array):
+def array_to_tensor(input_array, sequence_length, in_channels):
     return np.transpose(
-        np.array([input_array[:, i * 100 : (i + 1) * 100] for i in range(48)]),
+        np.array(
+            [
+                input_array[:, i * in_channels : (i + 1) * in_channels]
+                for i in range(sequence_length)
+            ]
+        ),
         (1, 2, 0),
     )
 
 
 # fills in missing values with the median of the column
-def prep_data(input_array, site):
+def prep_data(input_array, site, sequence_length, in_channels):
     return array_to_tensor(
         CombatModel().fit_transform(
             SimpleImputer(strategy="median").fit_transform(input_array), site
-        )
+        ),
+        sequence_length,
+        in_channels,
     )
 
 
@@ -303,8 +310,8 @@ def prep_tensorflow_data(dataset):
     X = dataset.X
     y = dataset.y[:, 0]
     site = dataset.y[:, 2, None]
-    # groups = dataset.groups
-    # feature_names = dataset.feature_names
+    # groups = dataset.groups #48
+    # feature_names = dataset.feature_names #4800
     # group_names = dataset.group_names
     # subjects = dataset.subjects
 
@@ -315,10 +322,12 @@ def prep_tensorflow_data(dataset):
     X_train, X_val, y_train, y_val, site_train, site_val = train_test_split(
         X_train, y_train, site_train, test_size=0.2
     )
+    sequence_length = len(dataset.groups)  # 48
+    in_channels = len(dataset.feature_names) // sequence_length  # 100
 
-    X_train = prep_data(X_train, site_train)
-    X_test = prep_data(X_test, site_test)
-    X_val = prep_data(X_val, site_val)
+    X_train = prep_data(X_train, site_train, sequence_length, in_channels)
+    X_test = prep_data(X_test, site_test, sequence_length, in_channels)
+    X_val = prep_data(X_val, site_val, sequence_length, in_channels)
 
     train_dataset = tf.data.Dataset.from_tensor_slices(
         (X_train.astype(np.float32), y_train.astype(np.float32))
