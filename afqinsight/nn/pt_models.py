@@ -14,7 +14,6 @@ torch_msg = (
 torch, has_torch, _ = optional_package("torch", trip_msg=torch_msg)  # noqa F811
 if has_torch:
     import torch.nn as nn
-    import torch.nn.functional as F
 else:
     Input = TripWire(torch_msg)
 
@@ -132,84 +131,85 @@ def cnn_lenet_pt(input_shape, n_classes):
 
 
 class CNN_VGG(nn.Module):
-    def __init__(
-        self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
-    ):
+    def __init__(self, input_shape, n_classes, output_activation):
         super(CNN_VGG, self).__init__()
-        self.n_conv_layers = int(round(math.log(input_shape[0], 2)) - 3)
-        if verbose:
-            print(f"Pooling layers: {self.n_conv_layers}")
+
+        n_conv_layers = int(round(math.log(input_shape[0], 2)) - 3)
+        # if verbose:
+        #     print(f"Pooling layers: {n_conv_layers}")
 
         conv_layers = []
+        in_channels = input_shape[0]
 
-        for i in range(self.n_conv_layers):
+        for i in range(n_conv_layers):
             num_filters = min(64 * 2**i, 512)
-            if i == 0:
-                conv_layers.append(
-                    nn.Conv1d(
-                        in_channels=input_shape[1],
-                        out_channels=num_filters,
-                        kernel_size=3,
-                        padding=1,
-                    )
-                )
-            else:
-                conv_layers.append(
-                    nn.Conv1d(
-                        in_channels=num_filters,
-                        out_channels=num_filters,
-                        kernel_size=3,
-                        padding=1,
-                    )
-                )
-            conv_layers.append(nn.ReLU())
+
             conv_layers.append(
-                nn.Conv1d(
-                    in_channels=num_filters,
-                    out_channels=num_filters,
-                    kernel_size=3,
-                    padding=1,
-                )
+                nn.Conv1d(in_channels, num_filters, kernel_size=3, padding=1)
             )
-            conv_layers.append(nn.ReLU())
+            conv_layers.append(nn.ReLU(inplace=True))
+
+            conv_layers.append(
+                nn.Conv1d(num_filters, num_filters, kernel_size=3, padding=1)
+            )
+            conv_layers.append(nn.ReLU(inplace=True))
+
             if i > 1:
                 conv_layers.append(
-                    nn.Conv1d(
-                        in_channels=num_filters,
-                        out_channels=num_filters,
-                        kernel_size=3,
-                        padding=1,
-                    )
+                    nn.Conv1d(num_filters, num_filters, kernel_size=3, padding=1)
                 )
-            conv_layers.append(nn.MaxPool1d(kernel_size=2))
+                conv_layers.append(nn.ReLU(inplace=True))
 
-        self.model = nn.Sequential(
-            *conv_layers,
+            conv_layers.append(nn.MaxPool1d(kernel_size=2, stride=2))
+
+            in_channels = num_filters
+
+        self.features = nn.Sequential(*conv_layers)
+
+        def _compute_feature_size(input_shape):
+            test_input = torch.zeros(1, *input_shape)
+            with torch.no_grad():
+                features = self.features(test_input)
+                return features.numel()
+
+        feature_size = _compute_feature_size(input_shape)
+
+        self.classifier = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(input_shape[0] * input_shape[1], 4096),
-            nn.ReLU(),
+            nn.Linear(feature_size, 4096),
+            nn.ReLU(inplace=True),
             nn.Dropout(0.5),
             nn.Linear(4096, 4096),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Dropout(0.5),
             nn.Linear(4096, n_classes),
         )
 
-        if output_activation == torch.softmax:
+        if output_activation == "softmax":
             self.output_activation = nn.Softmax(dim=1)
+        elif output_activation == "sigmoid":
+            self.output_activation = nn.Sigmoid()
         else:
-            self.output_activation = None
+            self.output_activation = nn.Identity()
 
     def forward(self, x):
-        x = self.model(x)
-        if self.output_activation:
-            x = self.output_activation(x)
-        return x
+        if len(x.shape) == 3:
+            x = x.transpose(1, 2)
+
+        features = self.features(x)
+
+        output = self.classifier(features)
+
+        output = self.output_activation(output)
+
+        return output
 
 
 def cnn_vgg_pt(input_shape, n_classes):
     cnn_vgg_Model = CNN_VGG(
-        input_shape, n_classes, output_activation=torch.softmax, verbose=False
+        input_shape,
+        n_classes,
+        output_activation=torch.softmax,
     )
     return cnn_vgg_Model
 
@@ -219,9 +219,8 @@ class LSTM1V0(nn.Module):
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
         super(LSTM1V0, self).__init__()
-        self.model = nn.Sequential(
-            nn.LSTM(input_shape[1], 512, batch_first=True), nn.Linear(512, n_classes)
-        )
+        self.lstm = nn.LSTM(input_shape[1], 512, batch_first=True)
+        self.fc = nn.Linear(512, n_classes)
 
         if output_activation == torch.softmax:
             self.output_activation = nn.Softmax(dim=1)
@@ -229,7 +228,8 @@ class LSTM1V0(nn.Module):
             self.output_activation = None
 
     def forward(self, x):
-        x = self.model(x)
+        x, _ = self.lstm(x)
+        x = self.fc(x[:, -1, :])
         if self.output_activation:
             x = self.output_activation(x)
         return x
@@ -247,9 +247,9 @@ class LSTM1(nn.Module):
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
         super(LSTM1, self).__init__()
-        self.model = nn.Sequential(
-            nn.LSTM(input_shape[1], 100), nn.ReLU(), nn.Linear(100, n_classes)
-        )
+        self.lstm = nn.LSTM(input_shape[1], 100, batch_first=True)
+        self.relu = nn.ReLU()
+        self.fc = nn.Linear(100, n_classes)
 
         if output_activation == torch.softmax:
             self.output_activation = nn.Softmax(dim=1)
@@ -257,7 +257,10 @@ class LSTM1(nn.Module):
             self.output_activation = None
 
     def forward(self, x):
-        x = self.model(x)
+        x, _ = self.lstm(x)
+        x = x[:, -1, :]
+        x = self.relu(x)
+        x = self.fc(x)
         if self.output_activation:
             x = self.output_activation(x)
         return x
@@ -275,13 +278,11 @@ class LSTM2(nn.Module):
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
         super(LSTM2, self).__init__()
-        self.model = nn.Sequential(
-            nn.LSTM(input_shape[1], 100),
-            nn.ReLU(),
-            nn.LSTM(100, 100),
-            nn.ReLU(),
-            nn.Linear(100, n_classes),
-        )
+        self.lstm1 = nn.LSTM(input_shape[1], 100, batch_first=True)
+        self.relu1 = nn.ReLU()
+        self.lstm2 = nn.LSTM(100, 100, batch_first=True)
+        self.relu2 = nn.ReLU()
+        self.fc = nn.Linear(100, n_classes)
 
         if output_activation == torch.softmax:
             self.output_activation = nn.Softmax(dim=1)
@@ -289,7 +290,14 @@ class LSTM2(nn.Module):
             self.output_activation = None
 
     def forward(self, x):
-        x = self.model(x)
+        x, _ = self.lstm1(x)
+        x = self.relu1(x)
+
+        x, _ = self.lstm2(x)
+        x = self.relu2(x)
+
+        x = self.fc(x[:, -1, :])
+
         if self.output_activation:
             x = self.output_activation(x)
         return x
@@ -307,11 +315,14 @@ class BLSTM1(nn.Module):
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
         super(BLSTM1, self).__init__()
-        self.model = nn.Sequential(
-            nn.LSTM(input_shape[1], 100, bidirectional=True),
-            nn.ReLU(),
-            nn.Linear(200, n_classes),
+        self.blstm = nn.LSTM(
+            input_size=input_shape[1],
+            hidden_size=100,
+            bidirectional=True,
+            batch_first=True,
         )
+        self.relu = nn.ReLU()
+        self.fc = nn.Linear(200, n_classes)
 
         if output_activation == torch.softmax:
             self.output_activation = nn.Softmax(dim=1)
@@ -319,7 +330,9 @@ class BLSTM1(nn.Module):
             self.output_activation = None
 
     def forward(self, x):
-        x = self.model(x)
+        x, _ = self.blstm(x)
+        x = self.relu(x)
+        x = self.fc(x[:, -1, :])
         if self.output_activation:
             x = self.output_activation(x)
         return x
@@ -337,13 +350,20 @@ class BLSTM2(nn.Module):
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
         super(BLSTM2, self).__init__()
-        self.model = nn.Sequential(
-            nn.LSTM(input_shape[1], 100, bidirectional=True),
-            nn.ReLU(),
-            nn.LSTM(200, 100, bidirectional=True),
-            nn.ReLU(),
-            nn.Linear(200, n_classes),
+        self.blstm1 = nn.LSTM(
+            input_size=input_shape[1],
+            hidden_size=100,
+            bidirectional=True,
+            batch_first=True,
         )
+        self.relu1 = nn.ReLU()
+
+        self.blstm2 = nn.LSTM(
+            input_size=200, hidden_size=100, bidirectional=True, batch_first=True
+        )
+        self.relu2 = nn.ReLU()
+
+        self.fc = nn.Linear(200, n_classes)
 
         if output_activation == torch.softmax:
             self.output_activation = nn.Softmax(dim=1)
@@ -351,7 +371,14 @@ class BLSTM2(nn.Module):
             self.output_activation = None
 
     def forward(self, x):
-        x = self.model(x)
+        x, _ = self.blstm1(x)
+        x = self.relu1(x)
+
+        x, _ = self.blstm2(x)
+        x = self.relu2(x)
+
+        x = self.fc(x[:, -1, :])
+
         if self.output_activation:
             x = self.output_activation(x)
         return x
@@ -403,7 +430,6 @@ class LSTM_FCN(nn.Module):
             self.output_activation = None
 
     def forward(self, x):
-        # Process CNN branch first if that's desired
         x_conv = x.permute(0, 2, 1)
         x_conv = self.conv1(x_conv)
         x_conv = self.bn1(x_conv)
@@ -420,16 +446,13 @@ class LSTM_FCN(nn.Module):
         x_conv = self.gap(x_conv)
         x_conv = x_conv.squeeze(-1)
 
-        # Process LSTM branch second if that's the arrangement
         x_lstm = x.permute(0, 2, 1)
         x_lstm, _ = self.lstm(x_lstm)
         x_lstm = self.dropout(x_lstm)
-        x_lstm = x_lstm[:, -1, :]  # Select the last output of the LSTM layer
+        x_lstm = x_lstm[:, -1, :]
 
-        # Concatenate the outputs
         x = torch.cat((x_conv, x_lstm), dim=1)
 
-        # Final dense layer and activation
         x = self.fc(x)
         if self.output_activation:
             x = self.output_activation(x)
@@ -447,71 +470,72 @@ class CNN_RESNET(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation="softmax"):
         super(CNN_RESNET, self).__init__()
 
-        length, channels = input_shape
+        in_channels = input_shape[0]
 
-        self.blocks = nn.ModuleList()
-        self.res_convs = nn.ModuleList()
-
-        num_filters = [64, 128, 128]
-        in_channels = channels
-
-        for i, nb_nodes in enumerate(num_filters):
-            block = nn.Sequential(
-                nn.Conv1d(in_channels, nb_nodes, kernel_size=8, padding=3),
-                nn.BatchNorm1d(nb_nodes),
-                nn.ReLU(inplace=True),
-                nn.Conv1d(nb_nodes, nb_nodes, kernel_size=5, padding=2),
-                nn.BatchNorm1d(nb_nodes),
-                nn.ReLU(inplace=True),
-                nn.Conv1d(nb_nodes, nb_nodes, kernel_size=3, padding=1),
-                nn.BatchNorm1d(nb_nodes),
-                nn.ReLU(inplace=True),
-            )
-            self.blocks.append(block)
-
-            if i < 2:
-                res_conv = nn.Sequential(
-                    nn.Conv1d(in_channels, nb_nodes, kernel_size=1, padding=0),
-                    nn.BatchNorm1d(nb_nodes),
-                )
-                self.res_convs.append(res_conv)
-            else:
-                self.res_convs.append(None)
-
-            in_channels = nb_nodes
+        self.layers = nn.ModuleList(
+            [
+                ResNetBlock(in_channels, 64, kernel_sizes=[8, 5, 3]),
+                ResNetBlock(64, 128, kernel_sizes=[8, 5, 3]),
+                ResNetBlock(128, 128, kernel_sizes=[8, 5, 3]),
+            ]
+        )
 
         self.global_avg_pool = nn.AdaptiveAvgPool1d(1)
 
-        self.fc = nn.Linear(num_filters[-1], n_classes)
+        self.fc = nn.Linear(128, n_classes)
 
         if output_activation == "softmax":
             self.output_activation = nn.Softmax(dim=1)
+        elif output_activation == "sigmoid":
+            self.output_activation = nn.Sigmoid()
         else:
-            self.output_activation = None
+            self.output_activation = nn.Identity()
 
     def forward(self, x):
-        x = x.permute(0, 2, 1)
-        residual = x
+        for layer in self.layers:
+            x = layer(x)
 
-        for i, block in enumerate(self.blocks):
-            conv = block(x)
-
-            if self.res_convs[i] is not None:
-                residual = self.res_convs[i](x)
-            conv += residual
-
-            conv = F.relu(conv)
-
-            residual = conv
-            x = conv
-
-        x = self.global_avg_pool(conv)
-        x = x.squeeze(-1)
+        x = self.global_avg_pool(x).squeeze(-1)
 
         x = self.fc(x)
 
-        if self.output_activation:
-            x = self.output_activation(x)
+        x = self.output_activation(x)
+
+        return x
+
+
+class ResNetBlock(nn.Module):
+    def __init__(self, in_channels, out_channels):
+        super(ResNetBlock, self).__init__()
+
+        self.shortcut = nn.Sequential(
+            nn.Conv1d(in_channels, out_channels, kernel_size=1, padding="same"),
+            nn.BatchNorm1d(out_channels),
+        )
+
+        self.conv_path = nn.Sequential(
+            nn.Conv1d(in_channels, out_channels, kernel_size=8, padding="same"),
+            nn.BatchNorm1d(out_channels),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(out_channels, out_channels, kernel_size=5, padding="same"),
+            nn.BatchNorm1d(out_channels),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(out_channels, out_channels, kernel_size=3, padding="same"),
+            nn.BatchNorm1d(out_channels),
+            nn.ReLU(inplace=True),
+        )
+
+        self.final_relu = nn.ReLU(inplace=True)
+
+    def forward(self, x):
+        residual = self.shortcut(x)
+
+        x = self.conv_path(x)
+
+        x = x + residual
+
+        x = self.final_relu(x)
+
         return x
 
 
