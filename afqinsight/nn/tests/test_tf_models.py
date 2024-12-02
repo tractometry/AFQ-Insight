@@ -1,12 +1,11 @@
 import tempfile
 
 import numpy as np
+import pytest
 import tensorflow as tf
 
 from afqinsight import AFQDataset
-from afqinsight.nn.performance_utils import (
-    prep_tensorflow_data,
-)
+from afqinsight.nn.performance_utils import prep_tensorflow_data
 from afqinsight.nn.tf_models import (
     blstm1,
     blstm2,
@@ -20,16 +19,23 @@ from afqinsight.nn.tf_models import (
     mlp4,
 )
 
-dataset = AFQDataset.from_study("hbn")
 
-epochs = 1
-train_dataset, X_test, X_train, y_test, val_dataset = prep_tensorflow_data(dataset)
+@pytest.fixture
+def dataset():
+    """Fixture to load the AFQ dataset."""
+    return AFQDataset.from_study("hbn")
 
 
-# print(X_train.shape[1:])
-def test_tensorflow_model(
-    model, train_dataset, val_dataset, X_test, y_test, n_epochs=100
-):
+@pytest.fixture
+def data_loaders(dataset):
+    """Fixture to prepare TensorFlow datasets."""
+    train_dataset, X_test, X_train, y_test, val_dataset = prep_tensorflow_data(dataset)
+    return train_dataset, X_test, X_train, y_test, val_dataset
+
+
+def run_tensorflow_model(model, data_loaders, n_epochs=100):
+    """General test function for training TensorFlow models."""
+    train_dataset, X_test, X_train, y_test, val_dataset = data_loaders
     lr = 0.0001
 
     model.compile(
@@ -79,107 +85,30 @@ def test_tensorflow_model(
     )
 
 
-def test_mlp4():
-    tf_model = mlp4(
-        input_shape=X_train.shape[1:],
-        n_classes=1,
-        verbose=True,
-        output_activation="linear",
+@pytest.mark.parametrize(
+    "model_fn",
+    [
+        mlp4,
+        cnn_lenet,
+        cnn_vgg,
+        lstm1v0,
+        lstm1,
+        lstm2,
+        blstm1,
+        blstm2,
+        lstm_fcn,
+        cnn_resnet,
+    ],
+)
+def test_tensorflow_models(model_fn, data_loaders):
+    """Test multiple TensorFlow models."""
+    train_dataset, X_test, X_train, y_test, val_dataset = data_loaders
+    input_shape = X_train.shape[1:]  # Dynamically infer the input shape
+    tf_model = model_fn(
+        input_shape=input_shape, n_classes=1, verbose=True, output_activation="linear"
     )
-    print(X_train.shape[1:])
-    test_tensorflow_model(
-        tf_model, train_dataset, val_dataset, X_test, y_test, n_epochs=epochs
+    run_tensorflow_model(
+        tf_model,
+        data_loaders,
+        n_epochs=1,  # Reduced epochs for testing
     )
-
-
-def test_cnn_lenet():
-    tf_model = cnn_lenet(
-        input_shape=(100, 48), n_classes=1, verbose=True, output_activation="linear"
-    )
-    test_tensorflow_model(
-        tf_model, train_dataset, val_dataset, X_test, y_test, n_epochs=epochs
-    )
-
-
-def test_cnn_vgg():
-    tf_model = cnn_vgg(
-        input_shape=(100, 48), n_classes=1, verbose=True, output_activation="linear"
-    )
-    test_tensorflow_model(
-        tf_model, train_dataset, val_dataset, X_test, y_test, n_epochs=epochs
-    )
-
-
-def test_lstm1v0():
-    tf_model = lstm1v0(
-        input_shape=(100, 48), n_classes=1, verbose=True, output_activation="linear"
-    )
-    test_tensorflow_model(
-        tf_model, train_dataset, val_dataset, X_test, y_test, n_epochs=epochs
-    )
-
-
-def test_lstm1():
-    tf_model = lstm1(
-        input_shape=(100, 48), n_classes=1, verbose=True, output_activation="linear"
-    )
-    test_tensorflow_model(
-        tf_model, train_dataset, val_dataset, X_test, y_test, n_epochs=epochs
-    )
-
-
-def test_lstm2():
-    tf_model = lstm2(
-        input_shape=(100, 48), n_classes=1, verbose=True, output_activation="linear"
-    )
-    test_tensorflow_model(
-        tf_model, train_dataset, val_dataset, X_test, y_test, n_epochs=epochs
-    )
-
-
-def test_blstm1():
-    tf_model = blstm1(
-        input_shape=(100, 48), n_classes=1, verbose=True, output_activation="linear"
-    )
-    test_tensorflow_model(
-        tf_model, train_dataset, val_dataset, X_test, y_test, n_epochs=epochs
-    )
-
-
-def test_blstm2():
-    tf_model = blstm2(
-        input_shape=(100, 48), n_classes=1, verbose=True, output_activation="linear"
-    )
-    test_tensorflow_model(
-        tf_model, train_dataset, val_dataset, X_test, y_test, n_epochs=epochs
-    )
-
-
-def test_lstm_fcn():
-    tf_model = lstm_fcn(
-        input_shape=(100, 48), n_classes=1, verbose=True, output_activation="linear"
-    )
-    test_tensorflow_model(
-        tf_model, train_dataset, val_dataset, X_test, y_test, n_epochs=epochs
-    )
-
-
-def test_cnn_resnet():
-    tf_model = cnn_resnet(
-        input_shape=(100, 48), n_classes=1, verbose=True, output_activation="linear"
-    )
-    test_tensorflow_model(
-        tf_model, train_dataset, val_dataset, X_test, y_test, n_epochs=epochs
-    )
-
-
-test_mlp4()  # done
-test_cnn_lenet()  # done
-test_cnn_vgg()  # done
-test_lstm1v0()  # no
-test_lstm1()  # no
-test_lstm2()  # no
-test_blstm1()  # no
-test_blstm2()  #
-test_lstm_fcn()  # done
-test_cnn_resnet()  # done
