@@ -33,8 +33,23 @@ def data_loaders(dataset):
     return train_dataset, X_test, X_train, y_test, val_dataset
 
 
-def run_tensorflow_model(model, data_loaders, n_epochs=100):
-    """General test function for training TensorFlow models."""
+def run_tensorflow_model(model, data_loaders, n_epochs=20):
+    """
+    Smoke testing on Tensorflow models to ensure it trains and tests correctly.
+
+    Args:
+        model (model):
+            Tensorflow model to train and test
+        data_loaders (tuple):
+            Train dataset,
+            test dataset,
+            validation datasets
+        n_epoch (int):
+            Number of epochs to train the model,
+            default is 100
+
+    Returns
+    """
     train_dataset, X_test, X_train, y_test, val_dataset = data_loaders
     lr = 0.0001
 
@@ -86,7 +101,7 @@ def run_tensorflow_model(model, data_loaders, n_epochs=100):
 
 
 @pytest.mark.parametrize(
-    "model_fn",
+    "model",
     [
         mlp4,
         cnn_lenet,
@@ -100,11 +115,14 @@ def run_tensorflow_model(model, data_loaders, n_epochs=100):
         cnn_resnet,
     ],
 )
-def test_tensorflow_models(model_fn, data_loaders):
-    """Test multiple TensorFlow models."""
+def test_tensorflow_models(model, data_loaders):
+    """
+    Test multiple PyTorch models
+    """
+
     train_dataset, X_test, X_train, y_test, val_dataset = data_loaders
-    input_shape = X_train.shape[1:]  # Dynamically infer the input shape
-    tf_model = model_fn(
+    input_shape = X_train.shape[1:]
+    tf_model = model(
         input_shape=input_shape, n_classes=1, verbose=True, output_activation="linear"
     )
     run_tensorflow_model(
