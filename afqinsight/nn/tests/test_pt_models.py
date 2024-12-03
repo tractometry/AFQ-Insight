@@ -151,7 +151,7 @@ def run_pytorch_model(
 
 
 @pytest.mark.parametrize(
-    "model_fn, permute",
+    "model, permute",
     [
         (mlp4_pt, False),
         (cnn_lenet_pt, False),
@@ -165,15 +165,33 @@ def run_pytorch_model(
         (cnn_resnet_pt, True),
     ],
 )
-def test_models(model_fn, permute, device, data_loaders, data_shapes):
+def test_models(model, permute, device, data_loaders, data_shapes):
     """
     Test multiple PyTorch models.
+
+    Args:
+        model : torch.nn.Module
+            The PyTorch model to be tested.
+        permute : boolean
+            Whether to permute the dimensions of the input batch for models
+            that require input with a specific shape.
+        device : torch.device
+            The computing device to use for training.
+        data_loaders : tuple
+            Pytorch dataset
+            Training data loader
+            Testing data loader
+            Validation data loader
+        data_shapes : tuple
+            The shape of the input and target tensors.
+
+    Returns
     """
     gt_shape, sequence_length, in_channels = data_shapes
-    if model_fn in [mlp4_pt]:
-        model = model_fn(in_channels * sequence_length, gt_shape).to(device)
+    if model in [mlp4_pt]:
+        model = model(in_channels * sequence_length, gt_shape).to(device)
     else:
-        model = model_fn((in_channels, sequence_length), gt_shape).to(device)
+        model = model((in_channels, sequence_length), gt_shape).to(device)
 
     run_pytorch_model(
         model,
