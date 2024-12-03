@@ -218,7 +218,7 @@ class LSTM1V0(nn.Module):
     ):
         print("test", input_shape)
         super(LSTM1V0, self).__init__()
-        self.lstm = nn.LSTM(input_shape[0], 512, batch_first=True)
+        self.lstm = nn.LSTM(input_shape[1], 512, batch_first=True)
         self.fc = nn.Linear(512, n_classes)
 
         if output_activation == torch.softmax:
@@ -246,7 +246,7 @@ class LSTM1(nn.Module):
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
         super(LSTM1, self).__init__()
-        self.lstm = nn.LSTM(input_shape[0], 100, batch_first=True)
+        self.lstm = nn.LSTM(input_shape[1], 100, batch_first=True)
         self.relu = nn.ReLU()
         self.fc = nn.Linear(100, n_classes)
 
@@ -277,7 +277,7 @@ class LSTM2(nn.Module):
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
         super(LSTM2, self).__init__()
-        self.lstm1 = nn.LSTM(input_shape[0], 100, batch_first=True)
+        self.lstm1 = nn.LSTM(input_shape[1], 100, batch_first=True)
         self.relu1 = nn.ReLU()
         self.lstm2 = nn.LSTM(100, 100, batch_first=True)
         self.relu2 = nn.ReLU()
@@ -315,7 +315,7 @@ class BLSTM1(nn.Module):
     ):
         super(BLSTM1, self).__init__()
         self.blstm = nn.LSTM(
-            input_size=input_shape[0],
+            input_size=input_shape[1],
             hidden_size=100,
             bidirectional=True,
             batch_first=True,
@@ -350,7 +350,7 @@ class BLSTM2(nn.Module):
     ):
         super(BLSTM2, self).__init__()
         self.blstm1 = nn.LSTM(
-            input_size=input_shape[0],
+            input_size=input_shape[1],
             hidden_size=100,
             bidirectional=True,
             batch_first=True,
@@ -396,7 +396,7 @@ class LSTM_FCN(nn.Module):
     ):
         super(LSTM_FCN, self).__init__()
 
-        features, timesteps = input_shape
+        timesteps, features = input_shape
 
         self.lstm = nn.LSTM(input_size=timesteps, hidden_size=128, batch_first=True)
         self.dropout = nn.Dropout(0.8)
@@ -469,7 +469,7 @@ class CNN_RESNET(nn.Module):
     def __init__(self, input_shape, n_classes, output_activation="softmax"):
         super(CNN_RESNET, self).__init__()
 
-        in_channels = input_shape[1]
+        in_channels = input_shape[0]
 
         self.layers = nn.ModuleList(
             [
