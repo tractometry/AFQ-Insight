@@ -56,7 +56,28 @@ def run_pytorch_model(
     n_epochs=100,
     permute=False,
 ):
-    """General test function for training PyTorch models."""
+    """
+    Smoke testing on PyTorch models to ensure it trains and tests correctly.
+
+    Args:
+        model : torch.nn.Module
+            The PyTorch model to be trained and validated.
+        device : torch.device
+            The computing device to use for training.
+        data_loaders : tuple
+            Pytorch dataset
+            Training data loader
+            Testing data loader
+            Validation data loader
+        n_epochs : int
+            Number of epochs to train the model.
+            If no value provided, epochs is 100.
+        permute : boolean
+            Whether to permute the dimensions of the input batch for models
+            that require input with a specific shape.
+
+    Returns
+    """
     torch_dataset, train_loader, test_loader, val_loader = data_loaders
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
     criterion = torch.nn.MSELoss()
