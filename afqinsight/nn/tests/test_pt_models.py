@@ -53,7 +53,7 @@ def run_pytorch_model(
     model,
     device,
     data_loaders,
-    n_epochs=100,
+    n_epochs=20,
     permute=False,
 ):
     """
@@ -71,7 +71,7 @@ def run_pytorch_model(
             Validation data loader
         n_epochs : int
             Number of epochs to train the model.
-            If no value provided, epochs is 100.
+            If no value provided, epochs is 20.
         permute : boolean
             Whether to permute the dimensions of the input batch for models
             that require input with a specific shape.
@@ -183,7 +183,9 @@ def test_models(model, permute, device, data_loaders, data_shapes):
             Testing data loader
             Validation data loader
         data_shapes : tuple
-            The shape of the input and target tensors.
+            The number of target classes,
+            Sequence length,
+            Number of input channels.
 
     Returns
     """
