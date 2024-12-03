@@ -54,6 +54,7 @@ def run_pytorch_model(
     device,
     data_loaders,
     n_epochs=100,
+    permute=False,
 ):
     """General test function for training PyTorch models."""
     torch_dataset, train_loader, test_loader, val_loader = data_loaders
@@ -76,6 +77,9 @@ def run_pytorch_model(
             assert not torch.isinf(input_batch).any()
             assert not torch.isnan(gt_batch).any()
             assert not torch.isinf(gt_batch).any()
+
+            if permute:
+                input_batch = input_batch.permute(0, 2, 1)
 
             optimizer.zero_grad()
             output = model(input_batch)
@@ -106,6 +110,9 @@ def run_pytorch_model(
                 input_batch = input_batch.to(device).float()
                 gt_batch = gt_batch.to(device).float()
 
+                if permute:
+                    input_batch = input_batch.permute(0, 2, 1)
+
                 output = model(input_batch).squeeze(-1)
 
                 loss = criterion(output, gt_batch)
@@ -123,21 +130,21 @@ def run_pytorch_model(
 
 
 @pytest.mark.parametrize(
-    "model_fn",
+    "model_fn, permute",
     [
-        (mlp4_pt),
-        (cnn_lenet_pt),
-        (cnn_vgg_pt),
-        (lstm1v0_pt),
-        (lstm1_pt),
-        (lstm2_pt),
-        (blstm1_pt),
-        (blstm2_pt),
-        (lstm_fcn_pt),
-        (cnn_resnet_pt),
+        (mlp4_pt, False),
+        (cnn_lenet_pt, False),
+        (cnn_vgg_pt, False),
+        (lstm1v0_pt, True),
+        (lstm1_pt, True),
+        (lstm2_pt, True),
+        (blstm1_pt, True),
+        (blstm2_pt, True),
+        (lstm_fcn_pt, True),
+        (cnn_resnet_pt, True),
     ],
 )
-def test_models(model_fn, device, data_loaders, data_shapes):
+def test_models(model_fn, permute, device, data_loaders, data_shapes):
     """
     Test multiple PyTorch models.
     """
@@ -152,4 +159,5 @@ def test_models(model_fn, device, data_loaders, data_shapes):
         device,
         data_loaders,
         n_epochs=1,  # Reduced epochs for testing
+        permute=permute,
     )
