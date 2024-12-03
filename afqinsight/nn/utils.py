@@ -384,10 +384,10 @@ def prep_pytorch_data(dataset):
 
     Returns:
         tuple:
-            The PyTorch dataset,
-            the training data loader,
-            the test data loader,
-            and the validation data loader.
+            PyTorch dataset,
+            Training data loader,
+            Test data loader,
+            Validation data loader.
     """
     dataset.drop_target_na()
     imputer = dataset.model_fit(SimpleImputer(strategy="median"))
