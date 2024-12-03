@@ -41,9 +41,11 @@ def run_tensorflow_model(model, data_loaders, n_epochs=20):
         model (function):
             Tensorflow model to train and test
         data_loaders (tuple):
-            Train dataset,
-            test dataset,
-            validation datasets
+            Training dataset,
+            Test dataset,
+            Training data,
+            Test data,
+            Validation dataset.
         n_epoch (int):
             Number of epochs to train the model,
             default is 20
