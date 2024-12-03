@@ -278,8 +278,18 @@ def compare_models(pytorch_model, tensorflow_model):
     return True
 
 
-# converts the input array to a tensor, fit for training
 def array_to_tensor(input_array, sequence_length, in_channels):
+    """
+    Converts the input array to a tensor, fit for training.
+
+    Args:
+        input_array (array): The input array to be converted to a tensor.
+        sequence_length (int): The length of the sequence.
+        in_channels (int): The number of input channels.
+
+    Returns:
+        array: The input array converted to a tensor.
+    """
     return np.transpose(
         np.array(
             [
@@ -291,8 +301,20 @@ def array_to_tensor(input_array, sequence_length, in_channels):
     )
 
 
-# fills in missing values with the median of the column
 def prep_data(input_array, site, sequence_length, in_channels):
+    """
+    Fills in missing values with the median of the column.
+
+    Args:
+        input_array (array): The input array.
+        site (array): The site array.
+        sequence_length (int): The length of the sequence.
+        in_channels (int): The number of input channels.
+
+    Returns:
+        array: The input array with missing values
+               filled in with the median of the column.
+    """
     return array_to_tensor(
         CombatModel().fit_transform(
             SimpleImputer(strategy="median").fit_transform(input_array), site
@@ -303,6 +325,21 @@ def prep_data(input_array, site, sequence_length, in_channels):
 
 
 def prep_tensorflow_data(dataset):
+    """
+    Prepares TensorFlow datasets.
+
+    Args:
+        dataset (AFQDataset): The dataset to be prepared.
+
+    Returns:
+        tuple:
+            The training dataset,
+            the test dataset,
+            the training data,
+            the test data,
+            and the validation dataset.
+
+    """
     dataset.drop_target_na()
     batch_size = 32
 
@@ -310,10 +347,6 @@ def prep_tensorflow_data(dataset):
     X = dataset.X
     y = dataset.y[:, 0]
     site = dataset.y[:, 2, None]
-    # groups = dataset.groups #48
-    # feature_names = dataset.feature_names #4800
-    # group_names = dataset.group_names
-    # subjects = dataset.subjects
 
     X_train, X_test, y_train, y_test, site_train, site_test = train_test_split(
         X, y, site, test_size=0.2
@@ -343,6 +376,19 @@ def prep_tensorflow_data(dataset):
 
 
 def prep_pytorch_data(dataset):
+    """
+    Prepares PyTorch datasets.
+
+    Args:
+        dataset (AFQDataset): The dataset to be prepared.
+
+    Returns:
+        tuple:
+            The PyTorch dataset,
+            the training data loader,
+            the test data loader,
+            and the validation data loader.
+    """
     dataset.drop_target_na()
     imputer = dataset.model_fit(SimpleImputer(strategy="median"))
     dataset = dataset.model_transform(imputer)
