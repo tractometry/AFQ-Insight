@@ -123,9 +123,11 @@ def test_tensorflow_models(model, data_loaders):
         model (function):
             Tensorflow model to train and test
         data_loaders (tuple):
-            Train dataset,
-            test dataset,
-            validation datasets
+            Training dataset,
+            Test dataset,
+            Training data,
+            Test data,
+            Validation dataset.
 
     Returns
     """

@@ -333,11 +333,11 @@ def prep_tensorflow_data(dataset):
 
     Returns:
         tuple:
-            The training dataset,
-            the test dataset,
-            the training data,
-            the test data,
-            and the validation dataset.
+            Training dataset,
+            Test dataset,
+            Training data,
+            Test data,
+            Validation dataset.
 
     """
     dataset.drop_target_na()
