@@ -77,9 +77,6 @@ def run_pytorch_model(
             assert not torch.isnan(gt_batch).any()
             assert not torch.isinf(gt_batch).any()
 
-            # if permute:
-            #     input_batch = input_batch.permute(0, 2, 1)
-
             optimizer.zero_grad()
             output = model(input_batch)
             gt_batch = gt_batch.squeeze(-1)
@@ -108,9 +105,6 @@ def run_pytorch_model(
             for input_batch, gt_batch in val_loader:
                 input_batch = input_batch.to(device).float()
                 gt_batch = gt_batch.to(device).float()
-
-                # if permute:
-                #     input_batch = input_batch.permute(0, 2, 1)
 
                 output = model(input_batch).squeeze(-1)
 
