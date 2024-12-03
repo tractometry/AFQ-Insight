@@ -288,7 +288,7 @@ def array_to_tensor(input_array, sequence_length, in_channels):
         in_channels (int): The number of input channels.
 
     Returns:
-        array: The input array converted to a tensor.
+        The input array converted to a tensor.
     """
     return np.transpose(
         np.array(
@@ -326,7 +326,7 @@ def prep_data(input_array, site, sequence_length, in_channels):
 
 def prep_tensorflow_data(dataset):
     """
-    Prepares TensorFlow datasets.
+    Prepares TensorFlow datasets, for training, testing, and validation.
 
     Args:
         dataset (AFQDataset): The dataset to be prepared.
@@ -377,7 +377,7 @@ def prep_tensorflow_data(dataset):
 
 def prep_pytorch_data(dataset):
     """
-    Prepares PyTorch datasets.
+    Prepares PyTorch datasets for training, testing, and validation.
 
     Args:
         dataset (AFQDataset): The dataset to be prepared.
