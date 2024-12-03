@@ -38,7 +38,7 @@ def run_tensorflow_model(model, data_loaders, n_epochs=20):
     Smoke testing on Tensorflow models to ensure it trains and tests correctly.
 
     Args:
-        model (model):
+        model (function):
             Tensorflow model to train and test
         data_loaders (tuple):
             Train dataset,
@@ -46,7 +46,7 @@ def run_tensorflow_model(model, data_loaders, n_epochs=20):
             validation datasets
         n_epoch (int):
             Number of epochs to train the model,
-            default is 100
+            default is 20
 
     Returns
     """
@@ -117,7 +117,17 @@ def run_tensorflow_model(model, data_loaders, n_epochs=20):
 )
 def test_tensorflow_models(model, data_loaders):
     """
-    Test multiple PyTorch models
+    Test multiple Tensorflow models
+
+    Args:
+        model (function):
+            Tensorflow model to train and test
+        data_loaders (tuple):
+            Train dataset,
+            test dataset,
+            validation datasets
+
+    Returns
     """
 
     train_dataset, X_test, X_train, y_test, val_dataset = data_loaders
