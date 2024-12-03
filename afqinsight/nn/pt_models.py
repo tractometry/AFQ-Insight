@@ -135,6 +135,7 @@ class CNN_VGG(nn.Module):
         super(CNN_VGG, self).__init__()
 
         n_conv_layers = int(round(math.log(input_shape[0], 2)) - 3)
+
         conv_layers = []
         in_channels = input_shape[0]
 
