@@ -216,7 +216,6 @@ class LSTM1V0(nn.Module):
     def __init__(
         self, input_shape, n_classes, output_activation=torch.softmax, verbose=False
     ):
-        print("test", input_shape)
         super(LSTM1V0, self).__init__()
         self.lstm = nn.LSTM(input_shape[1], 512, batch_first=True)
         self.fc = nn.Linear(512, n_classes)

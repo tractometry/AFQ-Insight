@@ -346,7 +346,6 @@ def prep_tensorflow_data(dataset):
     dataset.drop_target_na()
     batch_size = 32
 
-    print("test is running")
     X = dataset.X
     y = dataset.y[:, 0]
     site = dataset.y[:, 2, None]
@@ -368,7 +367,6 @@ def prep_tensorflow_data(dataset):
     train_dataset = tf.data.Dataset.from_tensor_slices(
         (X_train.astype(np.float32), y_train.astype(np.float32))
     )
-    print(train_dataset)
     val_dataset = tf.data.Dataset.from_tensor_slices(
         (X_val.astype(np.float32), y_val.astype(np.float32))
     )
