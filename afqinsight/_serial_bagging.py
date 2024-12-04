@@ -611,7 +611,7 @@ class SerialBaggingClassifier(BaggingClassifier):
         else:
             return np.log(self.predict_proba(X))
 
-    @if_delegate_has_method(delegate="base_estimator")
+    @available_if(lambda est: hasattr(est.base_estimator, "decision_function"))
     def decision_function(self, X):
         """Average of the decision functions of the base classifiers.
 
