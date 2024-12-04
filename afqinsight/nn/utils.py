@@ -293,7 +293,7 @@ def array_to_tensor(input_array, sequence_length, in_channels):
 
     Returns
     -------
-        The input array converted to a tensor.
+    The input array converted to a tensor.
     """
     return np.transpose(
         np.array(
