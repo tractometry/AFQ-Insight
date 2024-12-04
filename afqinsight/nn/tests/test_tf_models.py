@@ -50,6 +50,12 @@ def run_tensorflow_model(model, data_loaders, n_epochs=20):
         n_epoch (int):
             Number of epochs to train the model,
             default is 20
+
+    Returns:
+        history :
+            Model training history
+        results :
+            Model evaluation results
     """
     train_dataset, X_test, X_train, y_test, val_dataset = data_loaders
     lr = 0.0001
