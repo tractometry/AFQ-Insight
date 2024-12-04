@@ -282,7 +282,8 @@ def array_to_tensor(input_array, sequence_length, in_channels):
     """
     Converts the input array to a tensor, fit for training.
 
-    Args:
+    Parameters
+    ----------
         input_array (array): The input array to be converted to a tensor.
         sequence_length (int): The length of the sequence.
         in_channels (int): The number of input channels.
@@ -305,7 +306,8 @@ def prep_data(input_array, site, sequence_length, in_channels):
     """
     Fills in missing values with the median of the column.
 
-    Args:
+    Parameters
+    ----------
         input_array (array): The input array.
         site (array): The site array.
         sequence_length (int): The length of the sequence.
@@ -328,7 +330,8 @@ def prep_tensorflow_data(dataset):
     """
     Prepares TensorFlow datasets, for training, testing, and validation.
 
-    Args:
+    Parameters
+    ----------
         dataset (AFQDataset): The dataset to be prepared.
 
     Returns:
@@ -379,7 +382,8 @@ def prep_pytorch_data(dataset):
     """
     Prepares PyTorch datasets for training, testing, and validation.
 
-    Args:
+    Parameters
+    ----------
         dataset (AFQDataset): The dataset to be prepared.
 
     Returns:

@@ -37,7 +37,8 @@ def run_tensorflow_model(model, data_loaders, n_epochs=20):
     """
     Smoke testing on Tensorflow models to ensure it trains and tests correctly.
 
-    Args:
+    Parameters
+    ----------
         model (function):
             Tensorflow model to train and test
         data_loaders (tuple):
@@ -49,8 +50,6 @@ def run_tensorflow_model(model, data_loaders, n_epochs=20):
         n_epoch (int):
             Number of epochs to train the model,
             default is 20
-
-    Returns
     """
     train_dataset, X_test, X_train, y_test, val_dataset = data_loaders
     lr = 0.0001
@@ -92,14 +91,15 @@ def run_tensorflow_model(model, data_loaders, n_epochs=20):
         callbacks=callbacks,
         verbose=2,
     )
-    print(history.history)
+    # print(history.history)
 
     results = model.evaluate(X_test.astype(np.float32), y_test.astype(np.float32))
 
-    print(
-        f"Test Results - Loss: {results[0]}, RMSE: {results[1]}, MAE: {results[2]},"
-        f"MSE: {results[3]}"
-    )
+    return history, results
+    # print(
+    #     f"Test Results - Loss: {results[0]}, RMSE: {results[1]}, MAE: {results[2]},"
+    #     f"MSE: {results[3]}"
+    # )
 
 
 @pytest.mark.parametrize(
@@ -121,7 +121,8 @@ def test_tensorflow_models(model, data_loaders):
     """
     Test multiple Tensorflow models
 
-    Args:
+    Parameters
+    ----------
         model (function):
             Tensorflow model to train and test
         data_loaders (tuple):
@@ -130,8 +131,6 @@ def test_tensorflow_models(model, data_loaders):
             Training data,
             Test data,
             Validation dataset.
-
-    Returns
     """
 
     train_dataset, X_test, X_train, y_test, val_dataset = data_loaders
@@ -139,7 +138,7 @@ def test_tensorflow_models(model, data_loaders):
     tf_model = model(
         input_shape=input_shape, n_classes=1, verbose=True, output_activation="linear"
     )
-    run_tensorflow_model(
+    history, results = run_tensorflow_model(
         tf_model,
         data_loaders,
         n_epochs=1,  # Reduced epochs for testing
