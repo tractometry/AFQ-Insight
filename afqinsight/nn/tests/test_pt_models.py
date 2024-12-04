@@ -145,8 +145,7 @@ def run_pytorch_model(
         print(f"Epoch {epoch}: train loss {train_loss}, val loss {val_loss}")
 
         if np.isnan(val_loss):
-            print("Validation loss is NaN. Stopping training.")
-            break
+            raise ValueError("Validation loss is NaN. Stopping training.")
 
 
 @pytest.mark.parametrize(
