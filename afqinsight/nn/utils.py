@@ -346,7 +346,7 @@ def prep_tensorflow_data(dataset):
 
     Returns
     -------
-    tuple:
+    tuple :
         Training dataset,
         Test dataset,
         Training data,
