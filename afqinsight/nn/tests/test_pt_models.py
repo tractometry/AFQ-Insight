@@ -59,7 +59,8 @@ def run_pytorch_model(
     """
     Smoke testing on PyTorch models to ensure it trains and tests correctly.
 
-    Args:
+    Parameters
+    ----------
         model : torch.nn.Module
             The PyTorch model to be trained and validated.
         device : torch.device
@@ -75,8 +76,6 @@ def run_pytorch_model(
         permute : boolean
             Whether to permute the dimensions of the input batch for models
             that require input with a specific shape.
-
-    Returns
     """
     torch_dataset, train_loader, test_loader, val_loader = data_loaders
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
@@ -169,7 +168,8 @@ def test_models(model, permute, device, data_loaders, data_shapes):
     """
     Test multiple PyTorch models.
 
-    Args:
+    Parameters
+    ----------
         model : torch.nn.Module
             The PyTorch model to be tested.
         permute : boolean
@@ -186,8 +186,6 @@ def test_models(model, permute, device, data_loaders, data_shapes):
             The number of target classes,
             Sequence length,
             Number of input channels.
-
-    Returns
     """
     gt_shape, sequence_length, in_channels = data_shapes
     if model in [mlp4_pt]:

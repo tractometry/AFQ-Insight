@@ -91,15 +91,10 @@ def run_tensorflow_model(model, data_loaders, n_epochs=20):
         callbacks=callbacks,
         verbose=2,
     )
-    # print(history.history)
 
     results = model.evaluate(X_test.astype(np.float32), y_test.astype(np.float32))
 
     return history, results
-    # print(
-    #     f"Test Results - Loss: {results[0]}, RMSE: {results[1]}, MAE: {results[2]},"
-    #     f"MSE: {results[3]}"
-    # )
 
 
 @pytest.mark.parametrize(
