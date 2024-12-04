@@ -61,21 +61,21 @@ def run_pytorch_model(
 
     Parameters
     ----------
-        model : torch.nn.Module
-            The PyTorch model to be trained and validated.
-        device : torch.device
-            The computing device to use for training.
-        data_loaders : tuple
-            Pytorch dataset
-            Training data loader
-            Testing data loader
-            Validation data loader
-        n_epochs : int
-            Number of epochs to train the model.
-            If no value provided, epochs is 20.
-        permute : boolean
-            Whether to permute the dimensions of the input batch for models
-            that require input with a specific shape.
+    model : torch.nn.Module
+        The PyTorch model to be trained and validated.
+    device : torch.device
+        The computing device to use for training.
+    data_loaders : tuple
+        Pytorch dataset
+        Training data loader
+        Testing data loader
+        Validation data loader
+    n_epochs : int
+        Number of epochs to train the model.
+        If no value provided, epochs is 20.
+    permute : boolean
+        Whether to permute the dimensions of the input batch for models
+        that require input with a specific shape.
     """
     torch_dataset, train_loader, test_loader, val_loader = data_loaders
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
@@ -169,22 +169,22 @@ def test_models(model, permute, device, data_loaders, data_shapes):
 
     Parameters
     ----------
-        model : torch.nn.Module
-            The PyTorch model to be tested.
-        permute : boolean
-            Whether to permute the dimensions of the input batch for models
-            that require input with a specific shape.
-        device : torch.device
-            The computing device to use for training.
-        data_loaders : tuple
-            Pytorch dataset
-            Training data loader
-            Testing data loader
-            Validation data loader
-        data_shapes : tuple
-            The number of target classes,
-            Sequence length,
-            Number of input channels.
+    model : torch.nn.Module
+        The PyTorch model to be tested.
+    permute : boolean
+        Whether to permute the dimensions of the input batch for models
+        that require input with a specific shape.
+    device : torch.device
+        The computing device to use for training.
+    data_loaders : tuple
+        Pytorch dataset
+        Training data loader
+        Testing data loader
+        Validation data loader
+    data_shapes : tuple
+        The number of target classes,
+        Sequence length,
+        Number of input channels.
     """
     gt_shape, sequence_length, in_channels = data_shapes
     if model in [mlp4_pt]:

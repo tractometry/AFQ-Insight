@@ -39,23 +39,24 @@ def run_tensorflow_model(model, data_loaders, n_epochs=20):
 
     Parameters
     ----------
-        model (function):
-            Tensorflow model to train and test
-        data_loaders (tuple):
-            Training dataset,
-            Test dataset,
-            Training data,
-            Test data,
-            Validation dataset.
-        n_epoch (int):
-            Number of epochs to train the model,
-            default is 20
+    model : function
+        Tensorflow model to train and test
+    data_loaders : tuple
+        Training dataset,
+        Test dataset,
+        Training data,
+        Test data,
+        Validation dataset.
+    n_epoch : int
+        Number of epochs to train the model,
+        default is 20
 
-    Returns:
-        history :
-            Model training history
-        results :
-            Model evaluation results
+    Returns
+    -------
+    history :
+        Model training history
+    results :
+        Model evaluation results
     """
     train_dataset, X_test, X_train, y_test, val_dataset = data_loaders
     lr = 0.0001
@@ -124,14 +125,14 @@ def test_tensorflow_models(model, data_loaders):
 
     Parameters
     ----------
-        model (function):
-            Tensorflow model to train and test
-        data_loaders (tuple):
-            Training dataset,
-            Test dataset,
-            Training data,
-            Test data,
-            Validation dataset.
+    model : function
+        Tensorflow model to train and test
+    data_loaders : tuple
+        Training dataset,
+        Test dataset,
+        Training data,
+        Test data,
+        Validation dataset.
     """
 
     train_dataset, X_test, X_train, y_test, val_dataset = data_loaders

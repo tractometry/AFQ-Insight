@@ -284,11 +284,15 @@ def array_to_tensor(input_array, sequence_length, in_channels):
 
     Parameters
     ----------
-        input_array (array): The input array to be converted to a tensor.
-        sequence_length (int): The length of the sequence.
-        in_channels (int): The number of input channels.
+    input_array : array
+        The input array to be converted to a tensor.
+    sequence_length : int
+        The length of the sequence.
+    in_channels : int
+        The number of input channels.
 
-    Returns:
+    Returns
+    -------
         The input array converted to a tensor.
     """
     return np.transpose(
@@ -308,14 +312,19 @@ def prep_data(input_array, site, sequence_length, in_channels):
 
     Parameters
     ----------
-        input_array (array): The input array.
-        site (array): The site array.
-        sequence_length (int): The length of the sequence.
-        in_channels (int): The number of input channels.
+    input_array : array
+        The input array.
+    site : array
+        The site array.
+    sequence_length : int
+        The length of the sequence.
+    in_channels : int
+        The number of input channels.
 
-    Returns:
-        array: The input array with missing values
-               filled in with the median of the column.
+    Returns
+    -------
+    array: The input array with missing values
+            filled in with the median of the column.
     """
     return array_to_tensor(
         CombatModel().fit_transform(
@@ -332,15 +341,17 @@ def prep_tensorflow_data(dataset):
 
     Parameters
     ----------
-        dataset (AFQDataset): The dataset to be prepared.
+    dataset : AFQDataset
+        The dataset to be prepared.
 
-    Returns:
-        tuple:
-            Training dataset,
-            Test dataset,
-            Training data,
-            Test data,
-            Validation dataset.
+    Returns
+    -------
+    tuple:
+        Training dataset,
+        Test dataset,
+        Training data,
+        Test data,
+        Validation dataset.
 
     """
     dataset.drop_target_na()
@@ -382,14 +393,15 @@ def prep_pytorch_data(dataset):
 
     Parameters
     ----------
-        dataset (AFQDataset): The dataset to be prepared.
+    dataset : AFQDataset
+        The dataset to be prepared.
 
     Returns:
-        tuple:
-            PyTorch dataset,
-            Training data loader,
-            Test data loader,
-            Validation data loader.
+    tuple:
+        PyTorch dataset,
+        Training data loader,
+        Test data loader,
+        Validation data loader.
     """
     dataset.drop_target_na()
     imputer = dataset.model_fit(SimpleImputer(strategy="median"))
