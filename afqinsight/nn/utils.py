@@ -396,7 +396,8 @@ def prep_pytorch_data(dataset):
     dataset : AFQDataset
         The dataset to be prepared.
 
-    Returns:
+    Returns
+    -------
     tuple:
         PyTorch dataset,
         Training data loader,
