@@ -23,7 +23,8 @@ from sklearn.ensemble._bagging import (
     _parallel_predict_regression,
 )
 from sklearn.ensemble._base import _partition_estimators
-from sklearn.utils import check_array, check_random_state, indices_to_mask, resample
+from sklearn.utils import check_array, check_random_state, resample
+from sklearn.utils._mask import indices_to_mask
 from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.random import sample_without_replacement
 from sklearn.utils.validation import (
