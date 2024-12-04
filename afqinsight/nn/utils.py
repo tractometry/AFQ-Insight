@@ -1,4 +1,10 @@
+import numpy as np
+import tensorflow as tf
+import torch
 import torch.nn as nn
+from neurocombat_sklearn import CombatModel
+from sklearn.impute import SimpleImputer
+from sklearn.model_selection import train_test_split
 from tensorflow.keras import layers
 
 
@@ -270,3 +276,160 @@ def compare_models(pytorch_model, tensorflow_model):
 
     print("All layers match between the PyTorch and TensorFlow models.")
     return True
+
+
+def array_to_tensor(input_array, sequence_length, in_channels):
+    """
+    Converts the input array to a tensor, fit for training.
+
+    Parameters
+    ----------
+    input_array : array
+        The input array to be converted to a tensor.
+    sequence_length : int
+        The length of the sequence.
+    in_channels : int
+        The number of input channels.
+
+    Returns
+    -------
+    The input array converted to a tensor.
+    """
+    return np.transpose(
+        np.array(
+            [
+                input_array[:, i * in_channels : (i + 1) * in_channels]
+                for i in range(sequence_length)
+            ]
+        ),
+        (1, 2, 0),
+    )
+
+
+def prep_data(input_array, site, sequence_length, in_channels):
+    """
+    Fills in missing values with the median of the column.
+
+    Parameters
+    ----------
+    input_array : array
+        The input array.
+    site : array
+        The site array.
+    sequence_length : int
+        The length of the sequence.
+    in_channels : int
+        The number of input channels.
+
+    Returns
+    -------
+    array: The input array with missing values
+            filled in with the median of the column.
+    """
+    return array_to_tensor(
+        CombatModel().fit_transform(
+            SimpleImputer(strategy="median").fit_transform(input_array), site
+        ),
+        sequence_length,
+        in_channels,
+    )
+
+
+def prep_tensorflow_data(dataset):
+    """
+    Prepares TensorFlow datasets, for training, testing, and validation.
+
+    Parameters
+    ----------
+    dataset : AFQDataset
+        The dataset to be prepared.
+
+    Returns
+    -------
+    tuple :
+        Training dataset,
+        Test dataset,
+        Training data,
+        Test data,
+        Validation dataset.
+
+    """
+    dataset.drop_target_na()
+    batch_size = 32
+
+    X = dataset.X
+    y = dataset.y[:, 0]
+    site = dataset.y[:, 2, None]
+
+    X_train, X_test, y_train, y_test, site_train, site_test = train_test_split(
+        X, y, site, test_size=0.2
+    )
+
+    X_train, X_val, y_train, y_val, site_train, site_val = train_test_split(
+        X_train, y_train, site_train, test_size=0.2
+    )
+    sequence_length = len(dataset.groups)  # 48
+    in_channels = len(dataset.feature_names) // sequence_length  # 100
+
+    X_train = prep_data(X_train, site_train, sequence_length, in_channels)
+    X_test = prep_data(X_test, site_test, sequence_length, in_channels)
+    X_val = prep_data(X_val, site_val, sequence_length, in_channels)
+
+    train_dataset = tf.data.Dataset.from_tensor_slices(
+        (X_train.astype(np.float32), y_train.astype(np.float32))
+    )
+    val_dataset = tf.data.Dataset.from_tensor_slices(
+        (X_val.astype(np.float32), y_val.astype(np.float32))
+    )
+    train_dataset = train_dataset.batch(batch_size)
+    val_dataset = val_dataset.batch(batch_size)
+
+    return train_dataset, X_test, X_train, y_test, val_dataset
+
+
+def prep_pytorch_data(dataset):
+    """
+    Prepares PyTorch datasets for training, testing, and validation.
+
+    Parameters
+    ----------
+    dataset : AFQDataset
+        The dataset to be prepared.
+
+    Returns
+    -------
+    tuple:
+        PyTorch dataset,
+        Training data loader,
+        Test data loader,
+        Validation data loader.
+    """
+    dataset.drop_target_na()
+    imputer = dataset.model_fit(SimpleImputer(strategy="median"))
+    dataset = dataset.model_transform(imputer)
+    torch_dataset = dataset.as_torch_dataset(
+        bundles_as_channels=True, channels_last=False
+    )
+    train_dataset, test_dataset = torch.utils.data.random_split(
+        torch_dataset,
+        [
+            int(0.8 * len(torch_dataset)),
+            len(torch_dataset) - int(0.8 * len(torch_dataset)),
+        ],
+    )
+    train_dataset, val_dataset = torch.utils.data.random_split(
+        train_dataset,
+        [
+            int(0.8 * len(train_dataset)),
+            len(train_dataset) - int(0.8 * len(train_dataset)),
+        ],
+    )
+
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=32, shuffle=True
+    )
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset, batch_size=32, shuffle=False
+    )
+    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=32, shuffle=False)
+    return torch_dataset, train_loader, test_loader, val_loader
