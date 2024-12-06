@@ -26,12 +26,7 @@ jobs:
         --user
     - name: Build a binary wheel and a source tarball
       run: >-
-        python -m
-        build
-        --source
-        --binary
-        --out-dir dist/
-        .
+        python -m build --verbose .
     - name: Publish distribution 📦 to Test PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
 
