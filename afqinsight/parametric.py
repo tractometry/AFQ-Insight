@@ -1,4 +1,4 @@
-"""Perform linear modeling at leach node along the tract."""
+"""Perform linear modeling at each node along the tract."""
 
 import numpy as np
 import pandas as pd
@@ -11,11 +11,11 @@ from statsmodels.stats.multitest import multipletests
 def node_wise_regression(
     afq_dataset,
     tract,
-    metric,
     formula,
     group="group",
     lme=False,
     rand_eff="subjectID",
+    impute="median",
 ):
     """Model group differences using node-wise regression along the length of the tract.
 
@@ -28,10 +28,6 @@ def node_wise_regression(
         Loaded AFQDataset object
     tract: str
         String specifying the tract to model
-
-    metric: str
-        String specifying which diffusion metric to use as an outcome
-        eg. 'fa'
 
     formula: str
         An R-style formula <https://www.statsmodels.org/dev/example_formulas.html>
@@ -46,6 +42,9 @@ def node_wise_regression(
         mixed-effects models. If using anything other than the default value,
         this column must be present in the 'target_cols' of the AFQDataset object
 
+    impute: str or None, default='median'
+        String specifying the imputation strategy to use for missing data.
+
 
     Returns
     -------
@@ -53,13 +52,13 @@ def node_wise_regression(
         A dictionary with the following key-value pairs:
 
         {'tract': tract,
-                  'reference_coefs': coefs_default,
-                  'group_coefs': coefs_treat,
-                  'reference_CI': cis_default,
-                  'group_CI': cis_treat,
-                  'pvals': pvals,
-                  'reject_idx': reject_idx,
-                  'model_fits': fits}
+         'reference_coefs': coefs_default,
+         'group_coefs': coefs_treat,
+         'reference_CI': cis_default,
+         'group_CI': cis_treat,
+         'pvals': pvals,
+         'reject_idx': reject_idx,
+         'model_fits': fits}
 
         tract: str
             The tract described by this dictionary
@@ -96,8 +95,10 @@ def node_wise_regression(
             A list of the statsmodels object fit along the length of the nodes
 
     """
-    X = SimpleImputer(strategy="median").fit_transform(afq_dataset.X)
+    if impute is not None:
+        X = SimpleImputer(strategy=impute).fit_transform(afq_dataset.X)
     afq_dataset.target_cols[0] = group
+    metric = formula.split("~")[0].strip()
 
     tract_data = (
         pd.DataFrame(columns=afq_dataset.feature_names, data=X)
@@ -158,8 +159,49 @@ def node_wise_regression(
         "reference_CI": cis_default,
         "group_CI": cis_treat,
         "pvals": pvals,
+        "pvals_corrected": pval_corrected,
         "reject_idx": reject_idx,
         "model_fits": fits,
     }
 
     return tract_dict
+
+
+class RegressionResults(object):
+    def __init__(self, kwargs):
+        self.tract = kwargs.get("tract", None)
+        self.reference_coefs = kwargs.get("reference_coefs", None)
+        self.group_coefs = kwargs.get("group_coefs", None)
+        self.reference_ci = kwargs.get("reference_ci", None)
+        self.group_ci = kwargs.get("group_ci", None)
+        self.pvals = kwargs.get("pvals", None)
+        self.pvals_corrected = kwargs.get("pvals_corrected", None)
+        self.reject_idx = kwargs.get("reject_idx", None)
+        self.model_fits = kwargs.get("model_fits", None)
+
+
+class NodeWiseRegression(object):
+    def __init__(self, formula, lme=False):
+        self.formula = formula
+        self.lme = lme
+
+    def fit(self, dataset, tracts, group="group", rand_eff="subjectID"):
+        self.result_ = {}
+        for tract in tracts:
+            self.result_[tract] = node_wise_regression(
+                dataset,
+                tract,
+                self.formula,
+                lme=self.lme,
+                group=group,
+                rand_eff=rand_eff,
+            )
+        self.is_fitted = True
+        return self
+
+    def predict(self, dataset, tract, metric, group="group", rand_eff="subjectID"):
+        if not self.is_fitted:
+            raise ValueError("Model not fitted yet. Please call fit() method first.")
+        result = self.result_.get(tract, None)
+        if result is None:
+            raise ValueError(f"Tract {tract} not found in the fitted model.")
