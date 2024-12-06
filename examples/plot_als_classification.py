@@ -54,6 +54,7 @@ afqdata = AFQDataset.from_study("sarica")
 
 X = afqdata.X
 y = afqdata.y.astype(float)  # SGL expects float targets
+is_als = y[:, 0]
 groups = afqdata.groups
 feature_names = afqdata.feature_names
 group_names = afqdata.group_names
@@ -117,7 +118,7 @@ pipe = make_afq_classifier_pipeline(
 # scikit-learn functions
 
 scores = cross_validate(
-    pipe, X, y, cv=5, return_train_score=True, return_estimator=True
+    pipe, X, is_als, cv=5, return_train_score=True, return_estimator=True
 )
 
 # Display results
