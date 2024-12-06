@@ -55,3 +55,15 @@ dependencies.
     $ export HDF5_DIR=/opt/homebrew/opt/hdf5
     $ export BLOSC_DIR=/opt/homebrew/opt/c-blosc
     $ pip install tables
+
+
+If that does not work, another alternative is to install these dependencies
+using conda:
+
+.. code-block:: console
+
+    $ conda install h5py
+    $ conda install tables
+
+If you encounter any issues, please let us know by opening an issue on the
+`github repository <https://github.com/tractometry/AFQ-Insight>`_.
