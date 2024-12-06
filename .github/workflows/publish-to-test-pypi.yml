@@ -9,6 +9,7 @@ jobs:
   build-n-publish:
     name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ubuntu-latest
+    environment: release
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.11
