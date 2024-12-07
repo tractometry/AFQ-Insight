@@ -8,7 +8,7 @@ def test_node_wise_regression():
     # Store results
     group_dict = {}
     group_age_dict = {}
-    age_dict = {}  # noqa F841
+    age_dict = {}
 
     data = AFQDataset.from_study("sarica")
     tracts = ["Right Corticospinal", "Right SLF"]
@@ -23,13 +23,11 @@ def test_node_wise_regression():
             group_age_dict[tract] = node_wise_regression(
                 data, tract, "fa ~ C(group) + age", lme=lme, group="group"
             )
-            # age_dict[tract] = node_wise_regression(
-            #     data, tract, "fa ~ age", lme=lme
-            # )
+            age_dict[tract] = node_wise_regression(data, tract, "fa ~ age", lme=lme)
 
         assert group_dict[tract]["pvals"].shape == (100,)
         assert group_age_dict[tract]["pvals"].shape == (100,)
-        # assert age_dict[tract]["pval"].shape == (100,)
+        assert age_dict[tract]["pvals"].shape == (100,)
 
     assert np.any(group_dict["Right Corticospinal"]["pvals_corrected"] < 0.05)
     assert np.all(group_dict["Right SLF"]["pvals_corrected"] > 0.05)

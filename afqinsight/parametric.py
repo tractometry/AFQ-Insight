@@ -112,10 +112,12 @@ def node_wise_regression(
     )
 
     pvals = np.zeros(tract_data.shape[-1])
+    pvals_corrected = np.zeros(tract_data.shape[-1])
     coefs_default = np.zeros(tract_data.shape[-1])
     coefs_treat = np.zeros(tract_data.shape[-1])
     cis_default = np.zeros((tract_data.shape[-1], 2))
     cis_treat = np.zeros((tract_data.shape[-1], 2))
+    reject = np.zeros(tract_data.shape[-1], dtype=bool)
     fits = {}
 
     # Loop through each node and fit model
@@ -156,10 +158,11 @@ def node_wise_regression(
             pvals[ii] = fit.pvalues.filter(regex=group, axis=0).iloc[0]
 
             # Correct p-values for multiple comparisons
-            reject, pval_corrected, _, _ = multipletests(
+            reject, pvals_corrected, _, _ = multipletests(
                 pvals, alpha=0.05, method="fdr_bh"
             )
-            reject_idx = np.where(reject)
+
+        reject_idx = np.where(reject)
 
     tract_dict = {
         "tract": tract,
@@ -168,7 +171,7 @@ def node_wise_regression(
         "reference_CI": cis_default,
         "group_CI": cis_treat,
         "pvals": pvals,
-        "pvals_corrected": pval_corrected,
+        "pvals_corrected": pvals_corrected,
         "reject_idx": reject_idx,
         "model_fits": fits,
     }
