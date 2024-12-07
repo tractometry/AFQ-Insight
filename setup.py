@@ -6,9 +6,7 @@ from setuptools_scm import get_version
 
 
 def local_version(version):
-    """
-    Patch in a version that can be uploaded to test PyPI
-    """
+    """Patch in a version that can be uploaded to test PyPI."""
     scm_version = get_version()
     if "dev" in scm_version:
         gh_in_int = []
@@ -24,9 +22,7 @@ def local_version(version):
 
 opts = {
     "use_scm_version": {
-        "root": ".",
-        "relative_to": __file__,
-        "write_to": op.join("afqinsight", "version.py"),
+        "write_to": op.join("afqinsight", "_version.py"),
         "local_scheme": local_version,
     }
 }
