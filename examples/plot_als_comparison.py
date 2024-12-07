@@ -74,7 +74,7 @@ fig, axes = plt.subplots(nrows=2, ncols=num_cols, figsize=(10, 6))
 # Loop through the data and generate plots
 for ii, tract in enumerate(tracts):
     # fit node-wise regression for each tract based on model formula
-    tract_dict = node_wise_regression(afqdata, tract, "fa ~ C(group)")
+    tract_dict = node_wise_regression(afqdata, tract, "fa ~ C(group)", group="group")
 
     row = ii // num_cols
     col = ii % num_cols
