@@ -12,7 +12,7 @@ def node_wise_regression(
     afq_dataset,
     tract,
     formula,
-    group="group",
+    group=None,
     lme=False,
     rand_eff="subjectID",
     impute="median",
@@ -26,6 +26,7 @@ def node_wise_regression(
     ----------
     afq_dataset: AFQDataset
         Loaded AFQDataset object
+
     tract: str
         String specifying the tract to model
 
@@ -71,7 +72,7 @@ def node_wise_regression(
         group_coefs: list of floats
             A list of beta-weights representing the average group effect metric
             for the treatment group on a diffusion metric at a given location
-            along the tract
+            along the tract, if group None this will be a list of zeros.
 
         reference_CI: np.array of np.array
             A numpy array containing a series of numpy arrays indicating the
@@ -81,7 +82,8 @@ def node_wise_regression(
         group_CI: np.array of np.array
             A numpy array containing a series of numpy arrays indicating the
             95% confidence interval around the estimated beta-weight of the
-            treatment effect at a given location along the tract
+            treatment effect at a given location along the tract. If group is
+            None, this will be an array of zeros.
 
         pvals: list of floats
             A list of p-values testing whether or not the beta-weight of the
@@ -97,7 +99,10 @@ def node_wise_regression(
     """
     if impute is not None:
         X = SimpleImputer(strategy=impute).fit_transform(afq_dataset.X)
-    afq_dataset.target_cols[0] = group
+
+    if group is not None:
+        afq_dataset.target_cols[0] = group
+
     metric = formula.split("~")[0].strip()
 
     tract_data = (
@@ -140,17 +145,21 @@ def node_wise_regression(
 
         # pull out coefficients, CIs, and p-values from our model
         coefs_default[ii] = fit.params.filter(regex="Intercept", axis=0).iloc[0]
-        coefs_treat[ii] = fit.params.filter(regex=group, axis=0).iloc[0]
 
-        cis_default[ii] = (
-            fit.conf_int(alpha=0.05).filter(regex="Intercept", axis=0).values
-        )
-        cis_treat[ii] = fit.conf_int(alpha=0.05).filter(regex=group, axis=0).values
-        pvals[ii] = fit.pvalues.filter(regex=group, axis=0).iloc[0]
+        if group is not None:
+            coefs_treat[ii] = fit.params.filter(regex=group, axis=0).iloc[0]
 
-    # Correct p-values for multiple comparisons
-    reject, pval_corrected, _, _ = multipletests(pvals, alpha=0.05, method="fdr_bh")
-    reject_idx = np.where(reject)
+            cis_default[ii] = (
+                fit.conf_int(alpha=0.05).filter(regex="Intercept", axis=0).values
+            )
+            cis_treat[ii] = fit.conf_int(alpha=0.05).filter(regex=group, axis=0).values
+            pvals[ii] = fit.pvalues.filter(regex=group, axis=0).iloc[0]
+
+            # Correct p-values for multiple comparisons
+            reject, pval_corrected, _, _ = multipletests(
+                pvals, alpha=0.05, method="fdr_bh"
+            )
+            reject_idx = np.where(reject)
 
     tract_dict = {
         "tract": tract,
@@ -185,7 +194,7 @@ class NodeWiseRegression(object):
         self.formula = formula
         self.lme = lme
 
-    def fit(self, dataset, tracts, group="group", rand_eff="subjectID"):
+    def fit(self, dataset, tracts, group=None, rand_eff="subjectID"):
         self.result_ = {}
         for tract in tracts:
             self.result_[tract] = node_wise_regression(
