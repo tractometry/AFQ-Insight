@@ -38,11 +38,11 @@ differences have been removed.
 """
 
 import numpy as np
-from afqinsight.neurocombat_sklearn import CombatModel
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
 from afqinsight import AFQDataset
+from afqinsight.neurocombat_sklearn import CombatModel
 from afqinsight.plot import plot_tract_profiles
 
 #############################################################################

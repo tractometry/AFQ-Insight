@@ -168,9 +168,9 @@ def test_regression():
         SVR(),
     ]:
         for params in grid:
-            SerialBaggingRegressor(
-                estimator=estimator, random_state=rng, **params
-            ).fit(X_train, y_train).predict(X_test)
+            SerialBaggingRegressor(estimator=estimator, random_state=rng, **params).fit(
+                X_train, y_train
+            ).predict(X_test)
 
 
 def test_sparse_regression():
@@ -217,9 +217,7 @@ def test_sparse_regression():
 
             # Trained on dense format
             dense_results = (
-                SerialBaggingRegressor(
-                    estimator=CustomSVR(), random_state=1, **params
-                )
+                SerialBaggingRegressor(estimator=CustomSVR(), random_state=1, **params)
                 .fit(X_train, y_train)
                 .predict(X_test)
             )
