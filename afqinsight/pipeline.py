@@ -270,7 +270,7 @@ def make_base_afq_pipeline(
 
     if estimator is not None:
         if inspect.isclass(estimator) and issubclass(estimator, BaseEstimator):
-            base_estimator = call_with_kwargs(estimator, estimator_kwargs)
+            estimator = call_with_kwargs(estimator, estimator_kwargs)
 
             if ensemble_meta_estimator is not None:
                 allowed = ["bagging", "adaboost", "serial-bagging"]
@@ -284,33 +284,33 @@ def make_base_afq_pipeline(
                 else:
                     ensembler_kwargs = {}
 
-                ensembler_kwargs["base_estimator"] = base_estimator
+                ensembler_kwargs["estimator"] = estimator
 
                 if isinstance(ensemble_meta_estimator, str):
                     if ensemble_meta_estimator.lower() == "bagging":
-                        if is_classifier(base_estimator):
+                        if is_classifier(estimator):
                             ensembler = call_with_kwargs(
                                 BaggingClassifier, ensembler_kwargs
                             )
-                        elif is_regressor(base_estimator):
+                        elif is_regressor(estimator):
                             ensembler = call_with_kwargs(
                                 BaggingRegressor, ensembler_kwargs
                             )
                     elif ensemble_meta_estimator.lower() == "serial-bagging":
-                        if is_classifier(base_estimator):
+                        if is_classifier(estimator):
                             ensembler = call_with_kwargs(
                                 SerialBaggingClassifier, ensembler_kwargs
                             )
-                        elif is_regressor(base_estimator):
+                        elif is_regressor(estimator):
                             ensembler = call_with_kwargs(
                                 SerialBaggingRegressor, ensembler_kwargs
                             )
                     elif ensemble_meta_estimator.lower() == "adaboost":
-                        if is_classifier(base_estimator):
+                        if is_classifier(estimator):
                             ensembler = call_with_kwargs(
                                 AdaBoostClassifier, ensembler_kwargs
                             )
-                        elif is_regressor(base_estimator):
+                        elif is_regressor(estimator):
                             ensembler = call_with_kwargs(
                                 AdaBoostRegressor, ensembler_kwargs
                             )
@@ -330,7 +330,7 @@ def make_base_afq_pipeline(
                 else:
                     raise ValueError(err_msg.substitute(input=ensemble_meta_estimator))
 
-                base_estimator = ensembler
+                estimator = ensembler
 
             if any(
                 [
@@ -340,14 +340,14 @@ def make_base_afq_pipeline(
                 ]
             ):
                 pl_estimator = TransformedTargetRegressor(
-                    base_estimator,
+                    estimator,
                     transformer=target_transformer,
                     func=target_transform_func,
                     inverse_func=target_transform_inverse_func,
                     check_inverse=target_transform_check_inverse,
                 )
             else:
-                pl_estimator = base_estimator
+                pl_estimator = estimator
         else:
             raise ValueError(
                 "If provided, estimator must inherit from sklearn.base.BaseEstimator; "
