@@ -1,6 +1,7 @@
 import pytest
-from neurocombat_sklearn import CombatModel
 from sklearn.utils.estimator_checks import check_estimator
+
+from afqinsight.neurocombat_sklearn.neurocombat import CombatModel
 
 
 @pytest.mark.parametrize("Estimator", [CombatModel])
