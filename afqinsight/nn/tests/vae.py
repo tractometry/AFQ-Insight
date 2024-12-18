@@ -42,9 +42,7 @@ class Decoder(nn.Module):
     def __init__(self, input_shape, latent_dims):
         super(Decoder, self).__init__()
         self.model = nn.Sequential(
-            nn.Linear(latent_dims, 256),
-            nn.ReLU(),
-            nn.Linear(256, 500),
+            nn.Linear(latent_dims, 500),
             nn.ReLU(),
             nn.Linear(500, input_shape),
         )
