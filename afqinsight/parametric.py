@@ -119,7 +119,6 @@ def node_wise_regression(
     cis_treat = np.zeros((tract_data.shape[-1], 2))
     reject = np.zeros(tract_data.shape[-1], dtype=bool)
     fits = {}
-
     # Loop through each node and fit model
     for ii, column in enumerate(tract_data.columns):
         # fit linear mixed-effects model
@@ -133,7 +132,6 @@ def node_wise_regression(
 
             model = smf.mixedlm(formula, this, groups=rand_eff)
             fit = model.fit()
-            fits[column] = fit
 
         # fit OLS model
         else:
@@ -143,8 +141,7 @@ def node_wise_regression(
 
             model = OLS.from_formula(formula, this)
             fit = model.fit()
-            fits[column] = fit
-
+        fits[ii] = fit
         # pull out coefficients, CIs, and p-values from our model
         coefs_default[ii] = fit.params.filter(regex="Intercept", axis=0).iloc[0]
 
@@ -162,21 +159,21 @@ def node_wise_regression(
                 pvals, alpha=0.05, method="fdr_bh"
             )
 
-        reject_idx = np.where(reject)
+        reject = np.where(reject, 1, 0)
 
-    tract_dict = {
-        "tract": tract,
-        "reference_coefs": coefs_default,
-        "group_coefs": coefs_treat,
-        "reference_CI": cis_default,
-        "group_CI": cis_treat,
-        "pvals": pvals,
-        "pvals_corrected": pvals_corrected,
-        "reject_idx": reject_idx,
-        "model_fits": fits,
-    }
-
-    return tract_dict
+    return pd.DataFrame(
+        {
+            "reference_coefs": coefs_default,
+            "group_coefs": coefs_treat,
+            "reference_CI_lb": cis_default[:, 0],
+            "reference_CI_ub": cis_default[:, 1],
+            "group_CI_lb": cis_treat[:, 0],
+            "group_CI_ub": cis_treat[:, 1],
+            "pvals": pvals,
+            "pvals_corrected": pvals_corrected,
+            "reject_idx": reject,
+        }
+    ), fits
 
 
 class RegressionResults(object):
