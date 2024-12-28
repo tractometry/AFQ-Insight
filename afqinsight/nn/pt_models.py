@@ -1,7 +1,6 @@
 import math
 
 import torch
-import torch.nn.functional as F
 from dipy.utils.optpkg import optional_package
 from dipy.utils.tripwire import TripWire
 
@@ -549,6 +548,7 @@ class VariationalEncoder(nn.Module):
         self.linear1 = nn.Linear(input_shape, 500)
         self.linear2 = nn.Linear(500, latent_dims)
         self.linear3 = nn.Linear(500, latent_dims)
+        self.activation = nn.ReLU()
 
         self.N = torch.distributions.Normal(0, 1)
         self.N.loc = self.N.loc.to(device)
@@ -557,7 +557,8 @@ class VariationalEncoder(nn.Module):
 
     def forward(self, x):
         x = torch.flatten(x, start_dim=1)
-        x = F.relu(self.linear1(x))
+        x = self.linear1(x)
+        x = self.activation(x)
         mu = self.linear2(x)
         sigma = torch.exp(self.linear3(x))
         z = mu + sigma * self.N.sample(mu.shape)
@@ -565,18 +566,34 @@ class VariationalEncoder(nn.Module):
         return z
 
 
+class Encoder(nn.Module):
+    def __init__(self, input_shape, latent_dims):
+        super(Encoder, self).__init__()
+        self.flatten = nn.Flatten()
+        self.linear1 = nn.Linear(input_shape, 500)
+        self.activation = nn.ReLU()
+        self.linear2 = nn.Linear(500, latent_dims)
+
+    def forward(self, x):
+        x = self.flatten(x)
+        x = self.linear1(x)
+        x = self.activation(x)
+        x = self.linear2(x)
+        return x
+
+
 class Decoder(nn.Module):
     def __init__(self, input_shape, latent_dims):
         super(Decoder, self).__init__()
-        self.model = nn.Sequential(
-            nn.Linear(latent_dims, 500),
-            nn.ReLU(),
-            nn.Linear(500, input_shape),
-        )
+        self.linear1 = nn.Linear(latent_dims, 500)
+        self.relu = nn.ReLU()
+        self.linear2 = nn.Linear(500, input_shape)
 
     def forward(self, z):
         batch_size = z.size(0)
-        x = self.model(z)
+        x = self.linear1(z)
+        x = self.relu(x)
+        x = self.linear2(x)
         return x.view((batch_size, 48, 100))
 
 
@@ -593,18 +610,21 @@ class VariationalAutoencoder(nn.module):
         z = self.encoder(x)
         return self.decoder(z)
 
-    def fit(self, data, epochs=20):
-        opt = torch.optim.Adam(self.parameters())
+    def fit(self, data, epochs=20, lr=0.001):
+        opt = torch.optim.Adam(self.parameters(), lr=lr)
         for epoch in range(epochs):
-            print(f"Epoch {epoch}")
-            for x, y in data:
-                print("y", y)
-                x = x.to(device)
+            running_loss = 0
+            items = 0
+            for x, _ in data:
+                x = x.to(device)  # GPU
                 opt.zero_grad()
                 x_hat = self(x)
                 loss = ((x - x_hat) ** 2).sum() + self.encoder.kl
+                items += x.size(0)
+                running_loss += loss.item()
                 loss.backward()
                 opt.step()
+            print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
 
     def transform(self, x):
         return self.encoder(x)
@@ -617,29 +637,30 @@ class VariationalAutoencoder(nn.module):
 class Autoencoder(nn.module):
     def __init__(self, input_shape, latent_dims):
         super(Autoencoder, self).__init__()
-        self.encoder = nn.Sequential(
-            nn.Linear(input_shape, 500), nn.ReLU(), nn.Linear(500, latent_dims)
-        )
-        self.decoder = nn.Sequential(
-            nn.Linear(latent_dims, 500), nn.ReLU(), nn.Linear(500, input_shape)
-        )
+        self.encoder = Encoder(input_shape, latent_dims)
+        self.decoder = Decoder(input_shape, latent_dims)
 
     def forward(self, x):
         z = self.encoder(x)
         return self.decoder(z)
 
-    def fit(self, data, epochs=20):
-        opt = torch.optim.Adam(self.parameters())
+    def fit(self, data, epochs=20, lr=0.001):
+        opt = torch.optim.Adam(self.parameters(), lr=lr)
         for epoch in range(epochs):
-            print(f"Epoch {epoch}")
-            for x, y in data:
-                print("y", y)
-                x = x.to(device)
+            running_loss = 0
+            items = 0
+            for x, _ in data:
+                x = x.to(device)  # GPU
                 opt.zero_grad()
                 x_hat = self(x)
                 loss = ((x - x_hat) ** 2).sum()
+                items += x.size(0)
+                running_loss += loss.item()
                 loss.backward()
                 opt.step()
+            print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
+
+        return self
 
     def transform(self, x):
         return self.encoder(x)
