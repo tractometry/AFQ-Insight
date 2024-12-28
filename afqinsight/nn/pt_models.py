@@ -542,6 +542,9 @@ def cnn_resnet_pt(input_shape, n_classes):
     return cnn_resnet_Model
 
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
 class VariationalEncoder(nn.Module):
     def __init__(self, input_shape, latent_dims):
         super(VariationalEncoder, self).__init__()
@@ -597,14 +600,15 @@ class Decoder(nn.Module):
         return x.view((batch_size, 48, 100))
 
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-
-
 class VariationalAutoencoder(nn.module):
     def __init__(self, input_shape, latent_dims):
         super(VariationalAutoencoder, self).__init__()
         self.encoder = VariationalEncoder(input_shape, latent_dims)
         self.decoder = Decoder(input_shape, latent_dims)
+
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # is this useful?
+        self.to(self.device)
 
     def forward(self, x):
         z = self.encoder(x)
@@ -626,6 +630,7 @@ class VariationalAutoencoder(nn.module):
                 opt.step()
             print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
 
+    # what to do here
     def transform(self, x):
         return self.encoder(x)
 
@@ -640,6 +645,8 @@ class Autoencoder(nn.module):
         self.encoder = Encoder(input_shape, latent_dims)
         self.decoder = Decoder(input_shape, latent_dims)
 
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     def forward(self, x):
         z = self.encoder(x)
         return self.decoder(z)
@@ -650,7 +657,7 @@ class Autoencoder(nn.module):
             running_loss = 0
             items = 0
             for x, _ in data:
-                x = x.to(device)  # GPU
+                x = x.to(self.device)  # GPU
                 opt.zero_grad()
                 x_hat = self(x)
                 loss = ((x - x_hat) ** 2).sum()
@@ -662,6 +669,7 @@ class Autoencoder(nn.module):
 
         return self
 
+    # what to do here
     def transform(self, x):
         return self.encoder(x)
 
