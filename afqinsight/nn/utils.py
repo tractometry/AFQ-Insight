@@ -387,7 +387,7 @@ def prep_tensorflow_data(dataset):
     return train_dataset, X_test, X_train, y_test, val_dataset
 
 
-def prep_pytorch_data(dataset):
+def prep_pytorch_data(dataset, batch_size=32):
     """
     Prepares PyTorch datasets for training, testing, and validation.
 
@@ -426,10 +426,10 @@ def prep_pytorch_data(dataset):
     )
 
     train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=32, shuffle=True
+        train_dataset, batch_size=batch_size, shuffle=True
     )
     test_loader = torch.utils.data.DataLoader(
-        test_dataset, batch_size=32, shuffle=False
+        test_dataset, batch_size=batch_size, shuffle=False
     )
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=32, shuffle=False)
     return torch_dataset, train_loader, test_loader, val_loader
