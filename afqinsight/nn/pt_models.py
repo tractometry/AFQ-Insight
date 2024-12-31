@@ -542,9 +542,6 @@ def cnn_resnet_pt(input_shape, n_classes):
     return cnn_resnet_Model
 
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
 class VariationalEncoder(nn.Module):
     def __init__(self, input_shape, latent_dims):
         super(VariationalEncoder, self).__init__()
@@ -553,9 +550,11 @@ class VariationalEncoder(nn.Module):
         self.linear3 = nn.Linear(500, latent_dims)
         self.activation = nn.ReLU()
 
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
         self.N = torch.distributions.Normal(0, 1)
-        self.N.loc = self.N.loc.to(device)
-        self.N.scale = self.N.scale.to(device)
+        self.N.loc = self.N.loc.to(self.device)
+        self.N.scale = self.N.scale.to(self.device)
         self.kl = 0
 
     def forward(self, x):
@@ -607,8 +606,6 @@ class VariationalAutoencoder(nn.module):
         self.decoder = Decoder(input_shape, latent_dims)
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        # is this useful?
-        self.to(self.device)
 
     def forward(self, x):
         z = self.encoder(x)
@@ -620,7 +617,7 @@ class VariationalAutoencoder(nn.module):
             running_loss = 0
             items = 0
             for x, _ in data:
-                x = x.to(device)  # GPU
+                x = x.to(self.device)  # GPU
                 opt.zero_grad()
                 x_hat = self(x)
                 loss = ((x - x_hat) ** 2).sum() + self.encoder.kl
@@ -630,9 +627,8 @@ class VariationalAutoencoder(nn.module):
                 opt.step()
             print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
 
-    # what to do here
     def transform(self, x):
-        return self.encoder(x)
+        self.forward(x)
 
     def fit_transform(self, data, epochs=20):
         self.fit(data, epochs)
@@ -669,9 +665,8 @@ class Autoencoder(nn.module):
 
         return self
 
-    # what to do here
     def transform(self, x):
-        return self.encoder(x)
+        self.forward(x)
 
     def fit_transform(self, data, epochs=20):
         self.fit(data, epochs)
