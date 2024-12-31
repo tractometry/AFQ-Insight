@@ -599,7 +599,7 @@ class Decoder(nn.Module):
         return x.view((batch_size, 48, 100))
 
 
-class VariationalAutoencoder(nn.module):
+class VariationalAutoencoder(nn.Module):
     def __init__(self, input_shape, latent_dims):
         super(VariationalAutoencoder, self).__init__()
         self.encoder = VariationalEncoder(input_shape, latent_dims)
@@ -635,7 +635,7 @@ class VariationalAutoencoder(nn.module):
         return self.transform(data)
 
 
-class Autoencoder(nn.module):
+class Autoencoder(nn.Module):
     def __init__(self, input_shape, latent_dims):
         super(Autoencoder, self).__init__()
         self.encoder = Encoder(input_shape, latent_dims)
