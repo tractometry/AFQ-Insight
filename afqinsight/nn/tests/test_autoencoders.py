@@ -2,7 +2,10 @@ import pytest
 import torch
 
 from afqinsight import AFQDataset
-from afqinsight.nn.pt_models import Autoencoder, VariationalAutoencoder
+from afqinsight.nn.pt_models import (
+    Autoencoder,
+    VariationalAutoencoder,
+)
 from afqinsight.nn.utils import prep_pytorch_data
 
 
@@ -37,65 +40,39 @@ def data_shapes(data_loaders):
     return gt_shape, sequence_length, in_channels
 
 
+@pytest.mark.parametrize("model_class", [Autoencoder, VariationalAutoencoder])
 @pytest.mark.parametrize("latent_dims", [2, 10])
-def test_autoencoder_forward(data_loaders, latent_dims, data_shapes):
+def test_autoencoder_forward(data_loaders, data_shapes, model_class, latent_dims):
     """
-    Smoke test to check if the linear Autoencoder forward pass works
-    without raising an exception and returns the expected shape.
+    Smoke test to check if the forward pass of the Autoencoder models works
+    without throwing exceptions and returns the expected shape.
     """
     torch_dataset, train_loader, test_loader, val_loader = data_loaders
     gt_shape, sequence_length, in_channels = data_shapes
 
-    # Define input_shape = 48 * 100 = 4800
-    model = Autoencoder(
+    # Instantiate the model
+    model = model_class(
         input_shape=sequence_length * in_channels, latent_dims=latent_dims
     )
-    model.eval()  # We just do forward pass check, no training
+    model.eval()  # Forward pass check, no training
 
     # Retrieve a single batch
     data_iter = iter(test_loader)
     x, _ = next(data_iter)
 
-    # Forward pass
+    # Perform forward pass
     with torch.no_grad():
         output = model(x)
 
-    # Check output shapeß
-    # The decoder expects to return shape: (batch_size, 48, 100)
+    # Validate output shape
     expected_shape = (x.size(0), sequence_length, in_channels)
-    assert output.shape == expected_shape, (
-        f"Expected output shape {expected_shape}, " f"but got {output.shape}."
-    )
+    assert (
+        output.shape == expected_shape
+    ), f"Expected output shape {expected_shape}, but got {output.shape}."
 
 
-@pytest.mark.parametrize("latent_dims", [2, 10])
-def test_variational_autoencoder_forward(data_loaders, latent_dims, data_shapes):
-    """
-    Smoke test to check if the linear VariationalAutoencoder forward pass
-    works without throwing exceptions and returns the expected shape.
-    """
-    torch_dataset, train_loader, test_loader, val_loader = data_loaders
-    gt_shape, sequence_length, in_channels = data_shapes
-
-    model = VariationalAutoencoder(
-        input_shape=sequence_length * in_channels, latent_dims=latent_dims
-    )
-    model.eval()
-
-    data_iter = iter(test_loader)
-    x, _ = next(data_iter)
-
-    with torch.no_grad():
-        output = model(x)
-
-    # Check if shape matches (batch_size, 48, 100)
-    expected_shape = (x.size(0), sequence_length, in_channels)
-    assert output.shape == expected_shape, (
-        f"Expected output shape {expected_shape}, " f"but got {output.shape}."
-    )
-
-
-def test_autoencoder_train_loop(data_loaders, data_shapes):
+@pytest.mark.parametrize("model_class", [Autoencoder, VariationalAutoencoder])
+def test_autoencoder_train_loop(data_loaders, data_shapes, model_class):
     """
     Simple smoke test for the training loop of the linear Autoencoder,
     checking for any exceptions.
@@ -103,26 +80,12 @@ def test_autoencoder_train_loop(data_loaders, data_shapes):
     torch_dataset, train_loader, test_loader, val_loader = data_loaders
     gt_shape, sequence_length, in_channels = data_shapes
 
-    model = Autoencoder(input_shape=sequence_length * in_channels, latent_dims=10)
+    if model_class == Autoencoder or model_class == VariationalAutoencoder:
+        model = model_class(input_shape=sequence_length * in_channels, latent_dims=10)
     model.train()
 
-    # Fit the model on the random dataset for 1 epoch
-    # This doesn't guarantee correctness, just that it runs
-    model.fit(test_loader, epochs=1, lr=0.001)
-
-
-def test_variational_autoencoder_train_loop(data_loaders, data_shapes):
-    """
-    Simple smoke test for the training loop of the linear VariationalAutoencoder,
-    checking for any exceptions.
-    """
-    torch_dataset, train_loader, test_loader, val_loader = data_loaders
-    gt_shape, sequence_length, in_channels = data_shapes
-
-    model = VariationalAutoencoder(
-        input_shape=sequence_length * in_channels, latent_dims=10
-    )
-    model.train()
-
-    # Fit the model on the random dataset for 1 epoch
-    model.fit(test_loader, epochs=1, lr=0.001)
+    try:
+        if model_class == Autoencoder or model_class == VariationalAutoencoder:
+            model.fit(test_loader, epochs=1, lr=0.001)
+    except Exception as e:
+        pytest.fail(f"Model {model_class.__name__} failed with exception: {e}")
