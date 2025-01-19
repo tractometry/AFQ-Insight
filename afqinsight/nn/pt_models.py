@@ -542,6 +542,48 @@ def cnn_resnet_pt(input_shape, n_classes):
     return cnn_resnet_Model
 
 
+class VariationalEncoder_one_tract(nn.Module):
+    def __init__(self, input_shape, latent_dims, dropout):
+        super(VariationalEncoder_one_tract, self).__init__()
+        self.linear1 = nn.Linear(input_shape, 50)
+        self.linear2 = nn.Linear(50, latent_dims)
+        self.linear3 = nn.Linear(50, latent_dims)
+        self.dropout = nn.Dropout(dropout)
+        self.activation = nn.ReLU()
+        self.N = torch.distributions.Normal(0, 1)
+        self.N.loc = self.N.loc.to(self.device)
+        self.N.scale = self.N.scale.to(self.device)
+        self.kl = 0
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    def forward(self, x):
+        x = torch.flatten(x, start_dim=1)
+        x = self.linear1(x)
+        x = self.activation(x)
+        x = self.dropout(x)
+        mu = self.linear2(x)
+        sigma = torch.exp(self.linear3(x))
+        z = mu + sigma * self.N.sample(mu.shape)
+        self.kl = (sigma**2 + mu**2 - torch.log(sigma) - 1 / 2).sum()
+        return z
+
+
+class Decoder_one_tract(nn.Module):
+    def __init__(self, input_shape, latent_dims):
+        super(Decoder_one_tract, self).__init__()
+        self.linear1 = nn.Linear(latent_dims, 50)
+        self.relu = nn.ReLU()
+        self.linear2 = nn.Linear(50, input_shape)
+
+    def forward(self, z):
+        batch_size = z.size(0)
+        x = self.linear1(z)
+        x = self.relu(x)
+        x = self.linear2(x)
+        x = self.relu(x)
+        return x.view(batch_size, -1)
+
+
 class VariationalEncoder(nn.Module):
     def __init__(self, input_shape, latent_dims):
         super(VariationalEncoder, self).__init__()
@@ -637,6 +679,19 @@ class Conv1dDecoder(nn.Module):
         x = self.relu(self.deconv1(x))
         x = self.relu(self.deconv2(x))
         return x
+
+
+class VAE_one_tract(nn.Module):
+    def __init__(self, input_shape, latent_dims, dropout):
+        super(VAE_one_tract, self).__init__()
+        self.encoder = VariationalEncoder_one_tract(
+            input_shape, latent_dims, dropout=dropout
+        )
+        self.decoder = Decoder_one_tract(input_shape, latent_dims)
+
+    def forward(self, x):
+        z = self.encoder(x)
+        return self.decoder(z)
 
 
 class VariationalAutoencoder(nn.Module):
