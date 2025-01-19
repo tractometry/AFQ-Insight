@@ -47,7 +47,7 @@ tables_msg = (
     "afqinsight[tables]`, or by separately installing these packages with "
     "`pip install tables`."
 )
-tables, HAS_TABLES, _ = optional_package("tables", trip_msg=tables_msg)
+tables, HAS_TABLES, _ = optional_package(name="tables", trip_msg=tables_msg)
 
 
 try:
