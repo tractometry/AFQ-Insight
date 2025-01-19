@@ -1,6 +1,8 @@
 import math
 
+import numpy as np
 import torch
+import torch.nn.functional as F
 from dipy.utils.optpkg import optional_package
 from dipy.utils.tripwire import TripWire
 
@@ -692,6 +694,47 @@ class VAE_one_tract(nn.Module):
     def forward(self, x):
         z = self.encoder(x)
         return self.decoder(z)
+
+    def fit(self, data, epochs=20, lr=0.001, num_selected_tracts=5):
+        opt = torch.optim.Adam(self.parameters(), lr=lr)
+
+        for epoch in range(epochs):
+            running_loss = 0
+            items = 0
+            for x, _ in data:
+                batch_size = x.size(0)
+                num_tracts = x.size(1)
+
+                selected_tracts = []
+                for _ in range(num_selected_tracts):
+                    tract_indices = np.random.randint(0, num_tracts, size=batch_size)
+                    batch_indices = np.arange(batch_size)
+                    selected_tracts.append(x[batch_indices, tract_indices, :])
+
+                tract_data = torch.stack(selected_tracts, dim=1)
+
+                tract_data = tract_data.view(-1, 100).to(self.device)
+
+                opt.zero_grad()
+                x_hat = self(tract_data)
+
+                loss = F.mse_loss(x_hat, x, reduction="sum")
+
+                items += tract_data.size(0)
+                running_loss += loss.item()
+                loss.backward()
+                opt.step()
+
+            print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
+
+        return self
+
+    def transform(self, x):
+        self.forward(x)
+
+    def fit_transform(self, data, epochs=20):
+        self.fit(data, epochs)
+        return self.transform(data)
 
 
 class VariationalAutoencoder(nn.Module):
