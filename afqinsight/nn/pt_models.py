@@ -6,6 +6,8 @@ import torch.nn.functional as F
 from dipy.utils.optpkg import optional_package
 from dipy.utils.tripwire import TripWire
 
+import afqinsight.augmentation as aug
+
 torch_msg = (
     "To use afqinsight's pytorch models, you need to have pytorch "
     "installed. You can do this by installing afqinsight with `pip install "
@@ -695,16 +697,19 @@ class VAE_one_tract(nn.Module):
         z = self.encoder(x)
         return self.decoder(z)
 
-    def fit(self, data, epochs=20, lr=0.001, num_selected_tracts=5):
+    def random_train_multiple_tracts(
+        self, data, epochs=20, lr=0.001, num_selected_tracts=5, sigma=0.03
+    ):
         opt = torch.optim.Adam(self.parameters(), lr=lr)
 
         for epoch in range(epochs):
             running_loss = 0
             items = 0
             for x, _ in data:
-                batch_size = x.size(0)
-                num_tracts = x.size(1)
+                batch_size = x.size(0)  # 64
+                num_tracts = x.size(1)  # 48
 
+                # By the end, will have shape (batch_size, num_selected_tracts, 100)
                 selected_tracts = []
                 for _ in range(num_selected_tracts):
                     tract_indices = np.random.randint(0, num_tracts, size=batch_size)
@@ -713,12 +718,18 @@ class VAE_one_tract(nn.Module):
 
                 tract_data = torch.stack(selected_tracts, dim=1)
 
+                tract_data = tract_data.to(torch.float32).numpy()
+                tract_data = aug.jitter(tract_data, sigma=sigma)
+                tract_data = torch.tensor(tract_data, dtype=torch.float32).to(
+                    self.device
+                )
+
                 tract_data = tract_data.view(-1, 100).to(self.device)
 
                 opt.zero_grad()
                 x_hat = self(tract_data)
 
-                loss = F.mse_loss(x_hat, x, reduction="sum")
+                loss = F.mse_loss(tract_data, x_hat, reduction="sum")
 
                 items += tract_data.size(0)
                 running_loss += loss.item()
