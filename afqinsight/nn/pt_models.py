@@ -549,6 +549,7 @@ def cnn_resnet_pt(input_shape, n_classes):
 class VariationalEncoder_one_tract(nn.Module):
     def __init__(self, input_shape, latent_dims, dropout):
         super(VariationalEncoder_one_tract, self).__init__()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.linear1 = nn.Linear(input_shape, 50)
         self.linear2 = nn.Linear(50, latent_dims)
         self.linear3 = nn.Linear(50, latent_dims)
@@ -558,7 +559,6 @@ class VariationalEncoder_one_tract(nn.Module):
         self.N.loc = self.N.loc.to(self.device)
         self.N.scale = self.N.scale.to(self.device)
         self.kl = 0
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def forward(self, x):
         x = torch.flatten(x, start_dim=1)
@@ -692,14 +692,13 @@ class VAE_one_tract(nn.Module):
             input_shape, latent_dims, dropout=dropout
         )
         self.decoder = Decoder_one_tract(input_shape, latent_dims)
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def forward(self, x):
         z = self.encoder(x)
         return self.decoder(z)
 
-    def random_train_multiple_tracts(
-        self, data, epochs=20, lr=0.001, num_selected_tracts=5, sigma=0.03
-    ):
+    def fit(self, data, epochs=20, lr=0.001, num_selected_tracts=5, sigma=0.03):
         opt = torch.optim.Adam(self.parameters(), lr=lr)
 
         for epoch in range(epochs):
