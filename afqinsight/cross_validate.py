@@ -190,6 +190,7 @@ def cross_validate_checkpoint(
     n_jobs=None,
     verbose=0,
     fit_params=None,
+    score_params=None,
     pre_dispatch="2*n_jobs",
     return_train_score=False,
     return_estimator=False,
@@ -265,6 +266,9 @@ def cross_validate_checkpoint(
 
     fit_params : dict, default=None
         Parameters to pass to the fit method of the estimator.
+
+    score_params : dict, default=None
+        Parameters to pass to the score method of the estimator.
 
     pre_dispatch : int or str, default='2*n_jobs'
         Controls the number of jobs that get dispatched during parallel
@@ -423,6 +427,7 @@ def cross_validate_checkpoint(
                 verbose=verbose,
                 parameters=None,
                 fit_params=fit_params,
+                score_params=score_params,
                 return_train_score=return_train_score,
                 return_times=True,
                 return_estimator=return_estimator,
@@ -446,6 +451,7 @@ def cross_validate_checkpoint(
                 verbose=verbose,
                 parameters=None,
                 fit_params=fit_params,
+                score_params=score_params,
                 return_train_score=return_train_score,
                 return_times=True,
                 return_estimator=return_estimator,

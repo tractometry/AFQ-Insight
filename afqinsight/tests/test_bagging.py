@@ -66,7 +66,7 @@ def test_classification():
         }
     )
 
-    for base_estimator in [
+    for estimator in [
         None,
         DummyClassifier(),
         Perceptron(),
@@ -76,7 +76,7 @@ def test_classification():
     ]:
         for params in grid:
             SerialBaggingClassifier(
-                base_estimator=base_estimator, random_state=rng, **params
+                estimator=estimator, random_state=rng, **params
             ).fit(X_train, y_train).predict(X_test)
 
 
@@ -124,7 +124,7 @@ def test_sparse_classification():
             ]:
                 # Trained on sparse format
                 sparse_classifier = SerialBaggingClassifier(
-                    base_estimator=CustomSVC(decision_function_shape="ovr"),
+                    estimator=CustomSVC(decision_function_shape="ovr"),
                     random_state=1,
                     **params,
                 ).fit(X_train_sparse, y_train)
@@ -132,7 +132,7 @@ def test_sparse_classification():
 
                 # Trained on dense format
                 dense_classifier = SerialBaggingClassifier(
-                    base_estimator=CustomSVC(decision_function_shape="ovr"),
+                    estimator=CustomSVC(decision_function_shape="ovr"),
                     random_state=1,
                     **params,
                 ).fit(X_train, y_train)
@@ -160,7 +160,7 @@ def test_regression():
         }
     )
 
-    for base_estimator in [
+    for estimator in [
         None,
         DummyRegressor(),
         DecisionTreeRegressor(),
@@ -168,9 +168,9 @@ def test_regression():
         SVR(),
     ]:
         for params in grid:
-            SerialBaggingRegressor(
-                base_estimator=base_estimator, random_state=rng, **params
-            ).fit(X_train, y_train).predict(X_test)
+            SerialBaggingRegressor(estimator=estimator, random_state=rng, **params).fit(
+                X_train, y_train
+            ).predict(X_test)
 
 
 def test_sparse_regression():
@@ -211,15 +211,13 @@ def test_sparse_regression():
         for params in parameter_sets:
             # Trained on sparse format
             sparse_classifier = SerialBaggingRegressor(
-                base_estimator=CustomSVR(), random_state=1, **params
+                estimator=CustomSVR(), random_state=1, **params
             ).fit(X_train_sparse, y_train)
             sparse_results = sparse_classifier.predict(X_test_sparse)
 
             # Trained on dense format
             dense_results = (
-                SerialBaggingRegressor(
-                    base_estimator=CustomSVR(), random_state=1, **params
-                )
+                SerialBaggingRegressor(estimator=CustomSVR(), random_state=1, **params)
                 .fit(X_train, y_train)
                 .predict(X_test)
             )
@@ -248,33 +246,33 @@ def test_bootstrap_samples():
         diabetes.data, diabetes.target, random_state=rng
     )
 
-    base_estimator = DecisionTreeRegressor().fit(X_train, y_train)
+    estimator = DecisionTreeRegressor().fit(X_train, y_train)
 
     # without bootstrap, all trees are perfect on the training set
     ensemble = SerialBaggingRegressor(
-        base_estimator=DecisionTreeRegressor(),
+        estimator=DecisionTreeRegressor(),
         max_samples=1.0,
         bootstrap=False,
         random_state=rng,
     ).fit(X_train, y_train)
 
-    assert base_estimator.score(X_train, y_train) == ensemble.score(X_train, y_train)
+    assert estimator.score(X_train, y_train) == ensemble.score(X_train, y_train)
 
     # with bootstrap, trees are no longer perfect on the training set
     ensemble = SerialBaggingRegressor(
-        base_estimator=DecisionTreeRegressor(),
+        estimator=DecisionTreeRegressor(),
         max_samples=1.0,
         bootstrap=True,
         random_state=rng,
     ).fit(X_train, y_train)
 
-    assert base_estimator.score(X_train, y_train) > ensemble.score(X_train, y_train)
+    assert estimator.score(X_train, y_train) > ensemble.score(X_train, y_train)
 
     # check that each sampling correspond to a complete bootstrap resample.
     # the size of each bootstrap should be the same as the input data but
     # the data should be different (checked using the hash of the data).
     ensemble = SerialBaggingRegressor(
-        base_estimator=DummySizeEstimator(), bootstrap=True
+        estimator=DummySizeEstimator(), bootstrap=True
     ).fit(X_train, y_train)
     training_hash = []
     for estimator in ensemble.estimators_:
@@ -291,7 +289,7 @@ def test_bootstrap_features():
     )
 
     ensemble = SerialBaggingRegressor(
-        base_estimator=DecisionTreeRegressor(),
+        estimator=DecisionTreeRegressor(),
         max_features=1.0,
         bootstrap_features=False,
         random_state=rng,
@@ -301,7 +299,7 @@ def test_bootstrap_features():
         assert diabetes.data.shape[1] == np.unique(features).shape[0]
 
     ensemble = SerialBaggingRegressor(
-        base_estimator=DecisionTreeRegressor(),
+        estimator=DecisionTreeRegressor(),
         max_features=1.0,
         bootstrap_features=True,
         random_state=rng,
@@ -321,7 +319,7 @@ def test_probability():
     with np.errstate(divide="ignore", invalid="ignore"):
         # Normal case
         ensemble = SerialBaggingClassifier(
-            base_estimator=DecisionTreeClassifier(), random_state=rng
+            estimator=DecisionTreeClassifier(), random_state=rng
         ).fit(X_train, y_train)
 
         assert_array_almost_equal(
@@ -334,7 +332,7 @@ def test_probability():
 
         # Degenerate case, where some classes are missing
         ensemble = SerialBaggingClassifier(
-            base_estimator=LogisticRegression(), random_state=rng, max_samples=5
+            estimator=LogisticRegression(), random_state=rng, max_samples=5
         ).fit(X_train, y_train)
 
         assert_array_almost_equal(
@@ -354,9 +352,9 @@ def test_oob_score_classification():
         iris.data, iris.target, random_state=rng
     )
 
-    for base_estimator in [DecisionTreeClassifier(), SVC()]:
+    for estimator in [DecisionTreeClassifier(), SVC()]:
         clf = SerialBaggingClassifier(
-            base_estimator=base_estimator,
+            estimator=estimator,
             n_estimators=100,
             bootstrap=True,
             oob_score=True,
@@ -371,7 +369,7 @@ def test_oob_score_classification():
         assert_warns(
             UserWarning,
             SerialBaggingClassifier(
-                base_estimator=base_estimator,
+                estimator=estimator,
                 n_estimators=1,
                 bootstrap=True,
                 oob_score=True,
@@ -391,7 +389,7 @@ def test_oob_score_regression():
     )
 
     clf = SerialBaggingRegressor(
-        base_estimator=DecisionTreeRegressor(),
+        estimator=DecisionTreeRegressor(),
         n_estimators=50,
         bootstrap=True,
         oob_score=True,
@@ -406,7 +404,7 @@ def test_oob_score_regression():
     assert_warns(
         UserWarning,
         SerialBaggingRegressor(
-            base_estimator=DecisionTreeRegressor(),
+            estimator=DecisionTreeRegressor(),
             n_estimators=1,
             bootstrap=True,
             oob_score=True,
@@ -425,7 +423,7 @@ def test_single_estimator():
     )
 
     clf1 = SerialBaggingRegressor(
-        base_estimator=KNeighborsRegressor(),
+        estimator=KNeighborsRegressor(),
         n_estimators=1,
         bootstrap=False,
         bootstrap_features=False,
@@ -552,15 +550,15 @@ def test_gridsearch():
     y[y == 2] = 1
 
     # Grid search with scoring based on decision_function
-    parameters = {"n_estimators": (1, 2), "base_estimator__C": (1, 2)}
+    parameters = {"n_estimators": (1, 2), "estimator__C": (1, 2)}
 
     GridSearchCV(SerialBaggingClassifier(SVC()), parameters, scoring="roc_auc").fit(
         X, y
     )
 
 
-def test_base_estimator():
-    # Check base_estimator and its default values.
+def test_estimator():
+    # Check estimator and its default values.
     rng = check_random_state(0)
 
     # Classification
@@ -572,19 +570,19 @@ def test_base_estimator():
         X_train, y_train
     )
 
-    assert isinstance(ensemble.base_estimator_, DecisionTreeClassifier)
+    assert isinstance(ensemble.estimator_, DecisionTreeClassifier)
 
     ensemble = SerialBaggingClassifier(
         DecisionTreeClassifier(), n_jobs=3, random_state=0
     ).fit(X_train, y_train)
 
-    assert isinstance(ensemble.base_estimator_, DecisionTreeClassifier)
+    assert isinstance(ensemble.estimator_, DecisionTreeClassifier)
 
     ensemble = SerialBaggingClassifier(Perceptron(), n_jobs=3, random_state=0).fit(
         X_train, y_train
     )
 
-    assert isinstance(ensemble.base_estimator_, Perceptron)
+    assert isinstance(ensemble.estimator_, Perceptron)
 
     # Regression
     X_train, X_test, y_train, y_test = train_test_split(
@@ -595,18 +593,18 @@ def test_base_estimator():
         X_train, y_train
     )
 
-    assert isinstance(ensemble.base_estimator_, DecisionTreeRegressor)
+    assert isinstance(ensemble.estimator_, DecisionTreeRegressor)
 
     ensemble = SerialBaggingRegressor(
         DecisionTreeRegressor(), n_jobs=3, random_state=0
     ).fit(X_train, y_train)
 
-    assert isinstance(ensemble.base_estimator_, DecisionTreeRegressor)
+    assert isinstance(ensemble.estimator_, DecisionTreeRegressor)
 
     ensemble = SerialBaggingRegressor(SVR(), n_jobs=3, random_state=0).fit(
         X_train, y_train
     )
-    assert isinstance(ensemble.base_estimator_, SVR)
+    assert isinstance(ensemble.estimator_, SVR)
 
 
 def test_bagging_with_pipeline():
@@ -799,7 +797,7 @@ def test_estimators_samples_deterministic():
         SparseRandomProjection(n_components=2), LogisticRegression()
     )
     clf = SerialBaggingClassifier(
-        base_estimator=base_pipeline, max_samples=0.5, random_state=0
+        estimator=base_pipeline, max_samples=0.5, random_state=0
     )
     clf.fit(X, y)
     pipeline_estimator_coef = clf.estimators_[0].steps[-1][1].coef_.copy()
@@ -865,7 +863,7 @@ def replace(X):
 def test_bagging_regressor_with_missing_inputs():
     # Check that SerialBaggingRegressor can accept X with missing/infinite data
     X = np.array(
-        [[1, 3, 5], [2, None, 6], [2, np.nan, 6], [2, np.inf, 6], [2, np.NINF, 6]]
+        [[1, 3, 5], [2, None, 6], [2, np.nan, 6], [2, np.inf, 6], [2, -np.inf, 6]]
     )
     y_values = [
         np.array([2, 3, 3, 3, 3]),
@@ -890,7 +888,7 @@ def test_bagging_regressor_with_missing_inputs():
 def test_bagging_classifier_with_missing_inputs():
     # Check that SerialBaggingClassifier can accept X with missing/infinite data
     X = np.array(
-        [[1, 3, 5], [2, None, 6], [2, np.nan, 6], [2, np.inf, 6], [2, np.NINF, 6]]
+        [[1, 3, 5], [2, None, 6], [2, np.nan, 6], [2, np.inf, 6], [2, -np.inf, 6]]
     )
     y = np.array([3, 6, 6, 6, 6])
     classifier = DecisionTreeClassifier()
@@ -939,7 +937,7 @@ def test_bagging_get_estimators_indices():
             self._sample_indices = y
 
     clf = SerialBaggingRegressor(
-        base_estimator=MyEstimator(), n_estimators=1, random_state=0
+        estimator=MyEstimator(), n_estimators=1, random_state=0
     )
     clf.fit(X, y)
 
