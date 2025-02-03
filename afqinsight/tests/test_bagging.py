@@ -863,7 +863,7 @@ def replace(X):
 def test_bagging_regressor_with_missing_inputs():
     # Check that SerialBaggingRegressor can accept X with missing/infinite data
     X = np.array(
-        [[1, 3, 5], [2, None, 6], [2, np.nan, 6], [2, np.inf, 6], [2, np.NINF, 6]]
+        [[1, 3, 5], [2, None, 6], [2, np.nan, 6], [2, np.inf, 6], [2, -np.inf, 6]]
     )
     y_values = [
         np.array([2, 3, 3, 3, 3]),
@@ -888,7 +888,7 @@ def test_bagging_regressor_with_missing_inputs():
 def test_bagging_classifier_with_missing_inputs():
     # Check that SerialBaggingClassifier can accept X with missing/infinite data
     X = np.array(
-        [[1, 3, 5], [2, None, 6], [2, np.nan, 6], [2, np.inf, 6], [2, np.NINF, 6]]
+        [[1, 3, 5], [2, None, 6], [2, np.nan, 6], [2, np.inf, 6], [2, -np.inf, 6]]
     )
     y = np.array([3, 6, 6, 6, 6])
     classifier = DecisionTreeClassifier()

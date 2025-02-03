@@ -23,6 +23,7 @@ from sklearn.ensemble._bagging import (
     _parallel_predict_regression,
 )
 from sklearn.ensemble._base import _partition_estimators
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.utils import check_array, check_random_state, resample
 from sklearn.utils._mask import indices_to_mask
 from sklearn.utils.metaestimators import available_if
@@ -33,7 +34,7 @@ from sklearn.utils.validation import (
     has_fit_parameter,
 )
 
-__all__ = ["SerialBaggingClassifier"]
+__all__ = ["SerialBaggingClassifier", "SerialBaggingRegressor"]
 
 MAX_INT = np.iinfo(np.int32).max
 
@@ -300,6 +301,9 @@ class SerialBaggingClassifier(BaggingClassifier):
         random_state=None,
         verbose=0,
     ):
+        if estimator is None:
+            estimator = DecisionTreeClassifier()
+
         super().__init__(
             estimator=estimator,
             n_estimators=n_estimators,
@@ -816,6 +820,8 @@ class SerialBaggingRegressor(BaggingRegressor):
         random_state=None,
         verbose=0,
     ):
+        if estimator is None:
+            estimator = DecisionTreeRegressor()
         super().__init__(
             estimator=estimator,
             n_estimators=n_estimators,
