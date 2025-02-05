@@ -1,3 +1,8 @@
+0.7 (February 05, 2025)
+=======================
+  * Updates versions of dependencies (#20)
+  * Vendorize neurocombat_sklearn (#21)
+
 0.5.1 (September 12, 2024)
 ==========================
   * Push to the right PYPI url. (#2)
