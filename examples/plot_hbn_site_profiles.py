@@ -38,11 +38,11 @@ differences have been removed.
 """
 
 import numpy as np
-from neurocombat_sklearn import CombatModel
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
 from afqinsight import AFQDataset
+from afqinsight.neurocombat_sklearn import CombatModel
 from afqinsight.plot import plot_tract_profiles
 
 #############################################################################
@@ -108,8 +108,11 @@ site_figs = plot_tract_profiles(
 # FA and MD profiles. Let's use neuroComBat to harmonize the site differences
 # and then replot the mean bundle profiles.
 #
+
 # N.B. We use the excellent `neurocombat_sklearn
-# <https://github.com/Warvito/neurocombat_sklearn>`_ package to apply ComBat to
+# <https://github.com/Warvito/neurocombat_sklearn>`_ package, which we have
+# ported and updated to support recent versions of scikit learn,
+# to apply ComBat to
 # our data. We love this library, however, it is not fully compliant with the
 # scikit-learn transformer API, so we cannot use the
 # :func:`AFQDataset.model_fit_transform` method to apply this transformer to our
@@ -121,6 +124,7 @@ site_figs = plot_tract_profiles(
 # job.
 
 # Fit the ComBat transformer to the training set
+
 combat = CombatModel()
 combat.fit(
     dataset_train.X,
