@@ -22,7 +22,7 @@
 
 import numpy as np
 import numpy.linalg as la
-from sklearn.base import BaseEstimator
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.utils import check_array
 from sklearn.utils.validation import (
@@ -36,12 +36,16 @@ __all__ = [
 ]
 
 
-class CombatModel(BaseEstimator):
+class CombatModel(BaseEstimator, TransformerMixin):
     """Harmonize/normalize features using Combat [1].
 
     [1] Fortin, Jean-Philippe, et al. "Harmonization of cortical thickness
     measurements across scanners and sites." Neuroimage 167 (2018): 104-120.
     """
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        return tags
 
     def __init__(self, copy=True):
         self.copy = copy
@@ -51,20 +55,19 @@ class CombatModel(BaseEstimator):
 
         __init__ parameters are not touched.
         """
-
-        # Checking one attribute is enough, because they are all set together
-        if hasattr(self, "n_sites"):
-            del self.n_sites
-            del self.sites_names
-            del self.discrete_covariates_used
-            del self.continuous_covariates_used
-            del self.site_encoder
-            del self.discrete_encoders
-            del self.beta_hat
-            del self.grand_mean
-            del self.var_pooled
-            del self.gamma_star
-            del self.delta_star
+        for name in [
+            "n_sites",
+            "sites_names",
+            "discrete_covariates_used",
+            "continuous_covariates_used",
+            "site_encoder",
+            "discrete_encoders",
+            "beta_hat",
+            "grand_mean",
+            "var_pooled",
+        ]:
+            if hasattr(self, name):
+                setattr(self, name, None)
 
     def fit(self, data, sites, discrete_covariates=None, continuous_covariates=None):
         """Compute the parameters to perform the harmonization/normalization
@@ -89,9 +92,12 @@ class CombatModel(BaseEstimator):
         self._reset()
 
         data = check_array(data, copy=self.copy, estimator=self, dtype=FLOAT_DTYPES)
-        sites = check_array(sites, copy=self.copy, estimator=self)
+        if len(sites.shape) == 1:
+            sites = sites[:, None]
 
+        sites = check_array(sites, copy=self.copy, estimator=self)
         check_consistent_length(data, sites)
+        self.fit_sites_ = sites
 
         if discrete_covariates is not None:
             self.discrete_covariates_used = True
@@ -147,7 +153,7 @@ class CombatModel(BaseEstimator):
         return self
 
     def transform(
-        self, data, sites, discrete_covariates=None, continuous_covariates=None
+        self, data, sites=None, discrete_covariates=None, continuous_covariates=None
     ):
         """Transform data to harmonized space
 
@@ -162,10 +168,12 @@ class CombatModel(BaseEstimator):
         continuous_covariates : array-like
             The covariates which are continuous
         """
-
         check_is_fitted(self, "n_sites")
-
+        if sites is None:
+            sites = self.fit_sites_
         data = check_array(data, copy=self.copy, estimator=self, dtype=FLOAT_DTYPES)
+        if len(sites.shape) == 1:
+            sites = sites[:, None]
         sites = check_array(sites, copy=self.copy, estimator=self)
 
         check_consistent_length(data, sites)
@@ -221,8 +229,10 @@ class CombatModel(BaseEstimator):
 
         return bayes_data.T
 
-    def fit_transform(self, data, sites, *args):
+    def fit_transform(self, data, sites=None, *args, **kwargs):
         """Fit to data, then transform it"""
+        if sites is None:
+            sites = kwargs.pop("y")
         return self.fit(data, sites, *args).transform(data, sites, *args)
 
     def _make_design_matrix(
