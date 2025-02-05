@@ -93,8 +93,8 @@ about this format, see also the `AFQ-Browser documentation
 
  .. code-block:: none
 
-    subjects.csv:   0%|          | 0.00/938 [00:00<?, ?iB/s]    subjects.csv: 3.31kiB [00:00, 8.72MiB/s]                
-    nodes.csv:   0%|          | 0.00/5.81M [00:00<?, ?iB/s]    nodes.csv: 7.18MiB [00:00, 71.8MiB/s]                      nodes.csv: 14.6MiB [00:00, 73.0MiB/s]    nodes.csv: 16.3MiB [00:00, 73.2MiB/s]
+    subjects.csv:   0%|          | 0.00/938 [00:00<?, ?iB/s]    subjects.csv: 3.31kiB [00:00, 10.9MiB/s]                
+    nodes.csv:   0%|          | 0.00/5.81M [00:00<?, ?iB/s]    nodes.csv:  58%|█████▊    | 3.38M/5.81M [00:00<00:00, 32.1MiB/s]    nodes.csv: 7.69MiB [00:00, 38.4MiB/s]                               nodes.csv: 16.3MiB [00:00, 54.9MiB/s]
 
 
 
@@ -131,6 +131,13 @@ returns variables that we will use below in our analysis of the data.
 
 
 
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/afqinsight/transform.py:144: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
+      features = interpolated.stack(["subjectID", "tractID", "metric"]).unstack(
 
 
 
@@ -206,9 +213,9 @@ Create an analysis pipeline
 
  .. code-block:: none
 
-    Mean train score: 0.883
-    Mean test score:  -0.360
-    Mean fit time:    17.04s
+    Mean train score: 0.848
+    Mean test score:  -0.553
+    Mean fit time:    10.16s
     Mean score time:   0.00s
 
 
@@ -217,7 +224,7 @@ Create an analysis pipeline
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 26.291 seconds)
+   **Total running time of the script:** (0 minutes 52.564 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_age_regression.py:

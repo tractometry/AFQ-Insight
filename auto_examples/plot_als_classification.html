@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Classify ALS diagnosis from white matter features &#8212; AFQ-Insight 0.6.1 documentation</title>
+    <title>Classify ALS diagnosis from white matter features &#8212; AFQ-Insight 0.7 documentation</title>
   
   
   
@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/css/afqinsight.css?v=d1d1afb3" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -40,15 +40,15 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=2bd037f0"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/documentation_options.js?v=48f8e935"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/copybutton.js?v=26522df0"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_als_classification';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Getting help using AFQ-Insight" href="../getting_help.html" />
-    <link rel="prev" title="Use parametric statistics for group comparison" href="plot_als_comparison.html" />
+    <link rel="prev" title="Predict age from white matter features" href="plot_age_regression.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">AFQ-Insight 0.6.1 documentation</p>
+    <p class="title logo__title">AFQ-Insight 0.7 documentation</p>
   
 </a></div>
     
@@ -358,10 +358,10 @@ document.write(`
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="plot_hbn_site_profiles.html">Harmonize HBN data using ComBat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="demo_afq_dataset.html">Load and interact with an AFQ dataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot_age_regression.html">Predict age from white matter features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_hbn_site_profiles.html">Harmonize HBN data using ComBat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_als_comparison.html">Use parametric statistics for group comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_age_regression.html">Predict age from white matter features</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Classify ALS diagnosis from white matter features</a></li>
 </ul>
 </div>
@@ -452,13 +452,13 @@ human brain white matter” PLOS Computational Biology, 2021
 DOI: 10.1371/journal.pcbi.1009136</p>
 </aside>
 </aside>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">groupyr.decomposition</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">GroupPCA</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html#sklearn.impute.SimpleImputer" title="sklearn.impute.SimpleImputer" class="sphx-glr-backref-module-sklearn-impute sphx-glr-backref-type-py-class"><span class="n">SimpleImputer</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html#sklearn.model_selection.cross_validate" title="sklearn.model_selection.cross_validate" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-function"><span class="n">cross_validate</span></a>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">groupyr.decomposition</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">GroupPCA</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.impute</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html#sklearn.impute.SimpleImputer" title="sklearn.impute.SimpleImputer" class="sphx-glr-backref-module-sklearn-impute sphx-glr-backref-type-py-class"><span class="n">SimpleImputer</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html#sklearn.model_selection.cross_validate" title="sklearn.model_selection.cross_validate" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-function"><span class="n">cross_validate</span></a>
 
-<span class="kn">from</span> <span class="nn">afqinsight</span> <span class="kn">import</span> <span class="n">AFQDataset</span><span class="p">,</span> <a href="../api.html#afqinsight.make_afq_classifier_pipeline" title="afqinsight.make_afq_classifier_pipeline" class="sphx-glr-backref-module-afqinsight sphx-glr-backref-type-py-function"><span class="n">make_afq_classifier_pipeline</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">afqinsight</span><span class="w"> </span><span class="kn">import</span> <span class="n">AFQDataset</span><span class="p">,</span> <a href="../api.html#afqinsight.make_afq_classifier_pipeline" title="afqinsight.make_afq_classifier_pipeline" class="sphx-glr-backref-module-afqinsight sphx-glr-backref-type-py-function"><span class="n">make_afq_classifier_pipeline</span></a>
 </pre></div>
 </div>
 <section id="fetch-data-from-sarica-et-al">
@@ -577,13 +577,15 @@ the data from this study and initialize an object for us from this data.</p>
 </div>
 <img src="../_images/sphx_glr_plot_als_classification_001.png" srcset="../_images/sphx_glr_plot_als_classification_001.png" alt="Group Principal Regression Coefficients (FA only)" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>File /home/runner/.cache/afq-insight/sarica/subjects.csv exists.
 File /home/runner/.cache/afq-insight/sarica/nodes.csv exists.
+/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/afqinsight/transform.py:144: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What&#39;s New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
+  features = interpolated.stack([&quot;subjectID&quot;, &quot;tractID&quot;, &quot;metric&quot;]).unstack(
 Mean train score: 1.000
-Mean test score:  0.769
-Mean fit time:    10.57s
+Mean test score:  0.771
+Mean fit time:     7.45s
 Mean score time:   0.01s
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 53.530 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 37.766 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-als-classification-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1515fb8d41d5867af5fb33aeccec07c7/plot_als_classification.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_als_classification.ipynb</span></code></a></p>
@@ -610,12 +612,12 @@ Mean score time:   0.01s
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="plot_als_comparison.html"
+       href="plot_age_regression.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Use parametric statistics for group comparison</p>
+        <p class="prev-next-title">Predict age from white matter features</p>
       </div>
     </a>
     <a class="right-next"
@@ -692,7 +694,7 @@ Mean score time:   0.01s
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

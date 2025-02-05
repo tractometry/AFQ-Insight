@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>afqinsight.transform &#8212; AFQ-Insight 0.6.1 documentation</title>
+    <title>afqinsight.transform &#8212; AFQ-Insight 0.7 documentation</title>
   
   
   
@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/afqinsight.css?v=d1d1afb3" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -39,8 +39,8 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../_static/documentation_options.js?v=2bd037f0"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/documentation_options.js?v=48f8e935"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/copybutton.js?v=26522df0"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/afqinsight/transform';</script>
@@ -121,7 +121,7 @@
   
   
   
-    <p class="title logo__title">AFQ-Insight 0.6.1 documentation</p>
+    <p class="title logo__title">AFQ-Insight 0.7 documentation</p>
   
 </a></div>
     
@@ -402,13 +402,13 @@ document.write(`
   <h1>Source code for afqinsight.transform</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Transform AFQ data.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">sklearn_pandas</span> <span class="kn">import</span> <span class="n">DataFrameMapper</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrameMapper</span>
 
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">CANONICAL_TRACT_NAMES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">CANONICAL_TRACT_NAMES</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;AFQDataFrameMapper&quot;</span><span class="p">,</span>
@@ -422,7 +422,7 @@ document.write(`
 
 <div class="viewcode-block" id="AFQDataFrameMapper">
 <a class="viewcode-back" href="../../api.html#afqinsight.AFQDataFrameMapper">[docs]</a>
-<span class="k">class</span> <span class="nc">AFQDataFrameMapper</span><span class="p">(</span><span class="n">DataFrameMapper</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AFQDataFrameMapper</span><span class="p">(</span><span class="n">DataFrameMapper</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Map pandas dataframe to sklearn feature matrix.</span>
 
 <span class="sd">    This object first converts an AFQ nodes.csv dataframe into a feature</span>
@@ -477,7 +477,7 @@ document.write(`
 <span class="sd">        List of feature column names.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">pd_interpolate_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">bundle_agg_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -493,7 +493,7 @@ document.write(`
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dataframe_mapper_kwargs</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_bundle_agg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">agg_func</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_bundle_agg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">agg_func</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="s2">&quot;sessionID&quot;</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">concat_subject_session</span><span class="p">:</span>
             <span class="n">X</span><span class="o">.</span><span class="n">subjectID</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">subjectID</span> <span class="o">+</span> <span class="n">X</span><span class="o">.</span><span class="n">sessionID</span>
@@ -513,7 +513,7 @@ document.write(`
 
         <span class="k">return</span> <span class="n">features</span>
 
-    <span class="k">def</span> <span class="nf">_preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="c1"># We&#39;d like to interpolate the missing values, but first we need to</span>
         <span class="c1"># structure the data frame so that it does not interpolate from other</span>
         <span class="c1"># subjects, tracts, or metrics. It should only interpolate from nearby</span>
@@ -584,7 +584,7 @@ document.write(`
 
         <span class="k">return</span> <span class="n">features</span>
 
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit a transform from the given dataframe.</span>
 
 <span class="sd">        Parameters</span>
@@ -601,7 +601,7 @@ document.write(`
             <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bundle_agg</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bundle_agg_func</span><span class="p">,</span> <span class="n">set_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Transform the input data.</span>
 
 <span class="sd">        This assumes that ``fit`` or ``fit_transform`` has already been called.</span>
@@ -619,7 +619,7 @@ document.write(`
             <span class="p">)</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit a transform from the given dataframe and apply directly to given data.</span>
 
 <span class="sd">        Parameters</span>
@@ -639,13 +639,13 @@ document.write(`
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">feature_names_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">feature_names_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the feature names.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformed_names_</span></div>
 
 
 
-<span class="k">def</span> <span class="nf">isiterable</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isiterable</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if obj is an iterable, False otherwise.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">_</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>  <span class="c1"># noqa F841</span>
@@ -655,7 +655,7 @@ document.write(`
         <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">multicol2sets</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">tract_symmetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">multicol2sets</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">tract_symmetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a pandas MultiIndex to an array of sets.</span>
 
 <span class="sd">    Parameters</span>
@@ -692,7 +692,7 @@ document.write(`
     <span class="k">return</span> <span class="n">col_sets</span>
 
 
-<span class="k">def</span> <span class="nf">multicol2dicts</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">tract_symmetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">multicol2dicts</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">tract_symmetry</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a pandas MultiIndex to an array of dicts.</span>
 
 <span class="sd">    Parameters</span>
@@ -732,7 +732,7 @@ document.write(`
     <span class="k">return</span> <span class="n">col_dicts</span>
 
 
-<span class="k">def</span> <span class="nf">sort_features</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">scores</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sort_features</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">scores</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort features by importance.</span>
 
 <span class="sd">    Parameters</span>
@@ -758,7 +758,7 @@ document.write(`
     <span class="k">return</span> <span class="n">res</span>
 
 
-<span class="k">def</span> <span class="nf">beta_hat_by_groups</span><span class="p">(</span><span class="n">beta_hat</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">drop_zeros</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">beta_hat_by_groups</span><span class="p">(</span><span class="n">beta_hat</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">drop_zeros</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform one-dimensional beta_hat array into OrderedDict.</span>
 
 <span class="sd">    Organize by tract-metric groups</span>
@@ -803,7 +803,7 @@ document.write(`
     <span class="k">return</span> <span class="n">betas</span>
 
 
-<span class="k">def</span> <span class="nf">unfold_beta_hat_by_metrics</span><span class="p">(</span><span class="n">beta_hat</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">tract_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unfold_beta_hat_by_metrics</span><span class="p">(</span><span class="n">beta_hat</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">tract_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform one-dimensional beta_hat array into OrderedDict.</span>
 
 <span class="sd">    Organize by tract-metric groups</span>
@@ -898,7 +898,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

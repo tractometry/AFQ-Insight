@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Predict age from white matter features &#8212; AFQ-Insight 0.6.1 documentation</title>
+    <title>Predict age from white matter features &#8212; AFQ-Insight 0.7 documentation</title>
   
   
   
@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/css/afqinsight.css?v=d1d1afb3" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -40,15 +40,15 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=2bd037f0"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/documentation_options.js?v=48f8e935"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/copybutton.js?v=26522df0"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_age_regression';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Use parametric statistics for group comparison" href="plot_als_comparison.html" />
-    <link rel="prev" title="Load and interact with an AFQ dataset" href="demo_afq_dataset.html" />
+    <link rel="next" title="Classify ALS diagnosis from white matter features" href="plot_als_classification.html" />
+    <link rel="prev" title="Use parametric statistics for group comparison" href="plot_als_comparison.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">AFQ-Insight 0.6.1 documentation</p>
+    <p class="title logo__title">AFQ-Insight 0.7 documentation</p>
   
 </a></div>
     
@@ -358,10 +358,10 @@ document.write(`
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="plot_hbn_site_profiles.html">Harmonize HBN data using ComBat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="demo_afq_dataset.html">Load and interact with an AFQ dataset</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Predict age from white matter features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_hbn_site_profiles.html">Harmonize HBN data using ComBat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_als_comparison.html">Use parametric statistics for group comparison</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Predict age from white matter features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_als_classification.html">Classify ALS diagnosis from white matter features</a></li>
 </ul>
 </div>
@@ -451,14 +451,14 @@ brain white matter” PLOS Computational Biology, 2021 DOI:
 10.1371/journal.pcbi.1009136</p>
 </aside>
 </aside>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html#sklearn.model_selection.cross_validate" title="sklearn.model_selection.cross_validate" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-function"><span class="n">cross_validate</span></a>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html#sklearn.model_selection.cross_validate" title="sklearn.model_selection.cross_validate" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-function"><span class="n">cross_validate</span></a>
 
-<span class="kn">from</span> <span class="nn">afqinsight</span> <span class="kn">import</span> <a href="../api.html#afqinsight.make_afq_regressor_pipeline" title="afqinsight.make_afq_regressor_pipeline" class="sphx-glr-backref-module-afqinsight sphx-glr-backref-type-py-function"><span class="n">make_afq_regressor_pipeline</span></a>
-<span class="kn">from</span> <span class="nn">afqinsight.datasets</span> <span class="kn">import</span> <span class="n">download_weston_havens</span><span class="p">,</span> <span class="n">load_afq_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">afqinsight</span><span class="w"> </span><span class="kn">import</span> <a href="../api.html#afqinsight.make_afq_regressor_pipeline" title="afqinsight.make_afq_regressor_pipeline" class="sphx-glr-backref-module-afqinsight sphx-glr-backref-type-py-function"><span class="n">make_afq_regressor_pipeline</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">afqinsight.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_weston_havens</span><span class="p">,</span> <span class="n">load_afq_data</span>
 </pre></div>
 </div>
 <section id="fetch-example-data">
@@ -475,12 +475,12 @@ about this format, see also the <a class="reference external" href="https://yeat
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>subjects.csv:   0%|          | 0.00/938 [00:00&lt;?, ?iB/s]
-subjects.csv: 3.31kiB [00:00, 8.72MiB/s]
+subjects.csv: 3.31kiB [00:00, 10.9MiB/s]
 
 nodes.csv:   0%|          | 0.00/5.81M [00:00&lt;?, ?iB/s]
-nodes.csv: 7.18MiB [00:00, 71.8MiB/s]
-nodes.csv: 14.6MiB [00:00, 73.0MiB/s]
-nodes.csv: 16.3MiB [00:00, 73.2MiB/s]
+nodes.csv:  58%|█████▊    | 3.38M/5.81M [00:00&lt;00:00, 32.1MiB/s]
+nodes.csv: 7.69MiB [00:00, 38.4MiB/s]
+nodes.csv: 16.3MiB [00:00, 54.9MiB/s]
 </pre></div>
 </div>
 </section>
@@ -504,6 +504,10 @@ returns variables that we will use below in our analysis of the data.</p>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">feature_names</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span><span class="o">.</span><span class="n">feature_names</span></a>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">group_names</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span><span class="o">.</span><span class="n">group_names</span></a>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span><span class="o">.</span><span class="n">subjects</span></a>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/afqinsight/transform.py:144: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What&#39;s New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
+  features = interpolated.stack([&quot;subjectID&quot;, &quot;tractID&quot;, &quot;metric&quot;]).unstack(
 </pre></div>
 </div>
 </section>
@@ -558,13 +562,13 @@ returns variables that we will use below in our analysis of the data.</p>
 <a href="https://matplotlib.org/stable/api/text_api.html#matplotlib.text.Text" title="matplotlib.text.Text" class="sphx-glr-backref-module-matplotlib-text sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;Group Principal Regression Coefficients (MD only)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_age_regression_001.png" srcset="../_images/sphx_glr_plot_age_regression_001.png" alt="Group Principal Regression Coefficients (MD only)" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Mean train score: 0.883
-Mean test score:  -0.360
-Mean fit time:    17.04s
+<img src="../_images/sphx_glr_plot_age_regression_001.png" srcset="../_images/sphx_glr_plot_age_regression_001.png" alt="Group Principal Regression Coefficients (MD only)" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Mean train score: 0.848
+Mean test score:  -0.553
+Mean fit time:    10.16s
 Mean score time:   0.00s
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 26.291 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 52.564 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-age-regression-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/6c0234fab29c2b3dc2b87ddc4fbcc42d/plot_age_regression.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_age_regression.ipynb</span></code></a></p>
@@ -591,20 +595,20 @@ Mean score time:   0.00s
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="demo_afq_dataset.html"
+       href="plot_als_comparison.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Load and interact with an AFQ dataset</p>
+        <p class="prev-next-title">Use parametric statistics for group comparison</p>
       </div>
     </a>
     <a class="right-next"
-       href="plot_als_comparison.html"
+       href="plot_als_classification.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Use parametric statistics for group comparison</p>
+        <p class="prev-next-title">Classify ALS diagnosis from white matter features</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -675,7 +679,7 @@ Mean score time:   0.00s
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

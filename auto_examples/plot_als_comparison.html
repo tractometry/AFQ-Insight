@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Use parametric statistics for group comparison &#8212; AFQ-Insight 0.6.1 documentation</title>
+    <title>Use parametric statistics for group comparison &#8212; AFQ-Insight 0.7 documentation</title>
   
   
   
@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/css/afqinsight.css?v=d1d1afb3" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -40,15 +40,15 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=2bd037f0"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/documentation_options.js?v=48f8e935"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/copybutton.js?v=26522df0"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_als_comparison';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Classify ALS diagnosis from white matter features" href="plot_als_classification.html" />
-    <link rel="prev" title="Predict age from white matter features" href="plot_age_regression.html" />
+    <link rel="next" title="Predict age from white matter features" href="plot_age_regression.html" />
+    <link rel="prev" title="Harmonize HBN data using ComBat" href="plot_hbn_site_profiles.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">AFQ-Insight 0.6.1 documentation</p>
+    <p class="title logo__title">AFQ-Insight 0.7 documentation</p>
   
 </a></div>
     
@@ -358,10 +358,10 @@ document.write(`
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="plot_hbn_site_profiles.html">Harmonize HBN data using ComBat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="demo_afq_dataset.html">Load and interact with an AFQ dataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot_age_regression.html">Predict age from white matter features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_hbn_site_profiles.html">Harmonize HBN data using ComBat</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Use parametric statistics for group comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_age_regression.html">Predict age from white matter features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_als_classification.html">Classify ALS diagnosis from white matter features</a></li>
 </ul>
 </div>
@@ -444,15 +444,11 @@ AmyotrophicLateral Sclerosis” Human Brain Mapping, vol. 38, pp. 727-739, 2017
 DOI: 10.1002/hbm.23412</p>
 </aside>
 </aside>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html#sklearn.impute.SimpleImputer" title="sklearn.impute.SimpleImputer" class="sphx-glr-backref-module-sklearn-impute sphx-glr-backref-type-py-class"><span class="n">SimpleImputer</span></a>
-<span class="kn">from</span> <span class="nn">statsmodels.api</span> <span class="kn">import</span> <span class="n">OLS</span>
-<span class="kn">from</span> <span class="nn">statsmodels.stats.anova</span> <span class="kn">import</span> <span class="n">anova_lm</span>
-<span class="kn">from</span> <span class="nn">statsmodels.stats.multitest</span> <span class="kn">import</span> <span class="n">multipletests</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">from</span> <span class="nn">afqinsight</span> <span class="kn">import</span> <span class="n">AFQDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">afqinsight</span><span class="w"> </span><span class="kn">import</span> <span class="n">AFQDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">afqinsight.parametric</span><span class="w"> </span><span class="kn">import</span> <span class="n">node_wise_regression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">afqinsight.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_regression_profiles</span>
 </pre></div>
 </div>
 <section id="fetch-data-from-sarica-et-al">
@@ -465,294 +461,76 @@ these studies). By passing <cite>“sarica”</cite>, we request that the softwa
 the data from this study and initialize an object for us from this data.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../api.html#afqinsight.AFQDataset" title="afqinsight.AFQDataset" class="sphx-glr-backref-module-afqinsight sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span></a> <span class="o">=</span> <span class="n">AFQDataset</span><span class="o">.</span><span class="n">from_study</span><span class="p">(</span><span class="s2">&quot;sarica&quot;</span><span class="p">)</span>
 
-<span class="c1"># Examine the data</span>
-<span class="c1"># ----------------</span>
-<span class="c1"># ``afqdata`` is an ``AFQDataset`` object, with properties corresponding to the</span>
-<span class="c1"># tractometry features and phenotypic targets. In this case, y includes only the</span>
-<span class="c1"># group to which the subjects belong, encoded as 0 (patients) or 1 (controls).</span>
+<span class="c1"># Specify the tracts of interest</span>
+<span class="c1"># ------------------------------</span>
+<span class="c1"># Many times we have a specific set of tracts we want to analyze. We can specify</span>
+<span class="c1"># those tracts using a list with each tract of interest</span>
 
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span><span class="o">.</span><span class="n">X</span></a>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span><span class="o">.</span><span class="n">y</span></a>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">groups</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span><span class="o">.</span><span class="n">groups</span></a>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">feature_names</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span><span class="o">.</span><span class="n">feature_names</span></a>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">group_names</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span><span class="o">.</span><span class="n">group_names</span></a>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span><span class="o">.</span><span class="n">subjects</span></a>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tracts</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Left Arcuate&quot;</span><span class="p">,</span> <span class="s2">&quot;Right Arcuate&quot;</span><span class="p">,</span> <span class="s2">&quot;Left Corticospinal&quot;</span><span class="p">,</span> <span class="s2">&quot;Right Corticospinal&quot;</span><span class="p">]</span>
 
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html#sklearn.impute.SimpleImputer" title="sklearn.impute.SimpleImputer" class="sphx-glr-backref-module-sklearn-impute sphx-glr-backref-type-py-class"><span class="n">SimpleImputer</span></a><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">)</span>
-
-<span class="c1"># Filtering the data</span>
-<span class="c1"># ----------------</span>
-<span class="c1"># We start by filtering the data down to only the FA estimates in the left</span>
-<span class="c1"># corticospinal tract. We can do that by creating a Pandas dataframe and then</span>
-<span class="c1"># using the column labels that `afqdataset` has generated from the data.</span>
-
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class"><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span></a><span class="p">(</span><span class="n">columns</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span><span class="o">.</span><span class="n">feature_names</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">)</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lcst_fa</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.filter.html#pandas.DataFrame.filter" title="pandas.DataFrame.filter" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">data</span><span class="o">.</span><span class="n">filter</span></a><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="s2">&quot;Left Corticospinal&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="s2">&quot;fa&quot;</span><span class="p">)</span>
-
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pvals</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.shape.html#pandas.DataFrame.shape" title="pandas.DataFrame.shape" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-property"><span class="n">lcst_fa</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">coefs</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.shape.html#pandas.DataFrame.shape" title="pandas.DataFrame.shape" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-property"><span class="n">lcst_fa</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cis</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">((</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.shape.html#pandas.DataFrame.shape" title="pandas.DataFrame.shape" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-property"><span class="n">lcst_fa</span><span class="o">.</span><span class="n">shape</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span>
-
-<span class="c1"># Fit models</span>
-<span class="c1"># ----------------</span>
-<span class="c1"># Next, we fit a model for each node of the CST for the FA as a function of</span>
-<span class="c1"># group. The initializer `OLS.from_formula` takes</span>
-<span class="c1"># `R-style formulas &lt;https://www.statsmodels.org/dev/example_formulas.html&gt;`_</span>
-<span class="c1"># as its model specification. Here, we are using the `&quot;group&quot;` variable as a</span>
-<span class="c1"># categorical variable in the model. Much more complex linear models (including</span>
-<span class="c1"># linear mixed effects model) are possible for datasets with more complex</span>
-<span class="c1"># phenotypical data.</span>
-
-<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ii</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">column</span></a> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Index.html#pandas.Index" title="pandas.core.indexes.base.Index" class="sphx-glr-backref-module-pandas-core-indexes-base sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lcst_fa</span><span class="o">.</span><span class="n">columns</span></a><span class="p">):</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">feature</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tract</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">column</span></a>
-    <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">this</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class"><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span></a><span class="p">({</span><span class="s2">&quot;group&quot;</span><span class="p">:</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">feature</span></a><span class="p">:</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lcst_fa</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">column</span></a><span class="p">]})</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">OLS</span><span class="o">.</span><span class="n">from_formula</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">feature</span></a><span class="si">}</span><span class="s2"> ~ C(group)&quot;</span><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">this</span></a><span class="p">)</span>
-    <span class="n">fit</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
-    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">coefs</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ii</span></a><span class="p">]</span> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.loc.html#pandas.Series.loc" title="pandas.Series.loc" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-property"><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">loc</span></a><span class="p">[</span><span class="s2">&quot;C(group)[T.1]&quot;</span><span class="p">]</span>
-    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cis</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ii</span></a><span class="p">]</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">conf_int</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;C(group)[T.1]&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pvals</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ii</span></a><span class="p">]</span> <span class="o">=</span> <span class="n">anova_lm</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="n">typ</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="s2">&quot;PR(&gt;F)&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-
-<span class="c1"># Correct for multiple comparison</span>
-<span class="c1"># --------------------------------</span>
+<span class="c1"># Set up plot, run linear models, and show the results</span>
+<span class="c1"># ----------------------------------------------------</span>
+<span class="c1"># With the next few lines of code, we fit a linear model in order to predict</span>
+<span class="c1"># group differences in the diffusion properties of our tracts of interest. The</span>
+<span class="c1"># function `node_wise_regression` does this by looping through each node of a</span>
+<span class="c1"># tract and predicting our diffusion metric, in this case FA, as a function of</span>
+<span class="c1"># group. The initializer `OLS.from_formula` takes `R-style formulas</span>
+<span class="c1"># &lt;https://www.statsmodels.org/dev/example_formulas.html&gt;`_ as its model specification.</span>
+<span class="c1"># Here, we are using the `&quot;group&quot;` variable as a categorical variable in the model.</span>
+<span class="c1"># We can also specify linear-mixed effects models for more complex phenotypic data</span>
+<span class="c1"># by passing in the appropriate model formula and setting `lme=True`.</span>
+<span class="c1">#</span>
 <span class="c1"># Because we conducted 100 comparisons, we need to correct the p-values that</span>
 <span class="c1"># we obtained for the potential for a false discovery. There are multiple</span>
 <span class="c1"># ways to conduct multiple comparison correction, and we will not get into</span>
-<span class="c1"># the considerations in selecting a method here. For the example, we chose the</span>
-<span class="c1"># Benjamini/Hochberg FDR controlling method. This returns a boolean array for</span>
+<span class="c1"># the considerations in selecting a method here. The function `node_wise_regression`</span>
+<span class="c1"># uses Benjamini/Hochberg FDR controlling method. This returns a boolean array for</span>
 <span class="c1"># the p-values that are rejected at a specified alpha level (after correction),</span>
 <span class="c1"># as well as an array of the corrected p-values.</span>
 
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">reject</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pval_corrected</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <span class="n">multipletests</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pvals</span></a><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;fdr_bh&quot;</span><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">reject_idx</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.where.html#numpy.where" title="numpy.where" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">where</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">reject</span></a><span class="p">)</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_cols</span></a> <span class="o">=</span> <span class="mi">2</span>
 
-<span class="c1"># Visualize</span>
-<span class="c1"># ----------</span>
-<span class="c1"># Using Matplotlib, we can visualize the results. The top figure shows the tract</span>
-<span class="c1"># profiles of the two groups, with stars indicating the nodes at which the null</span>
-<span class="c1"># hypothesis is rejected. The bottom figure shows the model coefficients</span>
-<span class="c1"># together with their estimated 95% confidence interval.</span>
+<span class="c1"># Define the figure and grid</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_cols</span></a><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.iloc.html#pandas.DataFrame.iloc" title="pandas.DataFrame.iloc" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-property"><span class="n">lcst_fa</span><span class="o">.</span><span class="n">iloc</span></a><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span><span class="o">.</span><span class="n">y</span></a> <span class="o">==</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.iloc.html#pandas.DataFrame.iloc" title="pandas.DataFrame.iloc" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-property"><span class="n">lcst_fa</span><span class="o">.</span><span class="n">iloc</span></a><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span><span class="o">.</span><span class="n">y</span></a> <span class="o">==</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">reject_idx</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">reject_idx</span></a><span class="p">)),</span> <span class="s2">&quot;k*&quot;</span><span class="p">)</span>
 
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">coefs</span></a><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cis</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cis</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="s2">&quot;k--&quot;</span><span class="p">)</span>
+<span class="c1"># Loop through the data and generate plots</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tract</span></a> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tracts</span></a><span class="p">):</span>
+    <span class="c1"># fit node-wise regression for each tract based on model formula</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tract_dict</span></a> <span class="o">=</span> <span class="n">node_wise_regression</span><span class="p">(</span><a href="../api.html#afqinsight.AFQDataset" title="afqinsight.AFQDataset" class="sphx-glr-backref-module-afqinsight sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">afqdata</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tract</span></a><span class="p">,</span> <span class="s2">&quot;fa&quot;</span><span class="p">,</span> <span class="s2">&quot;fa ~ C(group)&quot;</span><span class="p">)</span>
+
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="o">//</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_cols</span></a>
+    <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">col</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="o">%</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">num_cols</span></a>
+
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a><span class="p">][</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">col</span></a><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tract</span></a><span class="p">)</span>
+
+    <span class="c1"># Visualize</span>
+    <span class="c1"># ----------</span>
+    <span class="c1"># We can visualize the results with the `plot_regression_profiles`</span>
+    <span class="c1"># function. Each subplot shows the tract profiles of the two groups,</span>
+    <span class="c1"># while controlling for any covariates, with stars indicating the nodes</span>
+    <span class="c1"># at which the null hypothesis is rejected.</span>
+
+    <span class="n">plot_regression_profiles</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tract_dict</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">row</span></a><span class="p">][</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">col</span></a><span class="p">])</span>
+
+<span class="c1"># Adjust layout to prevent overlap</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
+
+<span class="c1"># Show the plot</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_als_comparison_001.png" srcset="../_images/sphx_glr_plot_als_comparison_001.png" alt="plot als comparison" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>subjects.csv:   0%|          | 0.00/515 [00:00&lt;?, ?iB/s]
-subjects.csv: 1.56kiB [00:00, 6.66MiB/s]
+<img src="../_images/sphx_glr_plot_als_comparison_001.png" srcset="../_images/sphx_glr_plot_als_comparison_001.png" alt="Left Arcuate, Right Arcuate, Left Corticospinal, Right Corticospinal" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>subjects.csv:   0%|          | 0.00/515 [00:00&lt;?, ?iB/s]
+subjects.csv: 1.56kiB [00:00, 5.58MiB/s]
 
 nodes.csv:   0%|          | 0.00/5.14M [00:00&lt;?, ?iB/s]
-nodes.csv: 7.84MiB [00:00, 78.4MiB/s]
-nodes.csv: 13.5MiB [00:00, 78.6MiB/s]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-/home/runner/work/AFQ-Insight/AFQ-Insight/examples/plot_als_comparison.py:90: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
-  pvals[ii] = anova_lm(fit, typ=2)[&quot;PR(&gt;F)&quot;][0]
-
-[&lt;matplotlib.lines.Line2D object at 0x7f00ca6f1570&gt;]
+nodes.csv: 8.73MiB [00:00, 87.3MiB/s]
+nodes.csv: 13.5MiB [00:00, 88.4MiB/s]
+/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/afqinsight/transform.py:144: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What&#39;s New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
+  features = interpolated.stack([&quot;subjectID&quot;, &quot;tractID&quot;, &quot;metric&quot;]).unstack(
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.628 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.517 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-als-comparison-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/bd472e1fe79e278546dec9725a76cd91/plot_als_comparison.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_als_comparison.ipynb</span></code></a></p>
@@ -779,20 +557,20 @@ nodes.csv: 13.5MiB [00:00, 78.6MiB/s]
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="plot_age_regression.html"
+       href="plot_hbn_site_profiles.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Predict age from white matter features</p>
+        <p class="prev-next-title">Harmonize HBN data using ComBat</p>
       </div>
     </a>
     <a class="right-next"
-       href="plot_als_classification.html"
+       href="plot_age_regression.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Classify ALS diagnosis from white matter features</p>
+        <p class="prev-next-title">Predict age from white matter features</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -861,7 +639,7 @@ nodes.csv: 13.5MiB [00:00, 78.6MiB/s]
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

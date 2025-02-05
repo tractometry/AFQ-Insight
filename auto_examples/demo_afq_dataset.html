@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Load and interact with an AFQ dataset &#8212; AFQ-Insight 0.6.1 documentation</title>
+    <title>Load and interact with an AFQ dataset &#8212; AFQ-Insight 0.7 documentation</title>
   
   
   
@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/css/afqinsight.css?v=d1d1afb3" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -40,15 +40,15 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=2bd037f0"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/documentation_options.js?v=48f8e935"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/copybutton.js?v=26522df0"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/demo_afq_dataset';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Predict age from white matter features" href="plot_age_regression.html" />
-    <link rel="prev" title="Harmonize HBN data using ComBat" href="plot_hbn_site_profiles.html" />
+    <link rel="next" title="Harmonize HBN data using ComBat" href="plot_hbn_site_profiles.html" />
+    <link rel="prev" title="General examples" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">AFQ-Insight 0.6.1 documentation</p>
+    <p class="title logo__title">AFQ-Insight 0.7 documentation</p>
   
 </a></div>
     
@@ -358,10 +358,10 @@ document.write(`
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="plot_hbn_site_profiles.html">Harmonize HBN data using ComBat</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Load and interact with an AFQ dataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot_age_regression.html">Predict age from white matter features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_hbn_site_profiles.html">Harmonize HBN data using ComBat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_als_comparison.html">Use parametric statistics for group comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_age_regression.html">Predict age from white matter features</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plot_als_classification.html">Classify ALS diagnosis from white matter features</a></li>
 </ul>
 </div>
@@ -462,17 +462,17 @@ brain white matter” PLOS Computational Biology, 2021 DOI:
 10.1371/journal.pcbi.1009136</p>
 </aside>
 </aside>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
 
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html#sklearn.impute.SimpleImputer" title="sklearn.impute.SimpleImputer" class="sphx-glr-backref-module-sklearn-impute sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">SimpleImputer</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html#sklearn.linear_model.Lasso" title="sklearn.linear_model.Lasso" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Lasso</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html#sklearn.metrics.r2_score" title="sklearn.metrics.r2_score" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">r2_score</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html#sklearn.model_selection.train_test_split" title="sklearn.model_selection.train_test_split" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-function"><span class="n">train_test_split</span></a>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.impute</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html#sklearn.impute.SimpleImputer" title="sklearn.impute.SimpleImputer" class="sphx-glr-backref-module-sklearn-impute sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">SimpleImputer</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html#sklearn.linear_model.Lasso" title="sklearn.linear_model.Lasso" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Lasso</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html#sklearn.metrics.r2_score" title="sklearn.metrics.r2_score" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">r2_score</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html#sklearn.model_selection.train_test_split" title="sklearn.model_selection.train_test_split" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-function"><span class="n">train_test_split</span></a>
 
-<span class="kn">import</span> <span class="nn">afqinsight.nn.tf_models</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">from</span> <span class="nn">afqinsight</span> <span class="kn">import</span> <span class="n">AFQDataset</span>
-<span class="kn">from</span> <span class="nn">afqinsight.datasets</span> <span class="kn">import</span> <span class="n">download_weston_havens</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">afqinsight.nn.tf_models</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">afqinsight</span><span class="w"> </span><span class="kn">import</span> <span class="n">AFQDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">afqinsight.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_weston_havens</span>
 </pre></div>
 </div>
 <section id="fetch-example-data">
@@ -599,20 +599,20 @@ this dataset requires a bit more work.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="plot_hbn_site_profiles.html"
+       href="index.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Harmonize HBN data using ComBat</p>
+        <p class="prev-next-title">General examples</p>
       </div>
     </a>
     <a class="right-next"
-       href="plot_age_regression.html"
+       href="plot_hbn_site_profiles.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Predict age from white matter features</p>
+        <p class="prev-next-title">Harmonize HBN data using ComBat</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -686,7 +686,7 @@ this dataset requires a bit more work.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>
