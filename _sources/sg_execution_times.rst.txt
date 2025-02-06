@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**07:04.772** total execution time for 5 files **from all galleries**:
+**07:06.247** total execution time for 5 files **from all galleries**:
 
 .. container::
 
@@ -33,16 +33,16 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_auto_examples_plot_hbn_site_profiles.py` (``../examples/plot_hbn_site_profiles.py``)
-     - 05:28.925
+     - 05:36.055
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_age_regression.py` (``../examples/plot_age_regression.py``)
-     - 00:52.564
+     - 00:46.222
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_als_classification.py` (``../examples/plot_als_classification.py``)
-     - 00:37.766
+     - 00:40.539
      - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_als_comparison.py` (``../examples/plot_als_comparison.py``)
-     - 00:05.517
+     - 00:03.432
      - 0.0
    * - :ref:`sphx_glr_auto_examples_demo_afq_dataset.py` (``../examples/demo_afq_dataset.py``)
      - 00:00.000
