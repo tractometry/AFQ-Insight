@@ -685,9 +685,9 @@ class Conv1dDecoder(nn.Module):
         return x
 
 
-class VAE_one_tract(nn.Module):
+class VAE_multiple_tract(nn.Module):
     def __init__(self, input_shape, latent_dims, dropout):
-        super(VAE_one_tract, self).__init__()
+        super(VAE_multiple_tract, self).__init__()
         self.encoder = VariationalEncoder_one_tract(
             input_shape, latent_dims, dropout=dropout
         )
@@ -915,6 +915,75 @@ class Conv1dAutoencoder(nn.Module):
                 break
 
         return model
+
+    def transform(self, x):
+        self.forward(x)
+
+    def fit_transform(self, data, epochs=20):
+        self.fit(data, epochs)
+        return self.transform(data)
+
+
+# linear one tract
+class VE_one_tract(nn.Module):
+    def __init__(self, input_shape, latent_dims, dropout):
+        super(VE_one_tract, self).__init__()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.linear1 = nn.Linear(input_shape, 50)
+        self.linear2 = nn.Linear(50, latent_dims)
+        self.linear3 = nn.Linear(50, latent_dims)
+        self.dropout = nn.Dropout(dropout)
+        self.activation = nn.ReLU()
+        self.N = torch.distributions.Normal(0, 1)
+        self.N.loc = self.N.loc.to(device)
+        self.N.scale = self.N.scale.to(device)
+        self.kl = 0
+
+    def forward(self, x):
+        x = torch.flatten(x, start_dim=1)
+        x = self.linear1(x)
+        x = self.activation(x)
+        x = self.dropout(x)
+        mu = self.linear2(x)
+        sigma = torch.exp(self.linear3(x))
+        z = mu + sigma * self.N.sample(mu.shape)
+        self.kl = (sigma**2 + mu**2 - torch.log(sigma) - 1 / 2).sum()
+        return z
+
+
+# linear one tract
+class Decoder_one_tract_experiment(nn.Module):
+    def __init__(self, input_shape, latent_dims):
+        super(Decoder_one_tract_experiment, self).__init__()
+        self.linear1 = nn.Linear(latent_dims, 50)
+        self.relu = nn.ReLU()
+        self.linear2 = nn.Linear(50, input_shape)
+        # self.batch_norm = nn.BatchNorm1d(50)
+        # self.batch_norm2 = nn.BatchNorm1d(100)
+        # self.linear3 = nn.Linear(100, input_shape)
+
+    def forward(self, z):
+        batch_size = z.size(0)
+        x = self.linear1(z)
+        x = self.relu(x)
+        # x = self.batch_norm(x)  .
+        x = self.linear2(x)
+        # x = self.relu(x)
+        # x = self.batch_norm2(x)
+        # x = self.linear3(x)
+        return x.view(batch_size, -1)
+
+
+# linear one tract
+class VAE_one_tract(nn.Module):
+    def __init__(self, input_shape, latent_dims, dropout):
+        super(VAE_one_tract, self).__init__()
+        self.encoder = VE_one_tract(input_shape, latent_dims, dropout=dropout)
+        self.decoder = Decoder_one_tract_experiment(input_shape, latent_dims)
+
+    def forward(self, x):
+        z = self.encoder(x)
+        return self.decoder(z)
 
     def transform(self, x):
         self.forward(x)
