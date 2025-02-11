@@ -23,8 +23,10 @@ from sklearn.ensemble._bagging import (
     _parallel_predict_regression,
 )
 from sklearn.ensemble._base import _partition_estimators
-from sklearn.utils import check_array, check_random_state, indices_to_mask, resample
-from sklearn.utils.metaestimators import if_delegate_has_method
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.utils import check_array, check_random_state, resample
+from sklearn.utils._mask import indices_to_mask
+from sklearn.utils.metaestimators import available_if
 from sklearn.utils.random import sample_without_replacement
 from sklearn.utils.validation import (
     _check_sample_weight,
@@ -32,7 +34,7 @@ from sklearn.utils.validation import (
     has_fit_parameter,
 )
 
-__all__ = ["SerialBaggingClassifier"]
+__all__ = ["SerialBaggingClassifier", "SerialBaggingRegressor"]
 
 MAX_INT = np.iinfo(np.int32).max
 
@@ -102,7 +104,7 @@ def _parallel_build_estimators(
     max_samples = ensemble._max_samples
     bootstrap = ensemble.bootstrap
     bootstrap_features = ensemble.bootstrap_features
-    support_sample_weight = has_fit_parameter(ensemble.base_estimator_, "sample_weight")
+    support_sample_weight = has_fit_parameter(ensemble.estimator_, "sample_weight")
     if not support_sample_weight and sample_weight is not None:
         raise ValueError("The base estimator doesn't support sample weight")
 
@@ -181,7 +183,7 @@ class SerialBaggingClassifier(BaggingClassifier):
 
     Parameters
     ----------
-    base_estimator : object, default=None
+    estimator : object, default=None
         The base estimator to fit on random subsets of the dataset.
         If None, then the base estimator is a decision tree.
 
@@ -235,7 +237,7 @@ class SerialBaggingClassifier(BaggingClassifier):
 
     Attributes
     ----------
-    base_estimator_ : estimator
+    estimator_ : estimator
         The base estimator from which the ensemble is grown.
 
     n_features_in_ : int
@@ -286,7 +288,7 @@ class SerialBaggingClassifier(BaggingClassifier):
 
     def __init__(
         self,
-        base_estimator=None,
+        estimator=None,
         n_estimators=10,
         *,
         max_samples=1.0,
@@ -299,8 +301,11 @@ class SerialBaggingClassifier(BaggingClassifier):
         random_state=None,
         verbose=0,
     ):
+        if estimator is None:
+            estimator = DecisionTreeClassifier()
+
         super().__init__(
-            base_estimator=base_estimator,
+            estimator=estimator,
             n_estimators=n_estimators,
             max_samples=max_samples,
             max_features=max_features,
@@ -366,7 +371,7 @@ class SerialBaggingClassifier(BaggingClassifier):
         self._validate_estimator()
 
         if max_depth is not None:  # pragma: no cover
-            self.base_estimator_.max_depth = max_depth
+            self.estimator_.max_depth = max_depth
 
         # Validate max_samples
         if max_samples is None:  # pragma: no cover
@@ -568,7 +573,7 @@ class SerialBaggingClassifier(BaggingClassifier):
             classes corresponds to that in the attribute :term:`classes_`.
         """
         check_is_fitted(self)
-        if hasattr(self.base_estimator_, "predict_log_proba"):
+        if hasattr(self.estimator_, "predict_log_proba"):
             # Check data
             X = check_array(
                 X, accept_sparse=["csr", "csc"], dtype=None, force_all_finite=False
@@ -610,7 +615,7 @@ class SerialBaggingClassifier(BaggingClassifier):
         else:
             return np.log(self.predict_proba(X))
 
-    @if_delegate_has_method(delegate="base_estimator")
+    @available_if(lambda est: hasattr(est.estimator, "decision_function"))
     def decision_function(self, X):
         """Average of the decision functions of the base classifiers.
 
@@ -690,7 +695,7 @@ class SerialBaggingRegressor(BaggingRegressor):
 
     Parameters
     ----------
-    base_estimator : object, default=None
+    estimator : object, default=None
         The base estimator to fit on random subsets of the dataset.
         If None, then the base estimator is a decision tree.
 
@@ -745,7 +750,7 @@ class SerialBaggingRegressor(BaggingRegressor):
 
     Attributes
     ----------
-    base_estimator_ : estimator
+    estimator_ : estimator
         The base estimator from which the ensemble is grown.
 
     n_features_in_ : int
@@ -780,7 +785,7 @@ class SerialBaggingRegressor(BaggingRegressor):
     >>> X, y = make_regression(n_samples=100, n_features=4,
     ...                        n_informative=2, n_targets=1,
     ...                        random_state=0, shuffle=False)
-    >>> regr = BaggingRegressor(base_estimator=SVR(),
+    >>> regr = BaggingRegressor(estimator=SVR(),
     ...                         n_estimators=10, random_state=0).fit(X, y)
     >>> regr.predict([[0, 0, 0, 0]])
     array([-2.8720...])
@@ -803,7 +808,7 @@ class SerialBaggingRegressor(BaggingRegressor):
 
     def __init__(
         self,
-        base_estimator=None,
+        estimator=None,
         n_estimators=10,
         max_samples=1.0,
         max_features=1.0,
@@ -815,8 +820,10 @@ class SerialBaggingRegressor(BaggingRegressor):
         random_state=None,
         verbose=0,
     ):
+        if estimator is None:
+            estimator = DecisionTreeRegressor()
         super().__init__(
-            base_estimator=base_estimator,
+            estimator=estimator,
             n_estimators=n_estimators,
             max_samples=max_samples,
             max_features=max_features,
@@ -881,7 +888,7 @@ class SerialBaggingRegressor(BaggingRegressor):
         self._validate_estimator()
 
         if max_depth is not None:  # pragma: no cover
-            self.base_estimator_.max_depth = max_depth
+            self.estimator_.max_depth = max_depth
 
         # Validate max_samples
         if max_samples is None:  # pragma: no cover
