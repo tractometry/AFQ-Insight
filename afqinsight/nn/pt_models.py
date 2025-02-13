@@ -685,6 +685,73 @@ class Conv1dDecoder(nn.Module):
         return x
 
 
+class Conv1DEncoder_fa(nn.Module):
+    def __init__(self, latent_dims=20, dropout=0.2):
+        super().__init__()
+        # Input shape: [batch, channels=48, length=50]
+        self.conv1 = nn.Conv1d(
+            in_channels=48, out_channels=32, kernel_size=3, stride=2, padding=1
+        )
+        self.conv2 = nn.Conv1d(
+            in_channels=32, out_channels=16, kernel_size=3, stride=2, padding=1
+        )
+        self.conv3 = nn.Conv1d(
+            in_channels=16, out_channels=latent_dims, kernel_size=3, stride=2, padding=1
+        )
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x):
+        x = self.relu(self.conv1(x))
+        x = self.dropout(x)
+        x = self.relu(self.conv2(x))
+        x = self.dropout(x)
+        x = self.conv3(x)
+        return x
+
+
+class Conv1DDecoder_fa(nn.Module):
+    def __init__(self, latent_dims=20, dropout=0.2):
+        super().__init__()
+        self.deconv1 = nn.ConvTranspose1d(
+            in_channels=latent_dims,
+            out_channels=16,
+            kernel_size=3,
+            stride=2,
+            padding=1,
+            output_padding=0,
+        )
+        self.deconv2 = nn.ConvTranspose1d(
+            in_channels=16,
+            out_channels=32,
+            kernel_size=3,
+            stride=2,
+            padding=1,
+            output_padding=0,
+        )
+        # change output padding back to 1
+        self.deconv3 = nn.ConvTranspose1d(
+            in_channels=32,
+            out_channels=48,
+            kernel_size=3,
+            stride=2,
+            padding=1,
+            output_padding=1,
+        )
+        self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x):
+        x = self.relu(self.deconv1(x))
+        x = self.dropout(x)
+        x = self.relu(self.deconv2(x))
+        x = self.dropout(x)
+        x = self.deconv3(x)
+        x = self.sigmoid(x)
+        return x
+
+
 class VAE_multiple_tract(nn.Module):
     def __init__(self, input_shape, latent_dims, dropout):
         super(VAE_multiple_tract, self).__init__()
@@ -924,66 +991,88 @@ class Conv1dAutoencoder(nn.Module):
         return self.transform(data)
 
 
-# linear one tract
-class VE_one_tract(nn.Module):
-    def __init__(self, input_shape, latent_dims, dropout):
-        super(VE_one_tract, self).__init__()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.linear1 = nn.Linear(input_shape, 50)
-        self.linear2 = nn.Linear(50, latent_dims)
-        self.linear3 = nn.Linear(50, latent_dims)
-        self.dropout = nn.Dropout(dropout)
-        self.activation = nn.ReLU()
-        self.N = torch.distributions.Normal(0, 1)
-        self.N.loc = self.N.loc.to(device)
-        self.N.scale = self.N.scale.to(device)
-        self.kl = 0
-
-    def forward(self, x):
-        x = torch.flatten(x, start_dim=1)
-        x = self.linear1(x)
-        x = self.activation(x)
-        x = self.dropout(x)
-        mu = self.linear2(x)
-        sigma = torch.exp(self.linear3(x))
-        z = mu + sigma * self.N.sample(mu.shape)
-        self.kl = (sigma**2 + mu**2 - torch.log(sigma) - 1 / 2).sum()
-        return z
-
-
-# linear one tract
-class Decoder_one_tract_experiment(nn.Module):
-    def __init__(self, input_shape, latent_dims):
-        super(Decoder_one_tract_experiment, self).__init__()
-        self.linear1 = nn.Linear(latent_dims, 50)
-        self.relu = nn.ReLU()
-        self.linear2 = nn.Linear(50, input_shape)
-        # self.batch_norm = nn.BatchNorm1d(50)
-        # self.batch_norm2 = nn.BatchNorm1d(100)
-        # self.linear3 = nn.Linear(100, input_shape)
-
-    def forward(self, z):
-        batch_size = z.size(0)
-        x = self.linear1(z)
-        x = self.relu(x)
-        # x = self.batch_norm(x)  .
-        x = self.linear2(x)
-        # x = self.relu(x)
-        # x = self.batch_norm2(x)
-        # x = self.linear3(x)
-        return x.view(batch_size, -1)
-
-
-# linear one tract
 class VAE_one_tract(nn.Module):
     def __init__(self, input_shape, latent_dims, dropout):
         super(VAE_one_tract, self).__init__()
-        self.encoder = VE_one_tract(input_shape, latent_dims, dropout=dropout)
-        self.decoder = Decoder_one_tract_experiment(input_shape, latent_dims)
+        self.encoder = VariationalEncoder_one_tract(
+            input_shape, latent_dims, dropout=dropout
+        )
+        self.decoder = Decoder_one_tract(input_shape, latent_dims)
 
     def forward(self, x):
         z = self.encoder(x)
         return self.decoder(z)
+
+    def fit(self, data, epochs=20, lr=0.001):
+        opt = torch.optim.Adam(self.parameters(), lr=lr)
+
+        for epoch in range(epochs):
+            running_loss = 0
+            items = 0
+            for x, _ in data:  # x shape: (batch_size, 48, 100)
+                tract_data = (
+                    x[:, 0, :].to(torch.float32).to(device)
+                )  # Shape: (batch_size, 100)
+
+                opt.zero_grad()
+                x_hat = self(tract_data).to(device)
+
+                loss = reconstruction_loss(tract_data, x_hat, kl_div=0, reduction="sum")
+
+                items += tract_data.size(0)
+                running_loss += loss.item()
+                loss.backward()
+                opt.step()
+
+            print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
+
+        return self
+
+    def transform(self, x):
+        self.forward(x)
+
+    def fit_transform(self, data, epochs=20):
+        self.fit(data, epochs)
+        return self.transform(data)
+
+
+class Conv1DAutoencoder_fa(nn.Module):
+    def __init__(self, latent_dims=20, dropout=0.2):
+        super().__init__()
+        self.encoder = Conv1DEncoder_fa(latent_dims, dropout)
+        self.decoder = Conv1DDecoder_fa(latent_dims, dropout)
+
+    def forward(self, x):
+        z = self.encoder(x)
+        x_prime = self.decoder(z)
+        return x_prime
+
+    def fit(self, data, epochs=20, lr=0.001):
+        opt = optim.Adam(self.parameters(), lr=lr, weight_decay=1e-5)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            opt, mode="min", patience=10, factor=0.5, verbose=True
+        )
+
+        self.to(device)
+
+        for epoch in range(epochs):
+            running_loss = 0
+            items = 0
+            self.train()
+            for x, _ in data:  # x shape: [batch, 48, 50]
+                x = x.to(torch.float32).to(device)
+                opt.zero_grad()
+                x_hat = self(x)
+                loss = reconstruction_loss(x, x_hat, kl_div=0, reduction="sum")
+                loss.backward()
+                opt.step()
+                items += x.size(0)
+                running_loss += loss.item()
+
+            avg_loss = running_loss / items
+            scheduler.step(avg_loss)
+            print(f"Epoch {epoch+1}, Loss: {avg_loss:.4f}")
+        return self
 
     def transform(self, x):
         self.forward(x)
