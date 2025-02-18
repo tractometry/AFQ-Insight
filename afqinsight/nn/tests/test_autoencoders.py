@@ -3,7 +3,11 @@ import pytest
 import torch
 
 from afqinsight import AFQDataset
-from afqinsight.nn.pt_models import Autoencoder, VAE_one_tract, VariationalAutoencoder
+from afqinsight.nn.pt_models import (
+    Autoencoder,
+    VAE_random_tracts,
+    VariationalAutoencoder,
+)
 from afqinsight.nn.utils import prep_pytorch_data
 
 
@@ -39,7 +43,7 @@ def data_shapes(data_loaders):
 
 
 @pytest.mark.parametrize(
-    "model_class", [Autoencoder, VariationalAutoencoder, VAE_one_tract]
+    "model_class", [Autoencoder, VariationalAutoencoder, VAE_random_tracts]
 )
 @pytest.mark.parametrize("latent_dims", [2, 10])
 def test_autoencoder_forward(data_loaders, data_shapes, model_class, latent_dims):
@@ -51,7 +55,7 @@ def test_autoencoder_forward(data_loaders, data_shapes, model_class, latent_dims
     gt_shape, sequence_length, in_channels = data_shapes
 
     # Instantiate the model
-    if model_class == VAE_one_tract:
+    if model_class == VAE_random_tracts:
         model = model_class(
             input_shape=in_channels, latent_dims=latent_dims, dropout=0.1
         )
@@ -80,13 +84,13 @@ def test_autoencoder_forward(data_loaders, data_shapes, model_class, latent_dims
 
     # Perform forward pass
     with torch.no_grad():
-        if model_class == VAE_one_tract:
+        if model_class == VAE_random_tracts:
             output = model(tract_data)
         elif model_class == VariationalAutoencoder or model_class == Autoencoder:
             output = model(x)
 
     # Validate output shape
-    if model_class == VAE_one_tract:
+    if model_class == VAE_random_tracts:
         expected_shape = (x.size(0), in_channels)
     elif model_class == VariationalAutoencoder or model_class == Autoencoder:
         expected_shape = (x.size(0), sequence_length, in_channels)
@@ -96,7 +100,7 @@ def test_autoencoder_forward(data_loaders, data_shapes, model_class, latent_dims
 
 
 @pytest.mark.parametrize(
-    "model_class", [Autoencoder, VariationalAutoencoder, VAE_one_tract]
+    "model_class", [Autoencoder, VariationalAutoencoder, VAE_random_tracts]
 )
 def test_autoencoder_train_loop(data_loaders, data_shapes, model_class):
     """
@@ -106,14 +110,14 @@ def test_autoencoder_train_loop(data_loaders, data_shapes, model_class):
     torch_dataset, train_loader, test_loader, val_loader = data_loaders
     gt_shape, sequence_length, in_channels = data_shapes
 
-    if model_class == VAE_one_tract:
+    if model_class == VAE_random_tracts:
         model = model_class(input_shape=in_channels, latent_dims=10, dropout=0.1)
     elif model_class == VariationalAutoencoder or model_class == Autoencoder:
         model = model_class(input_shape=sequence_length * in_channels, latent_dims=10)
     model.train()
 
     try:
-        if model_class == VAE_one_tract:
+        if model_class == VAE_random_tracts:
             model.fit(train_loader, epochs=1, lr=0.001)
         elif model_class == VariationalAutoencoder or model_class == Autoencoder:
             model.fit(test_loader, epochs=1, lr=0.001)
