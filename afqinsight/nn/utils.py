@@ -487,22 +487,6 @@ def prep_fa_dataset(dataset, batch_size=32):
 def reconstruction_loss(x, x_hat, kl_div=0.0, reduction="sum"):
     """
     Compute the reconstruction loss (MSE) and optionally add a KL term.
-
-    Parameters
-    ----------
-    x : torch.Tensor
-        Original input tensor.
-    x_hat : torch.Tensor
-        Reconstructed output from the autoencoder.
-    kl_div : float
-        KL divergence term (VAE only). Defaults to 0 for a standard autoencoder.
-    reduction : str
-        Reduction mode: "sum" or "mean". Defaults to "sum".
-
-    Returns
-    -------
-    torch.Tensor
-        Scalar loss value.
     """
     recon_loss = F.mse_loss(x_hat, x, reduction=reduction)
     total_loss = recon_loss + kl_div
