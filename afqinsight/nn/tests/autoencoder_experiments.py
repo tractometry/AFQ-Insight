@@ -5,8 +5,8 @@ import torch.utils
 
 from afqinsight import AFQDataset
 from afqinsight.nn.autoencoder_experiment_utils import (
-    random_train_multiple_tracts_experiment,
-    train_multiple_latent_dimensions,
+    train_first_tract_dropout_experiment,
+    train_first_tract_latent_experiment,
 )
 from afqinsight.nn.pt_models import VAE_one_tract
 from afqinsight.nn.utils import (
@@ -51,7 +51,7 @@ def run_dropout_experiment(
             in_channels, latent_dims=latent_dims, dropout=dropout
         ).to(device)
 
-        train_rmse, val_rmse = random_train_multiple_tracts_experiment(
+        train_rmse, val_rmse = train_first_tract_dropout_experiment(
             vae_one_tract,
             train_loader,
             val_loader,
@@ -114,7 +114,7 @@ def run_dropout_experiment(
 latent_dims = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
 # plot 1, train rmse vs epoch
-results = train_multiple_latent_dimensions(train_loader, val_loader)
+results = train_first_tract_latent_experiment(train_loader, val_loader)
 plt.figure(figsize=(18, 6))
 for result in results:
     plt.plot(

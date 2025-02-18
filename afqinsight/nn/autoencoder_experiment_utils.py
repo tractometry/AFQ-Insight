@@ -11,7 +11,7 @@ plt.rcParams["figure.dpi"] = 200
 
 
 # rename this to be train_first_tract_dropout_experiment
-def random_train_multiple_tracts_experiment(
+def train_first_tract_dropout_experiment(
     self, train_data, val_data, epochs=20, lr=0.001, num_selected_tracts=5, sigma=0.03
 ):
     opt = torch.optim.Adam(self.parameters(), lr=lr)
@@ -83,7 +83,7 @@ def random_train_multiple_tracts_experiment(
     return train_rmse_per_epoch, val_rmse_per_epoch
 
 
-def train_multiple_latent_dimensions(
+def train_first_tract_latent_experiment(
     train_data, val_data, epochs=100, lr=0.001, sigma=0.03
 ):
     latent_dims = list(range(10, 101, 10))  # [10, 20, ..., 100]
