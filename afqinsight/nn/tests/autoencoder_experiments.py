@@ -8,7 +8,7 @@ from afqinsight.nn.autoencoder_experiment_utils import (
     train_first_tract_dropout_experiment,
     train_first_tract_latent_experiment,
 )
-from afqinsight.nn.pt_models import VAE_one_tract
+from afqinsight.nn.pt_models import VAE_first_tract
 from afqinsight.nn.utils import (
     prep_pytorch_data,
 )
@@ -47,12 +47,12 @@ def run_dropout_experiment(
 
     for dropout in dropout_values:
         print(f"Training with dropout = {dropout}")
-        vae_one_tract = VAE_one_tract(
+        vae_first_tract = VAE_first_tract(
             in_channels, latent_dims=latent_dims, dropout=dropout
         ).to(device)
 
         train_rmse, val_rmse = train_first_tract_dropout_experiment(
-            vae_one_tract,
+            vae_first_tract,
             train_loader,
             val_loader,
             epochs=epochs,
