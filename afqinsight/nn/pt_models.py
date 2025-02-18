@@ -801,9 +801,9 @@ class Conv1DDecoder_fa(nn.Module):
         return x
 
 
-class VAE_multiple_tract(nn.Module):
+class VAE_random_tracts(nn.Module):
     def __init__(self, input_shape, latent_dims, dropout):
-        super(VAE_multiple_tract, self).__init__()
+        super(VAE_random_tracts, self).__init__()
         self.encoder = VariationalEncoder_one_tract(
             input_shape, latent_dims, dropout=dropout
         )
@@ -1040,9 +1040,9 @@ class Conv1dAutoencoder(nn.Module):
         return self.transform(data)
 
 
-class VAE_one_tract(nn.Module):
+class VAE_first_tract(nn.Module):
     def __init__(self, input_shape, latent_dims, dropout):
-        super(VAE_one_tract, self).__init__()
+        super(VAE_first_tract, self).__init__()
         self.encoder = VariationalEncoder_one_tract(
             input_shape, latent_dims, dropout=dropout
         )
@@ -1131,7 +1131,7 @@ class Conv1DAutoencoder_fa(nn.Module):
         return self.transform(data)
 
 
-class Conv1DAutoencoder_one_tract(nn.Module):
+class Conv1DAutoencoder_first_tract(nn.Module):
     def __init__(self, latent_dim=20):
         super().__init__()
         self.encoder = Conv1DEncoder_one_tract(latent_dim)
