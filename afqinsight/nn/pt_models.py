@@ -666,22 +666,6 @@ class VariationalEncoder(nn.Module):
         return z
 
 
-class Encoder(nn.Module):
-    def __init__(self, input_shape, latent_dims):
-        super(Encoder, self).__init__()
-        self.flatten = nn.Flatten()
-        self.linear1 = nn.Linear(input_shape, 500)
-        self.activation = nn.ReLU()
-        self.linear2 = nn.Linear(500, latent_dims)
-
-    def forward(self, x):
-        x = self.flatten(x)
-        x = self.linear1(x)
-        x = self.activation(x)
-        x = self.linear2(x)
-        return x
-
-
 class Decoder(nn.Module):
     def __init__(self, input_shape, latent_dims):
         super(Decoder, self).__init__()
@@ -853,44 +837,6 @@ class VariationalAutoencoder(nn.Module):
                 loss.backward()
                 opt.step()
             print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
-
-    def transform(self, x):
-        self.forward(x)
-
-    def fit_transform(self, data, epochs=20):
-        self.fit(data, epochs)
-        return self.transform(data)
-
-
-class Autoencoder(nn.Module):
-    def __init__(self, input_shape, latent_dims):
-        super(Autoencoder, self).__init__()
-        self.encoder = Encoder(input_shape, latent_dims)
-        self.decoder = Decoder(input_shape, latent_dims)
-
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    def forward(self, x):
-        z = self.encoder(x)
-        return self.decoder(z)
-
-    def fit(self, data, epochs=20, lr=0.001):
-        opt = torch.optim.Adam(self.parameters(), lr=lr)
-        for epoch in range(epochs):
-            running_loss = 0
-            items = 0
-            for x, _ in data:
-                x = x.to(self.device)  # GPU
-                opt.zero_grad()
-                x_hat = self(x)
-                loss = ((x - x_hat) ** 2).sum()
-                items += x.size(0)
-                running_loss += loss.item()
-                loss.backward()
-                opt.step()
-            print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
-
-        return self
 
     def transform(self, x):
         self.forward(x)
