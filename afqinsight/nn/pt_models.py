@@ -7,6 +7,9 @@ from dipy.utils.optpkg import optional_package
 from dipy.utils.tripwire import TripWire
 
 import afqinsight.augmentation as aug
+from afqinsight.nn.utils import (
+    reconstruction_loss,
+)
 
 torch_msg = (
     "To use afqinsight's pytorch models, you need to have pytorch "
@@ -694,50 +697,10 @@ class Decoder(nn.Module):
         return x.view((batch_size, 48, 100))
 
 
-class Conv1dEncoder(nn.Module):
-    def __init__(self, in_channels=48, latent_channels=12):
-        super().__init__()
-        self.conv1 = nn.Conv1d(
-            in_channels, latent_channels * 2, kernel_size=3, stride=1, padding=1
-        )
-        self.conv2 = nn.Conv1d(
-            latent_channels * 2, latent_channels, kernel_size=3, stride=1, padding=1
-        )
-        self.dropout = nn.Dropout(0.5)
-        self.maxpool = nn.MaxPool1d(2)
-        self.relu = nn.ReLU()
-
-    def forward(self, x):
-        x = self.relu(self.conv1(x))
-        x = self.maxpool(x)
-        x = self.relu(self.conv2(x))
-        x = self.maxpool(x)
-        return x
-
-
-class Conv1dDecoder(nn.Module):
-    def __init__(self, in_channels=12, out_channels=48):
-        super().__init__()
-
-        self.relu = nn.ReLU()
-        self.deconv1 = nn.ConvTranspose1d(
-            in_channels, in_channels * 2, kernel_size=4, stride=2, padding=1
-        )
-        self.deconv2 = nn.ConvTranspose1d(
-            in_channels * 2, out_channels, kernel_size=4, stride=2, padding=1
-        )
-        self.dropout = nn.Dropout(0.2)
-
-    def forward(self, x):
-        x = self.relu(self.deconv1(x))
-        x = self.relu(self.deconv2(x))
-        return x
-
-
-class Conv1DEncoder_fa(nn.Module):
+class Conv1DEncoder(nn.Module):
     def __init__(self, latent_dims=20, dropout=0.2):
         super().__init__()
-        # Input shape: [batch, channels=48, length=50]
+        # Input shape: [batch, channels=48, length=50 if false, 100 if all tracts]
         self.conv1 = nn.Conv1d(
             in_channels=48, out_channels=32, kernel_size=3, stride=2, padding=1
         )
@@ -759,7 +722,7 @@ class Conv1DEncoder_fa(nn.Module):
         return x
 
 
-class Conv1DDecoder_fa(nn.Module):
+class Conv1DDecoder(nn.Module):
     def __init__(self, latent_dims=20, dropout=0.2):
         super().__init__()
         self.deconv1 = nn.ConvTranspose1d(
@@ -937,109 +900,6 @@ class Autoencoder(nn.Module):
         return self.transform(data)
 
 
-class Conv1dAutoencoder(nn.Module):
-    def __init__(self, in_channels=48, latent_channels=12):
-        super().__init__()
-        self.encoder = Conv1dEncoder(
-            in_channels=in_channels, latent_channels=latent_channels
-        )
-        self.decoder = Conv1dDecoder(
-            out_channels=in_channels, in_channels=latent_channels
-        )
-
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    def forward(self, x):
-        z = self.encoder(x)
-        x_hat = self.decoder(z)
-        return x_hat
-
-    def fit(
-        self,
-        model,
-        train_loader,
-        val_loader,
-        patience=10,
-        lr_patience=3,
-        epochs=5,
-        lr=1e-3,
-        use_lr_scheduler=False,
-    ):
-        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-        if use_lr_scheduler:
-            scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-                optimizer, mode="min", factor=0.5, patience=lr_patience, verbose=True
-            )
-        loss_fn = nn.MSELoss()
-        num_no_improve = 0
-        best_val_loss = 10**10
-
-        for epoch in range(epochs):
-            model.train()
-            epoch_loss = 0.0
-            num_items = 0
-            for x, _ in train_loader:
-                x = x.to(self.device)
-
-                x_hat = model(x)
-                loss = loss_fn(x_hat, x)
-
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-
-                epoch_loss += loss.item()
-                num_items += x.size(0)
-            avg_loss = epoch_loss / num_items
-
-            print(
-                f"Epoch {epoch+1}/{epochs}, Loss = {avg_loss:.6f},"
-                f"lr = {optimizer.param_groups[0]['lr']}"
-            )
-
-            model.eval()
-            val_loss = 0.0
-            num_items = 0
-            with torch.no_grad():
-                for x, _ in val_loader:
-                    x = x.to(self.device)
-                    x_hat = model(x)
-                    loss = loss_fn(x_hat, x).item()
-                    val_loss += loss
-                    num_items += x.size(0)
-
-            val_loss /= num_items
-            if use_lr_scheduler:
-                scheduler.step(val_loss)
-
-            if val_loss > best_val_loss:
-                num_no_improve += 1
-            else:
-                num_no_improve = 0
-                best_val_loss = val_loss
-
-            if num_no_improve != 0:
-                print(
-                    f"Validation Loss = {val_loss:.6f},"
-                    f"No improvement for {num_no_improve} epochs"
-                )
-            else:
-                print(f"Validation Loss = {val_loss:.6f}")
-
-            if num_no_improve == patience:
-                print("Early stopping")
-                break
-
-        return model
-
-    def transform(self, x):
-        self.forward(x)
-
-    def fit_transform(self, data, epochs=20):
-        self.fit(data, epochs)
-        return self.transform(data)
-
-
 class VAE_first_tract(nn.Module):
     def __init__(self, input_shape, latent_dims, dropout):
         super(VAE_first_tract, self).__init__()
@@ -1085,11 +945,11 @@ class VAE_first_tract(nn.Module):
         return self.transform(data)
 
 
-class Conv1DAutoencoder_fa(nn.Module):
+class Conv1DAutoencoder(nn.Module):
     def __init__(self, latent_dims=20, dropout=0.2):
         super().__init__()
-        self.encoder = Conv1DEncoder_fa(latent_dims, dropout)
-        self.decoder = Conv1DDecoder_fa(latent_dims, dropout)
+        self.encoder = Conv1DEncoder(latent_dims, dropout)
+        self.decoder = Conv1DDecoder(latent_dims, dropout)
 
     def forward(self, x):
         z = self.encoder(x)
