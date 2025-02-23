@@ -761,6 +761,30 @@ class VAE_random_tracts(nn.Module):
         z = self.encoder(x)
         return self.decoder(z)
 
+    def train_first_tract(self, data, epochs=20, lr=0.001, sigma=0.02):
+        opt = torch.optim.Adam(self.parameters(), lr=lr)
+
+        for epoch in range(epochs):
+            running_loss = 0
+            items = 0
+            for x, _ in data:
+                # Select only the first tract for each sample
+                tract_data = x[:, 0, :].to(torch.float32).to(device)
+
+                opt.zero_grad()
+                x_hat = self(tract_data).to(device)
+
+                loss = reconstruction_loss(tract_data, x_hat, kl_div=0, reduction="sum")
+
+                items += tract_data.size(0)
+                running_loss += loss.item()
+                loss.backward()
+                opt.step()
+
+            print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
+
+        return self
+
     def fit(self, data, epochs=20, lr=0.001, num_selected_tracts=5, sigma=0.03):
         opt = torch.optim.Adam(self.parameters(), lr=lr)
 
