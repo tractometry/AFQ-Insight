@@ -4,7 +4,6 @@ import torch
 
 from afqinsight import AFQDataset
 from afqinsight.nn.pt_models import (
-    Autoencoder,
     VAE_random_tracts,
     VariationalAutoencoder,
 )
@@ -42,9 +41,7 @@ def data_shapes(data_loaders):
     return gt_shape, sequence_length, in_channels
 
 
-@pytest.mark.parametrize(
-    "model_class", [Autoencoder, VariationalAutoencoder, VAE_random_tracts]
-)
+@pytest.mark.parametrize("model_class", [VariationalAutoencoder, VAE_random_tracts])
 @pytest.mark.parametrize("latent_dims", [2, 10])
 def test_autoencoder_forward(data_loaders, data_shapes, model_class, latent_dims):
     """
@@ -59,7 +56,7 @@ def test_autoencoder_forward(data_loaders, data_shapes, model_class, latent_dims
         model = model_class(
             input_shape=in_channels, latent_dims=latent_dims, dropout=0.1
         )
-    elif model_class == VariationalAutoencoder or model_class == Autoencoder:
+    elif model_class == VariationalAutoencoder:
         model = model_class(
             input_shape=sequence_length * in_channels, latent_dims=latent_dims
         )
@@ -92,16 +89,14 @@ def test_autoencoder_forward(data_loaders, data_shapes, model_class, latent_dims
     # Validate output shape
     if model_class == VAE_random_tracts:
         expected_shape = (x.size(0), in_channels)
-    elif model_class == VariationalAutoencoder or model_class == Autoencoder:
+    elif model_class == VariationalAutoencoder:
         expected_shape = (x.size(0), sequence_length, in_channels)
     assert (
         output.shape == expected_shape
     ), f"Expected output shape {expected_shape}, but got {output.shape}."
 
 
-@pytest.mark.parametrize(
-    "model_class", [Autoencoder, VariationalAutoencoder, VAE_random_tracts]
-)
+@pytest.mark.parametrize("model_class", [VariationalAutoencoder, VAE_random_tracts])
 def test_autoencoder_train_loop(data_loaders, data_shapes, model_class):
     """
     Simple smoke test for the training loop of the Autoencoder models,
@@ -112,7 +107,7 @@ def test_autoencoder_train_loop(data_loaders, data_shapes, model_class):
 
     if model_class == VAE_random_tracts:
         model = model_class(input_shape=in_channels, latent_dims=10, dropout=0.1)
-    elif model_class == VariationalAutoencoder or model_class == Autoencoder:
+    elif model_class == VariationalAutoencoder:
         model = model_class(input_shape=sequence_length * in_channels, latent_dims=10)
     model.train()
 
