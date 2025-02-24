@@ -388,7 +388,7 @@ def prep_tensorflow_data(dataset):
     return train_dataset, X_test, X_train, y_test, val_dataset
 
 
-def prep_pytorch_data(dataset):
+def prep_pytorch_data(dataset, batch_size=32):
     """
     Prepares PyTorch datasets for training, testing, and validation.
 
@@ -427,10 +427,67 @@ def prep_pytorch_data(dataset):
     )
 
     train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=32, shuffle=True
+        train_dataset, batch_size=batch_size, shuffle=True
     )
     test_loader = torch.utils.data.DataLoader(
-        test_dataset, batch_size=32, shuffle=False
+        test_dataset, batch_size=batch_size, shuffle=False
     )
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=32, shuffle=False)
     return torch_dataset, train_loader, test_loader, val_loader
+
+
+def brownian_noise(
+    batch_sz, channel_sz, n_steps, delta=1.0, start=0.0, range=(0.9, 1.1)
+):
+    """
+    Generate Brownian noise.
+    """
+    steps = np.random.normal(0, delta, size=(batch_sz, channel_sz, n_steps - 1))
+
+    path = np.cumsum(steps, axis=2)
+
+    start_values = np.full((batch_sz, channel_sz, 1), start)
+    path = np.concatenate([start_values, path + start], axis=2)
+
+    path_min = path.min(axis=(2), keepdims=True)
+    path_max = path.max(axis=(2), keepdims=True)
+    path = (path - path_min) / (path_max - path_min)
+    path = path * (range[1] - range[0]) + range[0]
+
+    return path.astype(np.float32)
+
+
+def prep_fa_dataset(dataset, batch_size=32):
+    """
+    Extracts the fa_tracts from the provided dataset and
+    prepares the dataset for training.
+    """
+    fa_indices = []
+    for i, fname in enumerate(dataset.feature_names):
+        if fname[0] == "dki_fa":
+            fa_indices.append(i)
+
+    X_fa = dataset.X[:, fa_indices]
+    feature_names_fa = [dataset.feature_names[i] for i in fa_indices]
+
+    dataset_fa = AFQDataset(
+        X=X_fa,
+        y=dataset.y,
+        groups=dataset.groups,
+        feature_names=feature_names_fa,
+        group_names=dataset.group_names,
+        target_cols=dataset.target_cols,
+        subjects=dataset.subjects,
+        sessions=dataset.sessions,
+        classes=dataset.classes,
+    )
+    return prep_pytorch_data(dataset_fa, batch_size=batch_size)
+
+
+def reconstruction_loss(x, x_hat, kl_div=0.0, reduction="sum"):
+    """
+    Compute the reconstruction loss (MSE) and optionally add a KL term.
+    """
+    recon_loss = F.mse_loss(x_hat, x, reduction=reduction)
+    total_loss = recon_loss + kl_div
+    return total_loss
