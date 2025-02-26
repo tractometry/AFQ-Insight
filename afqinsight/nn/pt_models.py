@@ -570,7 +570,7 @@ class VariationalEncoder(nn.Module):
         logvar = self.logvar(x)
 
         std = torch.exp(0.5 * logvar)
-        eps = torch.randn_like(std).to(self.device)
+        eps = torch.randn_like(std)
         z = mu + eps * std
 
         kl = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
