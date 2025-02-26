@@ -587,7 +587,6 @@ class Encoder(nn.Module):
         super(Encoder, self).__init__()
         self.linear1 = nn.Linear(input_shape, 50)
         self.linear2 = nn.Linear(50, latent_dims)
-        self.linear3 = nn.Linear(50, latent_dims)
         self.dropout = nn.Dropout(dropout)
         self.activation = nn.ReLU()
 
@@ -596,9 +595,6 @@ class Encoder(nn.Module):
         x = self.activation(x)
         x = self.dropout(x)
         x = self.linear2(x)
-        x = self.activation(x)
-        x = self.dropout(x)
-        x = self.linear3(x)
         return x
 
 
@@ -772,29 +768,6 @@ class Autoencoder(nn.Module):
     def forward(self, x):
         z = self.encoder(x)
         return self.decoder(z)
-
-    def train_first_tract(self, data, epochs=20, lr=0.001, sigma=0.02):
-        opt = torch.optim.Adam(self.parameters(), lr=lr)
-
-        for epoch in range(epochs):
-            running_loss = 0
-            items = 0
-            for x, _ in data:
-                tract_data = x[:, 0, :].to(torch.float32).to(self.device)
-
-                opt.zero_grad()
-                x_hat = self(tract_data).to(self.device)
-
-                loss = reconstruction_loss(tract_data, x_hat, kl_div=0, reduction="sum")
-
-                items += tract_data.size(0)
-                running_loss += loss.item()
-                loss.backward()
-                opt.step()
-
-            print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
-
-        return self
 
     def fit(self, data, epochs=20, lr=0.001, num_selected_tracts=5, sigma=0.03):
         opt = torch.optim.Adam(self.parameters(), lr=lr)
