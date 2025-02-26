@@ -446,6 +446,9 @@ def prep_first_tract_data(dataset, batch_size=32):
         def __init__(self, original_dataset):
             self.original_dataset = original_dataset
 
+        def __len__(self):
+            return len(self.original_dataset)
+
         def __getitem__(self, idx):
             x, y = self.original_dataset[idx]
             tract_data = x[0:1, :].clone()
