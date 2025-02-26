@@ -851,7 +851,7 @@ class Autoencoder(nn.Module):
 
 class Conv1DVariationalAutoencoder(nn.Module):
     def __init__(self, latent_dims=20, dropout=0.2):
-        super(Conv1DVariationalAutoencoder).__init__()
+        super().__init__()
         self.encoder = Conv1DVariationalEncoder(latent_dims, dropout)
         self.decoder = Conv1DDecoder(latent_dims)
         self.device = torch.device(
@@ -902,7 +902,7 @@ class Conv1DVariationalAutoencoder(nn.Module):
 
 class Conv1DAutoencoder(nn.Module):
     def __init__(self, latent_dims=20, dropout=0.2):
-        super(Conv1DAutoencoder).__init__()
+        super().__init__()
         self.encoder = Conv1DEncoder(latent_dims, dropout)
         self.decoder = Conv1DDecoder(latent_dims)
         self.device = torch.device(
