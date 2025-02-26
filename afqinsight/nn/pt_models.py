@@ -573,13 +573,13 @@ class VariationalEncoder(nn.Module):
         eps = torch.randn_like(std)
         z = mu + eps * std
 
-        # kl = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
+        kl = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 
         # z: sampled latent vector
         # mu: mean vectors
         # logvar: log variance vectors
-        # return z, mu, logvar, kl
-        return z
+        return z, mu, logvar, kl
+        # return z
 
 
 class Encoder(nn.Module):
