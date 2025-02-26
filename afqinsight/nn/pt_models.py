@@ -573,12 +573,13 @@ class VariationalEncoder(nn.Module):
         eps = torch.randn_like(std)
         z = mu + eps * std
 
-        kl = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
+        # kl = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 
         # z: sampled latent vector
         # mu: mean vectors
         # logvar: log variance vectors
-        return z, mu, logvar, kl
+        # return z, mu, logvar, kl
+        return z
 
 
 class Encoder(nn.Module):
@@ -612,7 +613,6 @@ class Decoder(nn.Module):
         x = self.linear1(z)
         x = self.relu(x)
         x = self.linear2(x)
-        x = self.relu(x)
         return x
 
 
@@ -729,7 +729,7 @@ class VariationalAutoencoder(nn.Module):
             items = 0
             for x, _ in data:  # x shape: (batch_size, 48, 100)
                 tract_data = (
-                    x[:, 0, :].to(torch.float32).to(self.device)
+                    x[:, 0:1, :].to(torch.float32).to(self.device)
                 )  # Shape: (batch_size, 100)
 
                 opt.zero_grad()
