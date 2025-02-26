@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import layers
