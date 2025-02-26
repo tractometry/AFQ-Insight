@@ -6,6 +6,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import layers
 
+from afqinsight.datasets import AFQDataset
 from afqinsight.neurocombat_sklearn import CombatModel
 
 
@@ -434,6 +435,43 @@ def prep_pytorch_data(dataset, batch_size=32):
     )
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=32, shuffle=False)
     return torch_dataset, train_loader, test_loader, val_loader
+
+
+def prep_first_tract_data(dataset, batch_size=32):
+    torch_dataset, train_loader, test_loader, val_loader = prep_pytorch_data(
+        dataset, batch_size=batch_size
+    )
+
+    class FirstTractDataset(torch.utils.data.Dataset):
+        def __init__(self, original_dataset):
+            self.original_dataset = original_dataset
+
+        def __getitem__(self, idx):
+            x, y = self.original_dataset[idx]
+            tract_data = x[0:1, :].clone()
+            return tract_data, y
+
+    first_tract_train_dataset = FirstTractDataset(train_loader.dataset)
+    first_tract_test_dataset = FirstTractDataset(test_loader.dataset)
+    first_tract_val_dataset = FirstTractDataset(val_loader.dataset)
+
+    # Create first tract data loaders
+    first_tract_train_loader = torch.utils.data.DataLoader(
+        first_tract_train_dataset, batch_size=batch_size, shuffle=True
+    )
+    first_tract_test_loader = torch.utils.data.DataLoader(
+        first_tract_test_dataset, batch_size=batch_size, shuffle=False
+    )
+    first_tract_val_loader = torch.utils.data.DataLoader(
+        first_tract_val_dataset, batch_size=batch_size, shuffle=False
+    )
+
+    return (
+        torch_dataset,
+        first_tract_train_loader,
+        first_tract_test_loader,
+        first_tract_val_loader,
+    )
 
 
 def brownian_noise(
