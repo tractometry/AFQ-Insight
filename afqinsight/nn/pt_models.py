@@ -552,7 +552,6 @@ def cnn_resnet_pt(input_shape, n_classes):
 class VariationalEncoder(nn.Module):
     def __init__(self, input_shape, latent_dims=20, dropout=0.2):
         super(VariationalEncoder, self).__init__()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # Encoder layers
         self.linear1 = nn.Linear(input_shape, 50)
@@ -563,8 +562,6 @@ class VariationalEncoder(nn.Module):
         self.activation = nn.ReLU()
 
     def forward(self, x):
-        x = torch.flatten(x, start_dim=1)
-
         x = self.linear1(x)
         x = self.activation(x)
         x = self.dropout(x)
@@ -587,7 +584,6 @@ class VariationalEncoder(nn.Module):
 class Encoder(nn.Module):
     def __init__(self, input_shape, latent_dims=20, dropout=0.2):
         super(Encoder, self).__init__()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.linear1 = nn.Linear(input_shape, 50)
         self.linear2 = nn.Linear(50, latent_dims)
         self.linear3 = nn.Linear(50, latent_dims)
@@ -595,7 +591,6 @@ class Encoder(nn.Module):
         self.activation = nn.ReLU()
 
     def forward(self, x):
-        x = torch.flatten(x, start_dim=1)
         x = self.linear1(x)
         x = self.activation(x)
         x = self.dropout(x)
@@ -614,12 +609,11 @@ class Decoder(nn.Module):
         self.linear2 = nn.Linear(50, input_shape)
 
     def forward(self, z):
-        batch_size = z.size(0)
         x = self.linear1(z)
         x = self.relu(x)
         x = self.linear2(x)
         x = self.relu(x)
-        return x.view(batch_size, -1)
+        return x
 
 
 class Conv1DVariationalEncoder(nn.Module):
