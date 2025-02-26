@@ -648,7 +648,9 @@ class Conv1DVariationalEncoder(nn.Module):
         eps = torch.randn_like(std)
         z = mu + eps * std
 
-        return z, mu, logvar
+        kl = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
+
+        return z, mu, logvar, kl
 
 
 class Conv1DEncoder(nn.Module):
@@ -857,7 +859,7 @@ class Conv1DVariationalAutoencoder(nn.Module):
         )
 
     def forward(self, x):
-        z = self.encoder(x)
+        z, _, _, _ = self.encoder(x)
         x_prime = self.decoder(z)
         return x_prime
 
