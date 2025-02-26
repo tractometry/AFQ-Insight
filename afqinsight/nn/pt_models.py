@@ -850,10 +850,10 @@ class Autoencoder(nn.Module):
 
 
 class Conv1DVariationalAutoencoder(nn.Module):
-    def __init__(self, latent_dim=20, dropout=0.2):
+    def __init__(self, latent_dims=20, dropout=0.2):
         super(Conv1DVariationalAutoencoder).__init__()
-        self.encoder = Conv1DVariationalEncoder(latent_dim, dropout)
-        self.decoder = Conv1DDecoder(latent_dim)
+        self.encoder = Conv1DVariationalEncoder(latent_dims, dropout)
+        self.decoder = Conv1DDecoder(latent_dims)
         self.device = torch.device(
             "mps"
             if torch.backends.mps.is_available()
@@ -901,10 +901,10 @@ class Conv1DVariationalAutoencoder(nn.Module):
 
 
 class Conv1DAutoencoder(nn.Module):
-    def __init__(self, latent_dim=20):
+    def __init__(self, latent_dims=20, dropout=0.2):
         super(Conv1DAutoencoder).__init__()
-        self.encoder = Conv1DEncoder(latent_dim)
-        self.decoder = Conv1DDecoder(latent_dim)
+        self.encoder = Conv1DEncoder(latent_dims, dropout)
+        self.decoder = Conv1DDecoder(latent_dims)
         self.device = torch.device(
             "mps"
             if torch.backends.mps.is_available()
