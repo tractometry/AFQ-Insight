@@ -569,10 +569,34 @@ class VariationalEncoder_one_tract(nn.Module):
         x = self.activation(x)
         x = self.dropout(x)
         mu = self.linear2(x)
+        mu = self.activation(mu)
+        mu = self.dropout(mu)
         sigma = torch.exp(self.linear3(x))
         z = mu + sigma * self.N.sample(mu.shape)
         self.kl = (sigma**2 + mu**2 - torch.log(sigma) - 1 / 2).sum()
         return z
+
+
+class Encoder_one_tract(nn.Module):
+    def __init__(self, input_shape, latent_dims, dropout):
+        super(Encoder_one_tract, self).__init__()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.linear1 = nn.Linear(input_shape, 50)
+        self.linear2 = nn.Linear(50, latent_dims)
+        self.linear3 = nn.Linear(50, latent_dims)
+        self.dropout = nn.Dropout(dropout)
+        self.activation = nn.ReLU()
+
+    def forward(self, x):
+        x = torch.flatten(x, start_dim=1)
+        x = self.linear1(x)
+        x = self.activation(x)
+        x = self.dropout(x)
+        x = self.linear2(x)
+        x = self.activation(x)
+        x = self.dropout(x)
+        x = self.linear3(x)
+        return x
 
 
 class Decoder_one_tract(nn.Module):
@@ -592,36 +616,40 @@ class Decoder_one_tract(nn.Module):
 
 
 class Conv1DEncoder_one_tract(nn.Module):
-    def __init__(self, latent_dim=20):
+    def __init__(self, latent_dims=20, dropout=0.2):
         super().__init__()
 
         self.conv1 = nn.Conv1d(1, 16, kernel_size=5, stride=2, padding=2)
         self.conv2 = nn.Conv1d(16, 32, kernel_size=4, stride=2, padding=2)
         self.conv3 = nn.Conv1d(32, 64, kernel_size=5, stride=2, padding=2)
-        self.conv4 = nn.Conv1d(64, latent_dim, kernel_size=5, stride=2, padding=2)
-        self.flatten = nn.Flatten()
+        self.conv4 = nn.Conv1d(64, latent_dims, kernel_size=5, stride=2, padding=2)
+        self.dropout = nn.Dropout(dropout)
+
         self.relu = nn.ReLU()
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
+        x = self.dropout(x)
         x = F.relu(self.conv2(x))
+        x = self.dropout(x)
         x = F.relu(self.conv3(x))
+        x = self.dropout(x)
         x = self.conv4(x)
         return x
 
 
 class Conv1DDecoder_one_tract(nn.Module):
-    def __init__(self, latent_dim=20):
+    def __init__(self, latent_dims=20):
         super().__init__()
 
         self.deconv1 = nn.ConvTranspose1d(
-            latent_dim, 64, kernel_size=5, stride=2, padding=2, output_padding=0
+            latent_dims, 64, kernel_size=5, stride=2, padding=2, output_padding=0
         )
         self.deconv2 = nn.ConvTranspose1d(
             64, 32, kernel_size=5, stride=2, padding=2, output_padding=0
         )
         self.deconv3 = nn.ConvTranspose1d(
-            32, 16, kernel_size=4, stride=2, padding=2, output_padding=1
+            32, 16, kernel_size=4, stride=2, padding=2, output_padding=2
         )
         self.deconv4 = nn.ConvTranspose1d(
             16, 1, kernel_size=5, stride=2, padding=2, output_padding=1
@@ -638,47 +666,6 @@ class Conv1DDecoder_one_tract(nn.Module):
         x = self.deconv4(x)
         x = self.sigmoid(x)
         return x
-
-
-class VariationalEncoder(nn.Module):
-    def __init__(self, input_shape, latent_dims):
-        super(VariationalEncoder, self).__init__()
-        self.linear1 = nn.Linear(input_shape, 500)
-        self.linear2 = nn.Linear(500, latent_dims)
-        self.linear3 = nn.Linear(500, latent_dims)
-        self.activation = nn.ReLU()
-
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-        self.N = torch.distributions.Normal(0, 1)
-        self.N.loc = self.N.loc.to(self.device)
-        self.N.scale = self.N.scale.to(self.device)
-        self.kl = 0
-
-    def forward(self, x):
-        x = torch.flatten(x, start_dim=1)
-        x = self.linear1(x)
-        x = self.activation(x)
-        mu = self.linear2(x)
-        sigma = torch.exp(self.linear3(x))
-        z = mu + sigma * self.N.sample(mu.shape)
-        self.kl = (sigma**2 + mu**2 - torch.log(sigma) - 1 / 2).sum()
-        return z
-
-
-class Decoder(nn.Module):
-    def __init__(self, input_shape, latent_dims):
-        super(Decoder, self).__init__()
-        self.linear1 = nn.Linear(latent_dims, 500)
-        self.relu = nn.ReLU()
-        self.linear2 = nn.Linear(500, input_shape)
-
-    def forward(self, z):
-        batch_size = z.size(0)
-        x = self.linear1(z)
-        x = self.relu(x)
-        x = self.linear2(x)
-        return x.view((batch_size, 48, 100))
 
 
 class Conv1DEncoder(nn.Module):
@@ -769,10 +756,10 @@ class VAE_random_tracts(nn.Module):
             items = 0
             for x, _ in data:
                 # Select only the first tract for each sample
-                tract_data = x[:, 0, :].to(torch.float32).to(device)
+                tract_data = x[:, 0, :].to(torch.float32).to(self.device)
 
                 opt.zero_grad()
-                x_hat = self(tract_data).to(device)
+                x_hat = self(tract_data).to(self.device)
 
                 loss = reconstruction_loss(tract_data, x_hat, kl_div=0, reduction="sum")
 
@@ -825,42 +812,6 @@ class VAE_random_tracts(nn.Module):
             print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
 
         return self
-
-    def transform(self, x):
-        self.forward(x)
-
-    def fit_transform(self, data, epochs=20):
-        self.fit(data, epochs)
-        return self.transform(data)
-
-
-class VariationalAutoencoder(nn.Module):
-    def __init__(self, input_shape, latent_dims):
-        super(VariationalAutoencoder, self).__init__()
-        self.encoder = VariationalEncoder(input_shape, latent_dims)
-        self.decoder = Decoder(input_shape, latent_dims)
-
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    def forward(self, x):
-        z = self.encoder(x)
-        return self.decoder(z)
-
-    def fit(self, data, epochs=20, lr=0.001):
-        opt = torch.optim.Adam(self.parameters(), lr=lr)
-        for epoch in range(epochs):
-            running_loss = 0
-            items = 0
-            for x, _ in data:
-                x = x.to(self.device)  # GPU
-                opt.zero_grad()
-                x_hat = self(x)
-                loss = ((x - x_hat) ** 2).sum() + self.encoder.kl
-                items += x.size(0)
-                running_loss += loss.item()
-                loss.backward()
-                opt.step()
-            print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
 
     def transform(self, x):
         self.forward(x)
