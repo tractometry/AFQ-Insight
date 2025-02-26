@@ -573,10 +573,12 @@ class VariationalEncoder(nn.Module):
         eps = torch.randn_like(std)
         z = mu + eps * std
 
+        kl = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
+
         # z: sampled latent vector
         # mu: mean vectors
         # logvar: log variance vectors
-        return z, mu, logvar
+        return z, mu, logvar, kl
         # return z
 
 
@@ -716,7 +718,7 @@ class VariationalAutoencoder(nn.Module):
         )
 
     def forward(self, x):
-        z = self.encoder(x)
+        z, _, _, _ = self.encoder(x)
         return self.decoder(z)
 
     def fit(self, data, epochs=20, lr=0.001):
