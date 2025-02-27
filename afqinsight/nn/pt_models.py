@@ -1,12 +1,10 @@
 import math
 
-import numpy as np
 import torch
 import torch.nn.functional as F
 from dipy.utils.optpkg import optional_package
 from dipy.utils.tripwire import TripWire
 
-import afqinsight.augmentation as aug
 from afqinsight.nn.utils import (
     reconstruction_loss,
 )
@@ -725,17 +723,15 @@ class VariationalAutoencoder(nn.Module):
         for epoch in range(epochs):
             running_loss = 0
             items = 0
-            for x, _ in data:  # x shape: (batch_size, 48, 100)
-                tract_data = (
-                    x[:, 0:1, :].to(torch.float32).to(self.device)
-                )  # Shape: (batch_size, 100)
+            for x, _ in data:
+                x = x.to(torch.float32).to(self.device)
 
                 opt.zero_grad()
-                x_hat = self(tract_data).to(self.device)
+                x_hat = self(x).to(self.device)
 
-                loss = reconstruction_loss(tract_data, x_hat, kl_div=0, reduction="sum")
+                loss = reconstruction_loss(x, x_hat, kl_div=0, reduction="sum")
 
-                items += tract_data.size(0)
+                items += x.size(0)
                 running_loss += loss.item()
                 loss.backward()
                 opt.step()
@@ -745,7 +741,24 @@ class VariationalAutoencoder(nn.Module):
         return self
 
     def transform(self, x):
-        self.forward(x)
+        self.eval()
+
+        if isinstance(x, torch.utils.data.DataLoader):
+            latent_vectors = []
+            with torch.no_grad():
+                for batch, _ in x:
+                    z, _, _, _ = self.encoder(batch.to(self.device))
+                    latent_vectors.append(z.cpu())
+
+            if latent_vectors:
+                return torch.cat(latent_vectors, dim=0)
+            return None
+
+        else:
+            with torch.no_grad():
+                x = x.to(self.device)
+                z, _, _, _ = self.encoder(x)
+                return z
 
     def fit_transform(self, data, epochs=20):
         self.fit(data, epochs)
@@ -776,32 +789,14 @@ class Autoencoder(nn.Module):
             running_loss = 0
             items = 0
             for x, _ in data:
-                batch_size = x.size(0)  # 64
-                num_tracts = x.size(1)  # 48
-
-                # By the end, will have shape (batch_size, num_selected_tracts, 100)
-                selected_tracts = []
-                for _ in range(num_selected_tracts):
-                    tract_indices = np.random.randint(0, num_tracts, size=batch_size)
-                    batch_indices = np.arange(batch_size)
-                    selected_tracts.append(x[batch_indices, tract_indices, :])
-
-                tract_data = torch.stack(selected_tracts, dim=1)
-
-                tract_data = tract_data.to(torch.float32).numpy()
-                tract_data = aug.jitter(tract_data, sigma=sigma)
-                tract_data = torch.tensor(tract_data, dtype=torch.float32).to(
-                    self.device
-                )
-
-                tract_data = tract_data.view(-1, 100).to(self.device)
+                x = x.to(torch.float32).to(self.device)
 
                 opt.zero_grad()
-                x_hat = self(tract_data)
+                x_hat = self(x).to(self.device)
 
-                loss = F.mse_loss(tract_data, x_hat, reduction="sum")
+                loss = reconstruction_loss(x, x_hat, kl_div=0, reduction="sum")
 
-                items += tract_data.size(0)
+                items += x.size(0)
                 running_loss += loss.item()
                 loss.backward()
                 opt.step()
@@ -811,7 +806,24 @@ class Autoencoder(nn.Module):
         return self
 
     def transform(self, x):
-        self.forward(x)
+        self.eval()
+
+        if isinstance(x, torch.utils.data.DataLoader):
+            latent_vectors = []
+            with torch.no_grad():
+                for batch, _ in x:
+                    z = self.encoder(batch.to(self.device))
+                    latent_vectors.append(z.cpu())
+
+            if latent_vectors:
+                return torch.cat(latent_vectors, dim=0)
+            return None
+
+        else:
+            with torch.no_grad():
+                x = x.to(self.device)
+                z = self.encoder(x)
+                return z
 
     def fit_transform(self, data, epochs=20):
         self.fit(data, epochs)
@@ -842,17 +854,15 @@ class Conv1DVariationalAutoencoder(nn.Module):
         for epoch in range(epochs):
             running_loss = 0
             items = 0
-            for x, _ in data:  # x shape: (batch_size, 48, 100)
-                tract_data = (
-                    x[:, 0, :].unsqueeze(1).to(torch.float32).to(self.device)
-                )  # Reshape to (batch_size, 1, 100)
+            for x, _ in data:
+                x = x.to(torch.float32).to(self.device)
 
                 opt.zero_grad()
-                x_hat = self(tract_data).to(self.device)
+                x_hat = self(x).to(self.device)
 
-                loss = reconstruction_loss(tract_data, x_hat, kl_div=0, reduction="sum")
+                loss = reconstruction_loss(x, x_hat, kl_div=0, reduction="sum")
 
-                items += tract_data.size(0)
+                items += x.size(0)
                 running_loss += loss.item()
                 loss.backward()
                 opt.step()
@@ -862,7 +872,24 @@ class Conv1DVariationalAutoencoder(nn.Module):
         return self
 
     def transform(self, x):
-        self.forward(x)
+        self.eval()
+
+        if isinstance(x, torch.utils.data.DataLoader):
+            latent_vectors = []
+            with torch.no_grad():
+                for batch, _ in x:
+                    z, _, _, _ = self.encoder(batch.to(self.device))
+                    latent_vectors.append(z.cpu())
+
+            if latent_vectors:
+                return torch.cat(latent_vectors, dim=0)
+            return None
+
+        else:
+            with torch.no_grad():
+                x = x.to(self.device)
+                z, _, _, _ = self.encoder(x)
+                return z
 
     def fit_transform(self, data, epochs=20):
         self.fit(data, epochs)
@@ -893,17 +920,14 @@ class Conv1DAutoencoder(nn.Module):
         for epoch in range(epochs):
             running_loss = 0
             items = 0
-            for x, _ in data:  # x shape: (batch_size, 48, 100)
-                tract_data = (
-                    x[:, 0, :].unsqueeze(1).to(torch.float32).to(self.device)
-                )  # Reshape to (batch_size, 1, 100)
-
+            for x, _ in data:
+                x = x.to(torch.float32).to(self.device)
                 opt.zero_grad()
-                x_hat = self(tract_data).to(self.device)
+                x_hat = self(x).to(self.device)
 
-                loss = reconstruction_loss(tract_data, x_hat, kl_div=0, reduction="sum")
+                loss = reconstruction_loss(x, x_hat, kl_div=0, reduction="sum")
 
-                items += tract_data.size(0)
+                items += x.size(0)
                 running_loss += loss.item()
                 loss.backward()
                 opt.step()
@@ -913,7 +937,24 @@ class Conv1DAutoencoder(nn.Module):
         return self
 
     def transform(self, x):
-        self.forward(x)
+        self.eval()
+
+        if isinstance(x, torch.utils.data.DataLoader):
+            latent_vectors = []
+            with torch.no_grad():
+                for batch, _ in x:
+                    z = self.encoder(batch.to(self.device))
+                    latent_vectors.append(z.cpu())
+
+            if latent_vectors:
+                return torch.cat(latent_vectors, dim=0)
+            return None
+
+        else:
+            with torch.no_grad():
+                x = x.to(self.device)
+                z = self.encoder(x)
+                return z
 
     def fit_transform(self, data, epochs=20):
         self.fit(data, epochs)
