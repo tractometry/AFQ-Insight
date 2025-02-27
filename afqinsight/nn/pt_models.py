@@ -551,7 +551,6 @@ class VariationalEncoder(nn.Module):
     def __init__(self, input_shape, latent_dims=20, dropout=0.2):
         super(VariationalEncoder, self).__init__()
 
-        # Encoder layers
         self.linear1 = nn.Linear(input_shape, 50)
         self.mu = nn.Linear(50, latent_dims)
         self.logvar = nn.Linear(50, latent_dims)
@@ -573,11 +572,7 @@ class VariationalEncoder(nn.Module):
 
         kl = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 
-        # z: sampled latent vector
-        # mu: mean vectors
-        # logvar: log variance vectors
         return z, mu, logvar, kl
-        # return z
 
 
 class Encoder(nn.Module):
