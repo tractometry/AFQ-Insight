@@ -1,30 +1,38 @@
-import numpy as np
 import pytest
 import torch
 
 from afqinsight import AFQDataset
-from afqinsight.nn.pt_models import Decoder, VariationalEncoder
-from afqinsight.nn.utils import prep_pytorch_data
+from afqinsight.nn.pt_models import Conv1DVariationalAutoencoder, VariationalAutoencoder
+from afqinsight.nn.utils import prep_first_tract_data, prep_pytorch_data
 
 
 @pytest.fixture
 def device():
-    """Fixture to set up the computing device."""
+    """Sets up the computing device."""
     if torch.backends.mps.is_available():
-        return torch.device("cpu")
+        return torch.device("mps")
     return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 @pytest.fixture
 def dataset():
-    """Fixture to load the AFQ dataset."""
+    """Loads the AFQ dataset."""
     return AFQDataset.from_study("hbn")
 
 
 @pytest.fixture
 def data_loaders(dataset):
-    """Fixture to prepare PyTorch datasets and data loaders."""
+    """Prepare PyTorch datasets and data loaders."""
     torch_dataset, train_loader, test_loader, val_loader = prep_pytorch_data(dataset)
+    return torch_dataset, train_loader, test_loader, val_loader
+
+
+@pytest.fixture
+def first_tract_data_loaders(dataset):
+    """Prepare PyTorch datasets and data loaders with only the first tract."""
+    torch_dataset, train_loader, test_loader, val_loader = prep_first_tract_data(
+        dataset
+    )
     return torch_dataset, train_loader, test_loader, val_loader
 
 
@@ -38,142 +46,100 @@ def data_shapes(data_loaders):
     return gt_shape, sequence_length, in_channels
 
 
-class VariationalAutoencoder(torch.nn.Module):
-    def __init__(self, input_shape, latent_dims=20, dropout=0.2):
-        super().__init__()
-        self.encoder = VariationalEncoder(input_shape, latent_dims, dropout)
-        self.decoder = Decoder(input_shape, latent_dims)
+@pytest.fixture
+def first_tract_shapes(first_tract_data_loaders):
+    """Fixture to compute shapes for first tract data."""
+    sample_batch, _ = next(iter(first_tract_data_loaders[1]))
 
-    def forward(self, x):
-        if len(x.shape) > 2:
-            x = torch.flatten(x, start_dim=1)
+    if len(sample_batch.shape) == 3:
+        input_shape = sample_batch.shape[1] * sample_batch.shape[2]
+    else:
+        input_shape = sample_batch.shape[1]
 
-        z, mu, logvar, kl = self.encoder(x)
-        x_hat = self.decoder(z)
-        return x_hat
-
-    def fit(self, train_loader, epochs=1, lr=0.001):
-        optimizer = torch.optim.Adam(self.parameters(), lr=lr)
-        for epoch in range(epochs):
-            for x, _ in train_loader:
-                batch_size = x.size(0)
-                num_tracts = x.size(1)
-                tract_indices = np.random.randint(0, num_tracts, size=batch_size)
-                batch_indices = np.arange(batch_size)
-                tract_data = x[batch_indices, tract_indices, :]
-                tract_data = tract_data.flatten(start_dim=1)
-
-                optimizer.zero_grad()
-                z, mu, logvar, kl = self.encoder(tract_data)
-                x_hat = self.decoder(z)
-
-                recon_loss = torch.nn.functional.mse_loss(x_hat, tract_data)
-                loss = recon_loss + kl
-
-                loss.backward()
-                optimizer.step()
-                print(f"Epoch {epoch+1}, Loss: {loss.item()}")
+    return input_shape
 
 
-@pytest.mark.parametrize("model_class", [VariationalAutoencoder])
-@pytest.mark.parametrize("latent_dims", [2, 10])
-def test_autoencoder_forward(
-    data_loaders, data_shapes, model_class, latent_dims, device
+@pytest.mark.parametrize(
+    "model_class", [VariationalAutoencoder, Conv1DVariationalAutoencoder]
+)
+def test_vae_training(
+    first_tract_data_loaders, first_tract_shapes, model_class, device
 ):
-    torch_dataset, train_loader, test_loader, val_loader = data_loaders
-    gt_shape, sequence_length, in_channels = data_shapes
+    """Test that the VAE can be trained without errors."""
+    input_shape = first_tract_shapes
 
-    model = model_class(input_shape=in_channels, latent_dims=latent_dims, dropout=0.1)
+    _, train_loader, _, _ = first_tract_data_loaders
+
+    if model_class == VariationalAutoencoder:
+        model = model_class(input_shape=input_shape, latent_dims=10, dropout=0.1)
+    else:
+        model = model_class(latent_dims=10, dropout=0.1)
     model.to(device)
-    model.eval()
-
-    data_iter = iter(test_loader)
-    x, _ = next(data_iter)
-    x = x.to(device)
-
-    batch_size = x.size(0)
-    num_tracts = x.size(1)
-
-    tract_indices = np.random.randint(0, num_tracts, size=batch_size)
-    batch_indices = np.arange(batch_size)
-
-    tract_data = x[batch_indices, tract_indices, :]
-    tract_data = tract_data.to(device)
-
-    with torch.no_grad():
-        output = model(tract_data)
-
-    expected_shape = (batch_size, in_channels)
-    assert (
-        output.shape == expected_shape
-    ), f"Expected output shape {expected_shape}, but got {output.shape}"
-
-
-@pytest.mark.parametrize("model_class", [VariationalAutoencoder])
-def test_autoencoder_train_loop(data_loaders, data_shapes, model_class, device):
-    """
-    Simple test for the training loop of the Autoencoder models,
-    checking for any exceptions.
-    """
-    torch_dataset, train_loader, test_loader, val_loader = data_loaders
-    gt_shape, sequence_length, in_channels = data_shapes
-
-    model = model_class(input_shape=in_channels, latent_dims=10, dropout=0.1)
-    model.to(device)
-    model.train()
 
     try:
         model.fit(train_loader, epochs=1, lr=0.001)
     except Exception as e:
-        pytest.fail(f"Model {model_class.__name__} failed with exception: {e}")
+        pytest.fail(f"VAE training failed with exception: {e}")
 
 
-@pytest.mark.parametrize("latent_dims", [2, 10, 20])
-def test_variational_encoder_outputs(data_loaders, data_shapes, latent_dims, device):
-    """
-    Test that the variational encoder returns the expected number of outputs
-    with the correct shapes.
-    """
-    torch_dataset, train_loader, test_loader, val_loader = data_loaders
-    gt_shape, sequence_length, in_channels = data_shapes
+@pytest.mark.parametrize(
+    "model_class", [VariationalAutoencoder, Conv1DVariationalAutoencoder]
+)
+def test_vae_transform(
+    first_tract_data_loaders, first_tract_shapes, model_class, device
+):
+    """Test the transform method of the Autoencoders."""
+    input_shape = first_tract_shapes
+    latent_dims = 10
 
-    encoder = VariationalEncoder(
-        input_shape=in_channels, latent_dims=latent_dims, dropout=0.1
-    )
-    encoder.to(device)
-    encoder.eval()
+    _, _, test_loader, _ = first_tract_data_loaders
+
+    if model_class == VariationalAutoencoder:
+        model = model_class(input_shape=input_shape, latent_dims=10, dropout=0.1)
+    else:
+        model = model_class(latent_dims=10, dropout=0.1)
+    model.to(device)
+    model.eval()
 
     data_iter = iter(test_loader)
-    x, _ = next(data_iter)
-    x = x.to(device)
+    batch, _ = next(data_iter)
 
-    batch_size = x.size(0)
-    num_tracts = x.size(1)
+    if model_class == VariationalAutoencoder:
+        flattened_batch = torch.flatten(batch, start_dim=1)
+    elif model_class == Conv1DVariationalAutoencoder:
+        flattened_batch = batch
 
-    tract_indices = np.random.randint(0, num_tracts, size=batch_size)
-    batch_indices = np.arange(batch_size)
-
-    tract_data = x[batch_indices, tract_indices, :]
-    tract_data = tract_data.to(device)
+    flattened_batch = flattened_batch.to(device)
 
     with torch.no_grad():
-        z, mu, logvar, kl = encoder(tract_data)
+        z = model.transform(flattened_batch)
 
-    assert isinstance(z, torch.Tensor), "z should be a tensor"
-    assert isinstance(mu, torch.Tensor), "mu should be a tensor"
-    assert isinstance(logvar, torch.Tensor), "logvar should be a tensor"
-    assert isinstance(kl, torch.Tensor), "kl should be a tensor"
+    batch_size = flattened_batch.shape[0]
+    if model_class == VariationalAutoencoder:
+        assert z.shape == (
+            batch_size,
+            latent_dims,
+        ), f"Expected z shape {(batch_size, latent_dims)}, got {z.shape}"
+    elif model_class == Conv1DVariationalAutoencoder:
+        assert z.shape == (
+            batch_size,
+            latent_dims,
+            7,
+        ), f"Expected z shape {(batch_size, latent_dims)}, got {z.shape}"
 
-    assert z.shape == (
-        batch_size,
-        latent_dims,
-    ), f"Expected z shape {(batch_size, latent_dims)}, got {z.shape}"
-    assert mu.shape == (
-        batch_size,
-        latent_dims,
-    ), f"Expected mu shape {(batch_size, latent_dims)}, got {mu.shape}"
-    assert logvar.shape == (
-        batch_size,
-        latent_dims,
-    ), f"Expected logvar shape {(batch_size, latent_dims)}, got {logvar.shape}"
-    assert kl.dim() == 0, f"KL should be a scalar tensor, got shape {kl.shape}"
+    with torch.no_grad():
+        transformed = model.transform(test_loader)
+
+    if model_class == VariationalAutoencoder:
+        num_samples = len(test_loader.dataset)
+        assert transformed.shape == torch.Size(
+            (num_samples, 1, latent_dims)
+        ), f"Expected transform shape {(num_samples, latent_dims)},"
+        f" got {transformed.shape}"
+    elif model_class == Conv1DVariationalAutoencoder:
+        num_samples = len(test_loader.dataset)
+        print(transformed.shape)
+        assert transformed.shape == torch.Size(
+            (num_samples, latent_dims, 7)
+        ), f"Expected transform shape {(num_samples, latent_dims, 7)},"
+        f" got {transformed.shape}"
