@@ -668,16 +668,16 @@ class Conv1DDecoder(nn.Module):
         super().__init__()
 
         self.deconv1 = nn.ConvTranspose1d(
-            latent_dims, 64, kernel_size=5, stride=2, padding=2, output_padding=0
+            latent_dims, 64, kernel_size=5, stride=2, padding=2, output_padding=1
         )
         self.deconv2 = nn.ConvTranspose1d(
-            64, 32, kernel_size=5, stride=2, padding=2, output_padding=0
+            64, 32, kernel_size=3, stride=2, padding=2, output_padding=1
         )
         self.deconv3 = nn.ConvTranspose1d(
-            32, 16, kernel_size=4, stride=2, padding=2, output_padding=2
+            32, 16, kernel_size=4, stride=2, padding=2, output_padding=1
         )
         self.deconv4 = nn.ConvTranspose1d(
-            16, 1, kernel_size=5, stride=2, padding=2, output_padding=1
+            16, 1, kernel_size=3, stride=2, padding=2, output_padding=1
         )
 
         self.relu = nn.ReLU()
