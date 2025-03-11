@@ -7,6 +7,7 @@ from dipy.utils.tripwire import TripWire
 
 from afqinsight.nn.utils import (
     reconstruction_loss,
+    vae_loss,
 )
 
 torch_msg = (
@@ -550,11 +551,9 @@ def cnn_resnet_pt(input_shape, n_classes):
 class VariationalEncoder(nn.Module):
     def __init__(self, input_shape, latent_dims=20, dropout=0.2):
         super(VariationalEncoder, self).__init__()
-
         self.linear1 = nn.Linear(input_shape, 50)
         self.mu = nn.Linear(50, latent_dims)
         self.logvar = nn.Linear(50, latent_dims)
-
         self.dropout = nn.Dropout(dropout)
         self.activation = nn.ReLU()
 
@@ -562,17 +561,9 @@ class VariationalEncoder(nn.Module):
         x = self.linear1(x)
         x = self.activation(x)
         x = self.dropout(x)
-
         mu = self.mu(x)
         logvar = self.logvar(x)
-
-        std = torch.exp(0.5 * logvar)
-        eps = torch.randn_like(std)
-        z = mu + eps * std
-
-        kl = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-
-        return z, mu, logvar, kl
+        return mu, logvar
 
 
 class Encoder(nn.Module):
@@ -631,13 +622,7 @@ class Conv1DVariationalEncoder(nn.Module):
         mu = self.conv_mu(x)
         logvar = self.conv_logvar(x)
 
-        std = torch.exp(0.5 * logvar)
-        eps = torch.randn_like(std)
-        z = mu + eps * std
-
-        kl = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-
-        return z, mu, logvar, kl
+        return mu, logvar
 
 
 class Conv1DEncoder(nn.Module):
@@ -699,37 +684,63 @@ class VariationalAutoencoder(nn.Module):
         self.encoder = VariationalEncoder(input_shape, latent_dims, dropout=dropout)
         self.decoder = Decoder(input_shape, latent_dims)
         self.device = torch.device(
-            "mps"
-            if torch.backends.mps.is_available()
-            else "cuda"
+            "cuda"
             if torch.cuda.is_available()
+            else "mps"
+            if torch.backends.mps.is_available()
             else "cpu"
         )
 
     def forward(self, x):
-        z, _, _, _ = self.encoder(x)
-        return self.decoder(z)
+        mean, logvar = self.encoder(x)
 
-    def fit(self, data, epochs=20, lr=0.001):
+        z = self.reparameterize(mean, logvar)
+
+        x_hat = self.decoder(z)
+
+        return x_hat, mean, logvar
+
+    def reparameterize(self, mean, logvar):
+        std = torch.exp(0.5 * logvar)
+        eps = torch.randn_like(std)
+        return mean + eps * std
+
+    def fit(self, data, epochs=20, lr=0.001, kl_weight=0.001):
         opt = torch.optim.Adam(self.parameters(), lr=lr)
+        self.train()
 
         for epoch in range(epochs):
             running_loss = 0
+            running_recon_loss = 0
+            running_kl_loss = 0
             items = 0
+
             for x, _ in data:
                 x = x.to(torch.float32).to(self.device)
-
                 opt.zero_grad()
-                x_hat = self(x).to(self.device)
 
-                loss = reconstruction_loss(x, x_hat, kl_div=0, reduction="sum")
+                x_hat, mean, logvar = self(x)
+
+                loss, recon_loss, kl_loss = vae_loss(
+                    x, x_hat, mean, logvar, kl_weight, reduction="sum"
+                )
 
                 items += x.size(0)
                 running_loss += loss.item()
+                running_recon_loss += recon_loss.item()
+                running_kl_loss += kl_loss.item()
+
                 loss.backward()
                 opt.step()
 
-            print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
+            avg_loss = running_loss / items
+            avg_recon_loss = running_recon_loss / items
+            avg_kl_loss = running_kl_loss / items
+
+            print(
+                f"Epoch {epoch+1}, Loss: {avg_loss:.2f}, "
+                f"Recon: {avg_recon_loss:.2f}, KL: {avg_kl_loss:.2f}"
+            )
 
         return self
 
@@ -738,10 +749,12 @@ class VariationalAutoencoder(nn.Module):
 
         if isinstance(x, torch.utils.data.DataLoader):
             latent_vectors = []
+
             with torch.no_grad():
                 for batch, _ in x:
-                    z, _, _, _ = self.encoder(batch.to(self.device))
-                    latent_vectors.append(z.cpu())
+                    batch = batch.to(torch.float32).to(self.device)
+                    mean, _ = self.encoder(batch)
+                    latent_vectors.append(mean.cpu())
 
             if latent_vectors:
                 return torch.cat(latent_vectors, dim=0)
@@ -749,12 +762,12 @@ class VariationalAutoencoder(nn.Module):
 
         else:
             with torch.no_grad():
-                x = x.to(self.device)
-                z, _, _, _ = self.encoder(x)
-                return z
+                x = x.to(torch.float32).to(self.device)
+                mean, _ = self.encoder(x)
+                return mean
 
-    def fit_transform(self, data, epochs=20):
-        self.fit(data, epochs)
+    def fit_transform(self, data, epochs=20, kl_weight=0.001):
+        self.fit(data, epochs, kl_weight=kl_weight)
         return self.transform(data)
 
 
@@ -764,10 +777,10 @@ class Autoencoder(nn.Module):
         self.encoder = Encoder(input_shape, latent_dims, dropout=dropout)
         self.decoder = Decoder(input_shape, latent_dims)
         self.device = torch.device(
-            "mps"
-            if torch.backends.mps.is_available()
-            else "cuda"
+            "cuda"
             if torch.cuda.is_available()
+            else "mps"
+            if torch.backends.mps.is_available()
             else "cpu"
         )
 
@@ -829,34 +842,51 @@ class Conv1DVariationalAutoencoder(nn.Module):
         self.encoder = Conv1DVariationalEncoder(latent_dims, dropout)
         self.decoder = Conv1DDecoder(latent_dims)
         self.device = torch.device(
-            "mps"
-            if torch.backends.mps.is_available()
-            else "cuda"
+            "cuda"
             if torch.cuda.is_available()
+            else "mps"
+            if torch.backends.mps.is_available()
             else "cpu"
         )
 
-    def forward(self, x):
-        z, _, _, _ = self.encoder(x)
-        x_prime = self.decoder(z)
-        return x_prime
+    def reparameterize(self, mean, logvar):
+        std = torch.exp(0.5 * logvar)
+        eps = torch.randn_like(std)
+        z = mean + eps * std
+        return z
 
-    def fit(self, data, epochs=20, lr=0.001):
+    def forward(self, x):
+        (
+            mu,
+            logvar,
+        ) = self.encoder(x)
+
+        z = self.reparameterize(mu, logvar)
+
+        x_prime = self.decoder(z)
+        return x_prime, mu, logvar
+
+    def fit(self, data, epochs=20, lr=0.001, kl_weight=0.001):
         opt = torch.optim.Adam(self.parameters(), lr=lr)
+        self.train()
 
         for epoch in range(epochs):
             running_loss = 0
             items = 0
+
             for x, _ in data:
                 x = x.to(torch.float32).to(self.device)
-
                 opt.zero_grad()
-                x_hat = self(x).to(self.device)
 
-                loss = reconstruction_loss(x, x_hat, kl_div=0, reduction="sum")
+                x_hat, mean, logvar = self(x)
+
+                loss, _, _ = vae_loss(
+                    x, x_hat, mean, logvar, kl_weight=kl_weight, reduction="sum"
+                )
 
                 items += x.size(0)
                 running_loss += loss.item()
+
                 loss.backward()
                 opt.step()
 
@@ -869,10 +899,12 @@ class Conv1DVariationalAutoencoder(nn.Module):
 
         if isinstance(x, torch.utils.data.DataLoader):
             latent_vectors = []
+
             with torch.no_grad():
                 for batch, _ in x:
-                    z, _, _, _ = self.encoder(batch.to(self.device))
-                    latent_vectors.append(z.cpu())
+                    batch = batch.to(torch.float32).to(self.device)
+                    mean, _ = self.encoder(batch)
+                    latent_vectors.append(mean.cpu())
 
             if latent_vectors:
                 return torch.cat(latent_vectors, dim=0)
@@ -880,12 +912,12 @@ class Conv1DVariationalAutoencoder(nn.Module):
 
         else:
             with torch.no_grad():
-                x = x.to(self.device)
-                z, _, _, _ = self.encoder(x)
-                return z
+                x = x.to(torch.float32).to(self.device)
+                mean, _ = self.encoder(x)
+                return mean
 
-    def fit_transform(self, data, epochs=20):
-        self.fit(data, epochs)
+    def fit_transform(self, data, epochs=20, kl_weight=0.001):
+        self.fit(data, epochs, kl_weight=kl_weight)
         return self.transform(data)
 
 
@@ -895,10 +927,10 @@ class Conv1DAutoencoder(nn.Module):
         self.encoder = Conv1DEncoder(latent_dims, dropout)
         self.decoder = Conv1DDecoder(latent_dims)
         self.device = torch.device(
-            "mps"
-            if torch.backends.mps.is_available()
-            else "cuda"
+            "cuda"
             if torch.cuda.is_available()
+            else "mps"
+            if torch.backends.mps.is_available()
             else "cpu"
         )
 
