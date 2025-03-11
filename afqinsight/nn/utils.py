@@ -617,3 +617,27 @@ def reconstruction_loss(x, x_hat, kl_div=0.0, reduction="sum"):
     recon_loss = F.mse_loss(x_hat, x, reduction=reduction)
     total_loss = recon_loss + kl_div
     return total_loss
+
+
+def kl_divergence_loss(mean, logvar):
+    """
+    Compute KL divergence loss for VAE
+    """
+    kl_loss = -0.5 * torch.sum(1 + logvar - mean.pow(2) - logvar.exp())
+    return kl_loss
+
+
+def vae_loss(x, x_hat, mean, logvar, kl_weight=1.0, reduction="sum"):
+    """
+    Combined VAE loss: reconstruction + KL divergence
+    """
+    if reduction == "sum":
+        recon_loss = F.mse_loss(x, x_hat, reduction="sum")
+    else:
+        recon_loss = F.mse_loss(x, x_hat, reduction="mean")
+
+    kl_loss = kl_divergence_loss(mean, logvar)
+
+    total_loss = recon_loss + kl_weight * kl_loss
+
+    return total_loss, recon_loss, kl_loss
