@@ -632,6 +632,40 @@ class Conv1DVariationalEncoder(nn.Module):
         return mean, logvar
 
 
+class Conv1DVariationalDecoder(nn.Module):
+    def __init__(self, latent_dims=20):
+        super().__init__()
+        self.fc = nn.Linear(latent_dims, 64 * 13)
+
+        self.deconv1 = nn.ConvTranspose1d(
+            latent_dims, 64, kernel_size=5, stride=2, padding=2, output_padding=1
+        )
+        self.deconv2 = nn.ConvTranspose1d(
+            64, 32, kernel_size=4, stride=2, padding=2, output_padding=1
+        )
+        self.deconv3 = nn.ConvTranspose1d(
+            32, 16, kernel_size=4, stride=2, padding=2, output_padding=1
+        )
+        self.deconv4 = nn.ConvTranspose1d(
+            16, 1, kernel_size=3, stride=2, padding=2, output_padding=1
+        )
+
+        self.relu = nn.ReLU()
+
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        # x = F.relu(self.deconv1(x))
+        batch_size = x.size(0)
+        x = self.fc(x)
+        x = x.view(batch_size, 64, 13)
+        x = F.relu(self.deconv2(x))
+        x = F.relu(self.deconv3(x))
+        x = self.deconv4(x)
+        x = self.sigmoid(x)
+        return x
+
+
 class Conv1DEncoder(nn.Module):
     def __init__(self, latent_dims=20, dropout=0.2):
         super().__init__()
@@ -658,13 +692,11 @@ class Conv1DEncoder(nn.Module):
 class Conv1DDecoder(nn.Module):
     def __init__(self, latent_dims=20):
         super().__init__()
-        self.fc = nn.Linear(latent_dims, 64 * 13)
-
         self.deconv1 = nn.ConvTranspose1d(
             latent_dims, 64, kernel_size=5, stride=2, padding=2, output_padding=1
         )
         self.deconv2 = nn.ConvTranspose1d(
-            64, 32, kernel_size=4, stride=2, padding=2, output_padding=2
+            64, 32, kernel_size=3, stride=2, padding=2, output_padding=1
         )
         self.deconv3 = nn.ConvTranspose1d(
             32, 16, kernel_size=4, stride=2, padding=2, output_padding=1
@@ -678,10 +710,7 @@ class Conv1DDecoder(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        # x = F.relu(self.deconv1(x))
-        batch_size = x.size(0)
-        x = self.fc(x)
-        x = x.view(batch_size, 64, 13)
+        x = F.relu(self.deconv1(x))
         x = F.relu(self.deconv2(x))
         x = F.relu(self.deconv3(x))
         x = self.deconv4(x)
@@ -799,26 +828,47 @@ class Autoencoder(nn.Module):
         z = self.encoder(x)
         return self.decoder(z)
 
-    def fit(self, data, epochs=20, lr=0.001, num_selected_tracts=5, sigma=0.03):
+    def fit(self, train_data, epochs=500, lr=0.001):
         opt = torch.optim.Adam(self.parameters(), lr=lr)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            opt, "min", patience=5, factor=0.5
+        )
 
         for epoch in range(epochs):
-            running_loss = 0
+            self.train()
+            running_loss = 0.0
+            running_rmse = 0.0
+            running_recon_loss = 0.0
             items = 0
-            for x, _ in data:
-                x = x.to(torch.float32).to(self.device)
+
+            for x, _ in train_data:
+                batch_size = x.size(0)
+                data = x.to(self.device)
 
                 opt.zero_grad()
-                x_hat = self(x).to(self.device)
+                x_hat = self(data)
 
-                loss = F.mse_loss(x, x_hat, reduction="sum")
+                recon_loss = F.mse_loss(data, x_hat, reduction="sum")
+                loss = recon_loss
 
-                items += x.size(0)
-                running_loss += loss.item()
+                batch_rmse = torch.sqrt(F.mse_loss(data, x_hat, reduction="mean"))
+
                 loss.backward()
                 opt.step()
 
-            print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
+                items += batch_size
+                running_loss += loss.item()
+                running_rmse += batch_rmse.item() * batch_size
+                running_recon_loss += recon_loss.item()
+
+            scheduler.step(running_loss / items)
+            avg_train_rmse = running_rmse / items
+            avg_train_recon_loss = running_recon_loss / items
+
+            print(
+                f"Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f},",
+                f"Recon Loss: {avg_train_recon_loss:.4f}",
+            )
 
         return self
 
@@ -851,7 +901,7 @@ class Conv1DVariationalAutoencoder(nn.Module):
     def __init__(self, latent_dims=20, dropout=0.2):
         super().__init__()
         self.encoder = Conv1DVariationalEncoder(latent_dims, dropout)
-        self.decoder = Conv1DDecoder(latent_dims)
+        self.decoder = Conv1DVariationalDecoder(latent_dims)
         self.device = torch.device(
             "cuda"
             if torch.cuda.is_available()
@@ -950,25 +1000,47 @@ class Conv1DAutoencoder(nn.Module):
         x_prime = self.decoder(z)
         return x_prime
 
-    def fit(self, data, epochs=20, lr=0.001):
+    def fit(self, train_data, epochs=500, lr=0.001):
         opt = torch.optim.Adam(self.parameters(), lr=lr)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            opt, "min", patience=5, factor=0.5
+        )
 
         for epoch in range(epochs):
-            running_loss = 0
+            self.train()
+            running_loss = 0.0
+            running_rmse = 0.0
+            running_recon_loss = 0.0
             items = 0
-            for x, _ in data:
-                x = x.to(torch.float32).to(self.device)
+
+            for x, _ in train_data:
+                batch_size = x.size(0)
+                data = x.to(self.device)
+
                 opt.zero_grad()
-                x_hat = self(x).to(self.device)
+                x_hat = self(data)
 
-                loss = F.mse_loss(x, x_hat, reduction="sum")
+                recon_loss = F.mse_loss(data, x_hat, reduction="sum")
+                loss = recon_loss
 
-                items += x.size(0)
-                running_loss += loss.item()
+                batch_rmse = torch.sqrt(F.mse_loss(data, x_hat, reduction="mean"))
+
                 loss.backward()
                 opt.step()
 
-            print(f"Epoch {epoch+1}, Loss: {running_loss/items:.2f}")
+                items += batch_size
+                running_loss += loss.item()
+                running_rmse += batch_rmse.item() * batch_size
+                running_recon_loss += recon_loss.item()
+
+            scheduler.step(running_loss / items)
+            avg_train_rmse = running_rmse / items
+            avg_train_recon_loss = running_recon_loss / items
+
+            print(
+                f"Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f}, ",
+                f"Recon Loss: {avg_train_recon_loss:.4f}",
+            )
 
         return self
 
