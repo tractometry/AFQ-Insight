@@ -610,15 +610,6 @@ def prep_fa_flattned_data(dataset, batch_size=64):
     )
 
 
-def reconstruction_loss(x, x_hat, kl_div=0.0, reduction="sum"):
-    """
-    Compute the reconstruction loss (MSE) and optionally add a KL term.
-    """
-    recon_loss = F.mse_loss(x_hat, x, reduction=reduction)
-    total_loss = recon_loss + kl_div
-    return total_loss
-
-
 def kl_divergence_loss(mean, logvar):
     """
     Compute KL divergence loss for VAE

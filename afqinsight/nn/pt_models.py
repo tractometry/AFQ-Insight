@@ -6,7 +6,6 @@ from dipy.utils.optpkg import optional_package
 from dipy.utils.tripwire import TripWire
 
 from afqinsight.nn.utils import (
-    reconstruction_loss,
     vae_loss,
 )
 
@@ -812,7 +811,7 @@ class Autoencoder(nn.Module):
                 opt.zero_grad()
                 x_hat = self(x).to(self.device)
 
-                loss = reconstruction_loss(x, x_hat, kl_div=0, reduction="sum")
+                loss = F.mse_loss(x, x_hat, reduction="sum")
 
                 items += x.size(0)
                 running_loss += loss.item()
@@ -962,7 +961,7 @@ class Conv1DAutoencoder(nn.Module):
                 opt.zero_grad()
                 x_hat = self(x).to(self.device)
 
-                loss = reconstruction_loss(x, x_hat, kl_div=0, reduction="sum")
+                loss = F.mse_loss(x, x_hat, reduction="sum")
 
                 items += x.size(0)
                 running_loss += loss.item()
