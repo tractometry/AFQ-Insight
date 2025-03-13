@@ -745,42 +745,72 @@ class VariationalAutoencoder(nn.Module):
         eps = torch.randn_like(std)
         return mean + eps * std
 
-    def fit(self, data, epochs=20, lr=0.001, kl_weight=0.001):
-        opt = torch.optim.Adam(self.parameters(), lr=lr)
+    def fit(self, train_data, epochs=500, lr=0.001, kl_weight=0.001):
         self.train()
+        opt = torch.optim.Adam(self.parameters(), lr=lr)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            opt, "min", patience=5, factor=0.5
+        )
+
+        train_rmse_per_epoch = []
+        train_kl_per_epoch = []
+        train_recon_per_epoch = []
+
+        beta_start = 0.0
+        beta_end = 1.0
+        slope = (beta_end - beta_start) / epochs
 
         for epoch in range(epochs):
-            running_loss = 0
-            running_recon_loss = 0
-            running_kl_loss = 0
+            running_loss = 0.0
+            running_rmse = 0.0
+            running_kl = 0.0
+            running_recon_loss = 0.0
             items = 0
 
-            for x, _ in data:
-                x = x.to(torch.float32).to(self.device)
+            beta = beta_start + slope * epoch
+
+            for x, _ in train_data:
+                batch_size = x.size(0)
+                tract_data = x.to(self.device)
+
                 opt.zero_grad()
 
-                x_hat, mean, logvar = self(x)
+                x_hat, mean, logvar = self(tract_data)
 
                 loss, recon_loss, kl_loss = vae_loss(
-                    x, x_hat, mean, logvar, kl_weight, reduction="sum"
+                    tract_data, x_hat, mean, logvar, beta, reduction="sum"
                 )
 
-                items += x.size(0)
-                running_loss += loss.item()
-                running_recon_loss += recon_loss.item()
-                running_kl_loss += kl_loss.item()
+                batch_rmse = torch.sqrt(F.mse_loss(tract_data, x_hat, reduction="mean"))
 
                 loss.backward()
                 opt.step()
 
-            avg_loss = running_loss / items
-            avg_recon_loss = running_recon_loss / items
-            avg_kl_loss = running_kl_loss / items
+                items += batch_size
+                running_loss += loss.item()
+                running_rmse += batch_rmse.item() * batch_size
+                running_kl += kl_loss.item()
+                running_recon_loss += recon_loss.item()
+
+            scheduler.step(running_loss / items)
+            avg_train_rmse = running_rmse / items
+            avg_train_kl = running_kl / items
+            avg_train_recon_loss = running_recon_loss / items
+
+            train_rmse_per_epoch.append(avg_train_rmse)
+            train_kl_per_epoch.append(avg_train_kl)
+            train_recon_per_epoch.append(avg_train_recon_loss)
 
             print(
-                f"Epoch {epoch+1}, Loss: {avg_loss:.2f}, "
-                f"Recon: {avg_recon_loss:.2f}, KL: {avg_kl_loss:.2f}"
+                f"Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f}, KL:",
+                f"{avg_train_kl:.4f}, Recon Loss: {avg_train_recon_loss:.4f}",
             )
+
+        self.history = {
+            "train_rmse_per_epoch": train_rmse_per_epoch,
+            "train_kl_per_epoch": train_kl_per_epoch,
+            "train_recon_per_epoch": train_recon_per_epoch,
+        }
 
         return self
 
@@ -834,6 +864,10 @@ class Autoencoder(nn.Module):
             opt, "min", patience=5, factor=0.5
         )
 
+        train_loss_per_epoch = []
+        train_rmse_per_epoch = []
+        train_recon_per_epoch = []
+
         for epoch in range(epochs):
             self.train()
             running_loss = 0.0
@@ -862,13 +896,24 @@ class Autoencoder(nn.Module):
                 running_recon_loss += recon_loss.item()
 
             scheduler.step(running_loss / items)
+            avg_train_loss = running_loss / items
             avg_train_rmse = running_rmse / items
             avg_train_recon_loss = running_recon_loss / items
+
+            train_loss_per_epoch.append(avg_train_loss)
+            train_rmse_per_epoch.append(avg_train_rmse)
+            train_recon_per_epoch.append(avg_train_recon_loss)
 
             print(
                 f"Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f},",
                 f"Recon Loss: {avg_train_recon_loss:.4f}",
             )
+
+        self.history = {
+            "train_loss_per_epoch": train_loss_per_epoch,
+            "train_rmse_per_epoch": train_rmse_per_epoch,
+            "train_recon_per_epoch": train_recon_per_epoch,
+        }
 
         return self
 
@@ -1047,6 +1092,10 @@ class Conv1DAutoencoder(nn.Module):
             opt, "min", patience=5, factor=0.5
         )
 
+        train_loss_per_epoch = []
+        train_rmse_per_epoch = []
+        train_recon_per_epoch = []
+
         for epoch in range(epochs):
             self.train()
             running_loss = 0.0
@@ -1075,13 +1124,24 @@ class Conv1DAutoencoder(nn.Module):
                 running_recon_loss += recon_loss.item()
 
             scheduler.step(running_loss / items)
+            avg_train_loss = running_loss / items
             avg_train_rmse = running_rmse / items
             avg_train_recon_loss = running_recon_loss / items
+
+            train_loss_per_epoch.append(avg_train_loss)
+            train_rmse_per_epoch.append(avg_train_rmse)
+            train_recon_per_epoch.append(avg_train_recon_loss)
 
             print(
                 f"Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f}, ",
                 f"Recon Loss: {avg_train_recon_loss:.4f}",
             )
+
+        self.history = {
+            "train_loss_per_epoch": train_loss_per_epoch,
+            "train_rmse_per_epoch": train_rmse_per_epoch,
+            "train_recon_per_epoch": train_recon_per_epoch,
+        }
 
         return self
 
