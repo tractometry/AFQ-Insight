@@ -608,6 +608,10 @@ class Conv1DVariationalEncoder(nn.Module):
             64, latent_dims, kernel_size=5, stride=2, padding=2
         )
 
+        self.fc_mean = nn.Linear(64 * 13, latent_dims)
+        self.fc_logvar = nn.Linear(64 * 13, latent_dims)
+        self.flatten = nn.Flatten()
+
         self.dropout = nn.Dropout(dropout)
         self.relu = nn.ReLU()
 
@@ -619,10 +623,14 @@ class Conv1DVariationalEncoder(nn.Module):
         x = self.relu(self.conv3(x))
         x = self.dropout(x)
 
-        mu = self.conv_mu(x)
-        logvar = self.conv_logvar(x)
+        # mu = self.conv_mu(x)
+        # logvar = self.conv_logvar(x)
 
-        return mu, logvar
+        x = self.flatten(x)  # [64, 64*7]
+        mean = self.fc_mean(x)
+        logvar = self.fc_logvar(x)
+
+        return mean, logvar
 
 
 class Conv1DEncoder(nn.Module):
@@ -651,12 +659,13 @@ class Conv1DEncoder(nn.Module):
 class Conv1DDecoder(nn.Module):
     def __init__(self, latent_dims=20):
         super().__init__()
+        self.fc = nn.Linear(latent_dims, 64 * 13)
 
         self.deconv1 = nn.ConvTranspose1d(
             latent_dims, 64, kernel_size=5, stride=2, padding=2, output_padding=1
         )
         self.deconv2 = nn.ConvTranspose1d(
-            64, 32, kernel_size=3, stride=2, padding=2, output_padding=1
+            64, 32, kernel_size=4, stride=2, padding=2, output_padding=2
         )
         self.deconv3 = nn.ConvTranspose1d(
             32, 16, kernel_size=4, stride=2, padding=2, output_padding=1
@@ -670,7 +679,10 @@ class Conv1DDecoder(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        x = F.relu(self.deconv1(x))
+        # x = F.relu(self.deconv1(x))
+        batch_size = x.size(0)
+        x = self.fc(x)
+        x = x.view(batch_size, 64, 13)
         x = F.relu(self.deconv2(x))
         x = F.relu(self.deconv3(x))
         x = self.deconv4(x)
