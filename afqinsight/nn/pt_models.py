@@ -641,7 +641,7 @@ class Conv1DVariationalDecoder(nn.Module):
             latent_dims, 64, kernel_size=5, stride=2, padding=2, output_padding=1
         )
         self.deconv2 = nn.ConvTranspose1d(
-            64, 32, kernel_size=4, stride=2, padding=2, output_padding=2
+            64, 32, kernel_size=5, stride=2, padding=2, output_padding=1
         )
         self.deconv3 = nn.ConvTranspose1d(
             32, 16, kernel_size=4, stride=2, padding=2, output_padding=1
@@ -652,8 +652,6 @@ class Conv1DVariationalDecoder(nn.Module):
 
         self.relu = nn.ReLU()
 
-        self.sigmoid = nn.Sigmoid()
-
     def forward(self, x):
         # x = F.relu(self.deconv1(x))
         batch_size = x.size(0)
@@ -662,7 +660,6 @@ class Conv1DVariationalDecoder(nn.Module):
         x = F.relu(self.deconv2(x))
         x = F.relu(self.deconv3(x))
         x = self.deconv4(x)
-        x = self.sigmoid(x)
         return x
 
 
@@ -707,14 +704,11 @@ class Conv1DDecoder(nn.Module):
 
         self.relu = nn.ReLU()
 
-        self.sigmoid = nn.Sigmoid()
-
     def forward(self, x):
         x = F.relu(self.deconv1(x))
         x = F.relu(self.deconv2(x))
         x = F.relu(self.deconv3(x))
         x = self.deconv4(x)
-        x = self.sigmoid(x)
         return x
 
 
