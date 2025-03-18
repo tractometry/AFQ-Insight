@@ -629,6 +629,7 @@ class Conv1DVariationalEncoder(nn.Module):
         mean = self.fc_mean(x)
         logvar = self.fc_logvar(x)
 
+        # After encoding, shape is [batch_size, latent_dims]
         return mean, logvar
 
 

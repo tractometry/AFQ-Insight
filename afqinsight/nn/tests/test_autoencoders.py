@@ -121,10 +121,10 @@ def test_vae_transform(
             latent_dims,
         ), f"Expected z shape {(batch_size, latent_dims)}, got {z.shape}"
     elif model_class == Conv1DVariationalAutoencoder:
+        print("z_shape", z.shape)
         assert z.shape == (
             batch_size,
             latent_dims,
-            7,
         ), f"Expected z shape {(batch_size, latent_dims)}, got {z.shape}"
 
     with torch.no_grad():
@@ -140,6 +140,6 @@ def test_vae_transform(
         num_samples = len(test_loader.dataset)
         print(transformed.shape)
         assert transformed.shape == torch.Size(
-            (num_samples, latent_dims, 7)
-        ), f"Expected transform shape {(num_samples, latent_dims, 7)},"
+            (num_samples, latent_dims)
+        ), f"Expected transform shape {(num_samples, latent_dims)},"
         f" got {transformed.shape}"
