@@ -759,6 +759,7 @@ class VariationalAutoencoder(nn.Module):
             running_recon_loss = 0.0
             items = 0
 
+            # The weight on KL changes linearly with epoch:
             beta = beta_start + slope * epoch
 
             for x, _ in train_data:
