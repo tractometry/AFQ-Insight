@@ -748,6 +748,7 @@ class VariationalAutoencoder(nn.Module):
         train_kl_per_epoch = []
         train_recon_per_epoch = []
 
+        # This is the weight for the KL "annealing"
         beta_start = 0.0
         beta_end = 1.0
         slope = (beta_end - beta_start) / epochs
@@ -759,6 +760,7 @@ class VariationalAutoencoder(nn.Module):
             running_recon_loss = 0.0
             items = 0
 
+            # The weight on KL changes linearly with epoch:
             beta = beta_start + slope * epoch
 
             for x, _ in train_data:
