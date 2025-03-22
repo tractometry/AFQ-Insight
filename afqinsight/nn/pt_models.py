@@ -622,10 +622,7 @@ class Conv1DVariationalEncoder(nn.Module):
         x = self.relu(self.conv3(x))
         x = self.dropout(x)
 
-        # mu = self.conv_mu(x)
-        # logvar = self.conv_logvar(x)
-
-        x = self.flatten(x)  # [64, 64*7]
+        x = self.flatten(x)
         mean = self.fc_mean(x)
         logvar = self.fc_logvar(x)
 
@@ -654,7 +651,6 @@ class Conv1DVariationalDecoder(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, x):
-        # x = F.relu(self.deconv1(x))
         batch_size = x.size(0)
         x = self.fc(x)
         x = x.view(batch_size, 64, 13)
