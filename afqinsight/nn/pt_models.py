@@ -1,3 +1,4 @@
+import logging
 import math
 
 import torch
@@ -50,7 +51,7 @@ class MLP4(nn.Module):
             self.output_activation = None
 
         if verbose:
-            print(self.model)
+            logging.info(self.model)
 
     def forward(self, x):
         x = self.model(x)
@@ -73,7 +74,7 @@ class CNN_LENET(nn.Module):
         super(CNN_LENET, self).__init__()
         self.n_conv_layers = int(round(math.log(input_shape[0], 2)) - 3)
         if verbose:
-            print(f"Pooling layers: {self.n_conv_layers}")
+            logging.info(f"Pooling layers: {self.n_conv_layers}")
 
         conv_layers = []
         seq_len = input_shape[0]
@@ -792,9 +793,9 @@ class VariationalAutoencoder(nn.Module):
             train_kl_per_epoch.append(avg_train_kl)
             train_recon_per_epoch.append(avg_train_recon_loss)
 
-            print(
-                f"Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f}, KL:",
-                f"{avg_train_kl:.4f}, Recon Loss: {avg_train_recon_loss:.4f}",
+            logging.info(
+                f"""Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f}, KL:
+                {avg_train_kl:.4f}, Recon Loss: {avg_train_recon_loss:.4f}"""
             )
 
         self.history = {
@@ -895,9 +896,9 @@ class Autoencoder(nn.Module):
             train_rmse_per_epoch.append(avg_train_rmse)
             train_recon_per_epoch.append(avg_train_recon_loss)
 
-            print(
-                f"Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f},",
-                f"Recon Loss: {avg_train_recon_loss:.4f}",
+            logging.info(
+                f"""Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f},
+                Recon Loss: {avg_train_recon_loss:.4f}"""
             )
 
         self.history = {
@@ -1019,9 +1020,9 @@ class Conv1DVariationalAutoencoder(nn.Module):
             train_kl_per_epoch.append(avg_train_kl)
             train_recon_per_epoch.append(avg_train_recon_loss)
 
-            print(
-                f"Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f}, KL:",
-                f"{avg_train_kl:.4f}, Recon Loss: {avg_train_recon_loss:.4f}",
+            logging.info(
+                f"""Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f}, KL:
+                {avg_train_kl:.4f}, Recon Loss: {avg_train_recon_loss:.4f}"""
             )
 
         self.history = {
@@ -1123,9 +1124,9 @@ class Conv1DAutoencoder(nn.Module):
             train_rmse_per_epoch.append(avg_train_rmse)
             train_recon_per_epoch.append(avg_train_recon_loss)
 
-            print(
-                f"Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f}, ",
-                f"Recon Loss: {avg_train_recon_loss:.4f}",
+            logging.info(
+                f"""Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f},
+                Recon Loss: {avg_train_recon_loss:.4f}"""
             )
 
         self.history = {
