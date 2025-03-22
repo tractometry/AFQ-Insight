@@ -551,7 +551,7 @@ class VariationalEncoder(nn.Module):
     def __init__(self, input_shape, latent_dims=20, dropout=0.2):
         super(VariationalEncoder, self).__init__()
         self.linear1 = nn.Linear(input_shape, 50)
-        self.mu = nn.Linear(50, latent_dims)
+        self.mean = nn.Linear(50, latent_dims)
         self.logvar = nn.Linear(50, latent_dims)
         self.dropout = nn.Dropout(dropout)
         self.activation = nn.ReLU()
@@ -560,9 +560,9 @@ class VariationalEncoder(nn.Module):
         x = self.linear1(x)
         x = self.activation(x)
         x = self.dropout(x)
-        mu = self.mu(x)
+        mean = self.mean(x)
         logvar = self.logvar(x)
-        return mu, logvar
+        return mean, logvar
 
 
 class Encoder(nn.Module):
@@ -954,14 +954,14 @@ class Conv1DVariationalAutoencoder(nn.Module):
 
     def forward(self, x):
         (
-            mu,
+            mean,
             logvar,
         ) = self.encoder(x)
 
-        z = self.reparameterize(mu, logvar)
+        z = self.reparameterize(mean, logvar)
 
         x_prime = self.decoder(z)
-        return x_prime, mu, logvar
+        return x_prime, mean, logvar
 
     def fit(self, train_data, epochs=500, lr=0.001, kl_weight=0.001):
         self.train()
