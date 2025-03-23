@@ -518,19 +518,33 @@ def brownian_noise(
     return path.astype(np.float32)
 
 
-def prep_fa_dataset(dataset, batch_size=32):
+def prep_fa_dataset(dataset, target_labels="dki_fa", batch_size=32):
     """
-    Extracts the fa_tracts from the provided dataset and
+    Extracts features that match the specified label from the provided dataset and
     prepares the dataset for training.
     """
+    # Can be single target or a list of targets
+    if isinstance(target_labels, str):
+        features = [target_labels]
+    else:
+        features = target_labels
+
     fa_indices = []
     for i, fname in enumerate(dataset.feature_names):
-        if fname[0] == "dki_fa":
+        if any(feature in fname for feature in features):
             fa_indices.append(i)
+
+    if not fa_indices:
+        available_features = sorted(
+            {fname.split("_")[0] for fname in dataset.feature_names}
+        )
+        raise ValueError(
+            f"No features found matching patterns: {features}. "
+            f"Features found: {available_features}"
+        )
 
     X_fa = dataset.X[:, fa_indices]
     feature_names_fa = [dataset.feature_names[i] for i in fa_indices]
-
     dataset_fa = AFQDataset(
         X=X_fa,
         y=dataset.y,
