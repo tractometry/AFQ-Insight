@@ -548,38 +548,43 @@ def cnn_resnet_pt(input_shape, n_classes):
     return cnn_resnet_Model
 
 
-class VariationalEncoder(nn.Module):
+class BaseEncoder(nn.Module):
     def __init__(self, input_shape, latent_dims=20, dropout=0.2):
-        super(VariationalEncoder, self).__init__()
+        super(BaseEncoder, self).__init__()
         self.linear1 = nn.Linear(input_shape, 50)
-        self.mean = nn.Linear(50, latent_dims)
-        self.logvar = nn.Linear(50, latent_dims)
         self.dropout = nn.Dropout(dropout)
         self.activation = nn.ReLU()
+        self.latent_dims = latent_dims
 
-    def forward(self, x):
+    def _encode_base(self, x):
         x = self.linear1(x)
         x = self.activation(x)
         x = self.dropout(x)
+        return x
+
+
+class Encoder(BaseEncoder):
+    def __init__(self, input_shape, latent_dims=20, dropout=0.2):
+        super(Encoder, self).__init__(input_shape, latent_dims, dropout)
+        self.linear2 = nn.Linear(50, latent_dims)
+
+    def forward(self, x):
+        x = self._encode_base(x)
+        x = self.linear2(x)
+        return x
+
+
+class VariationalEncoder(BaseEncoder):
+    def __init__(self, input_shape, latent_dims=20, dropout=0.2):
+        super(VariationalEncoder, self).__init__(input_shape, latent_dims, dropout)
+        self.mean = nn.Linear(50, latent_dims)
+        self.logvar = nn.Linear(50, latent_dims)
+
+    def forward(self, x):
+        x = self._encode_base(x)
         mean = self.mean(x)
         logvar = self.logvar(x)
         return mean, logvar
-
-
-class Encoder(nn.Module):
-    def __init__(self, input_shape, latent_dims=20, dropout=0.2):
-        super(Encoder, self).__init__()
-        self.linear1 = nn.Linear(input_shape, 50)
-        self.linear2 = nn.Linear(50, latent_dims)
-        self.dropout = nn.Dropout(dropout)
-        self.activation = nn.ReLU()
-
-    def forward(self, x):
-        x = self.linear1(x)
-        x = self.activation(x)
-        x = self.dropout(x)
-        x = self.linear2(x)
-        return x
 
 
 class Decoder(nn.Module):
@@ -596,38 +601,49 @@ class Decoder(nn.Module):
         return x
 
 
-class Conv1DVariationalEncoder(nn.Module):
+class BaseConv1DEncoder(nn.Module):
     def __init__(self, latent_dims=20, dropout=0.2):
         super().__init__()
         self.conv1 = nn.Conv1d(1, 16, kernel_size=5, stride=2, padding=2)
         self.conv2 = nn.Conv1d(16, 32, kernel_size=4, stride=2, padding=2)
         self.conv3 = nn.Conv1d(32, 64, kernel_size=5, stride=2, padding=2)
-
-        self.conv_mu = nn.Conv1d(64, latent_dims, kernel_size=5, stride=2, padding=2)
-        self.conv_logvar = nn.Conv1d(
-            64, latent_dims, kernel_size=5, stride=2, padding=2
-        )
-
-        self.fc_mean = nn.Linear(64 * 13, latent_dims)
-        self.fc_logvar = nn.Linear(64 * 13, latent_dims)
-        self.flatten = nn.Flatten()
-
         self.dropout = nn.Dropout(dropout)
         self.relu = nn.ReLU()
+        self.latent_dims = latent_dims
 
-    def forward(self, x):
+    def _encode_base(self, x):
         x = self.relu(self.conv1(x))
         x = self.dropout(x)
         x = self.relu(self.conv2(x))
         x = self.dropout(x)
         x = self.relu(self.conv3(x))
         x = self.dropout(x)
+        return x
 
+
+class Conv1DEncoder(BaseConv1DEncoder):
+    def __init__(self, latent_dims=20, dropout=0.2):
+        super().__init__(latent_dims, dropout)
+        self.conv4 = nn.Conv1d(64, latent_dims, kernel_size=5, stride=2, padding=2)
+
+    def forward(self, x):
+        x = self._encode_base(x)
+        x = self.conv4(x)
+        return x
+
+
+class Conv1DVariationalEncoder(BaseConv1DEncoder):
+    def __init__(self, latent_dims=20, dropout=0.2):
+        super().__init__(latent_dims, dropout)
+        self.flatten = nn.Flatten()
+        self.fc_mean = nn.Linear(64 * 13, latent_dims)
+        self.fc_logvar = nn.Linear(64 * 13, latent_dims)
+
+    def forward(self, x):
+        x = self._encode_base(x)
         x = self.flatten(x)
         mean = self.fc_mean(x)
         logvar = self.fc_logvar(x)
-
-        # After encoding, shape is [batch_size, latent_dims]
         return mean, logvar
 
 
@@ -658,29 +674,6 @@ class Conv1DVariationalDecoder(nn.Module):
         x = F.relu(self.deconv2(x))
         x = F.relu(self.deconv3(x))
         x = self.deconv4(x)
-        return x
-
-
-class Conv1DEncoder(nn.Module):
-    def __init__(self, latent_dims=20, dropout=0.2):
-        super().__init__()
-
-        self.conv1 = nn.Conv1d(1, 16, kernel_size=5, stride=2, padding=2)
-        self.conv2 = nn.Conv1d(16, 32, kernel_size=4, stride=2, padding=2)
-        self.conv3 = nn.Conv1d(32, 64, kernel_size=5, stride=2, padding=2)
-        self.conv4 = nn.Conv1d(64, latent_dims, kernel_size=5, stride=2, padding=2)
-        self.dropout = nn.Dropout(dropout)
-
-        self.relu = nn.ReLU()
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = self.dropout(x)
-        x = F.relu(self.conv2(x))
-        x = self.dropout(x)
-        x = F.relu(self.conv3(x))
-        x = self.dropout(x)
-        x = self.conv4(x)
         return x
 
 
