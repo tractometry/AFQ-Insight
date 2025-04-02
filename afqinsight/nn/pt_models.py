@@ -602,9 +602,9 @@ class Decoder(nn.Module):
 
 
 class BaseConv1DEncoder(nn.Module):
-    def __init__(self, latent_dims=20, dropout=0.2):
+    def __init__(self, num_tracts=48, latent_dims=20, dropout=0.2):
         super().__init__()
-        self.conv1 = nn.Conv1d(1, 16, kernel_size=5, stride=2, padding=2)
+        self.conv1 = nn.Conv1d(num_tracts, 16, kernel_size=5, stride=2, padding=2)
         self.conv2 = nn.Conv1d(16, 32, kernel_size=4, stride=2, padding=2)
         self.conv3 = nn.Conv1d(32, 64, kernel_size=5, stride=2, padding=2)
         self.dropout = nn.Dropout(dropout)
@@ -622,8 +622,8 @@ class BaseConv1DEncoder(nn.Module):
 
 
 class Conv1DEncoder(BaseConv1DEncoder):
-    def __init__(self, latent_dims=20, dropout=0.2):
-        super().__init__(latent_dims, dropout)
+    def __init__(self, num_tracts, latent_dims=20, dropout=0.2):
+        super().__init__(num_tracts, latent_dims, dropout)
         self.conv4 = nn.Conv1d(64, latent_dims, kernel_size=5, stride=2, padding=2)
 
     def forward(self, x):
@@ -633,8 +633,8 @@ class Conv1DEncoder(BaseConv1DEncoder):
 
 
 class Conv1DVariationalEncoder(BaseConv1DEncoder):
-    def __init__(self, latent_dims=20, dropout=0.2):
-        super().__init__(latent_dims, dropout)
+    def __init__(self, num_tracts, latent_dims=20, dropout=0.2):
+        super().__init__(num_tracts, latent_dims, dropout)
         self.flatten = nn.Flatten()
         self.fc_mean = nn.Linear(64 * 13, latent_dims)
         self.fc_logvar = nn.Linear(64 * 13, latent_dims)
@@ -648,7 +648,7 @@ class Conv1DVariationalEncoder(BaseConv1DEncoder):
 
 
 class Conv1DVariationalDecoder(nn.Module):
-    def __init__(self, latent_dims=20):
+    def __init__(self, num_tracts, latent_dims=20):
         super().__init__()
         self.fc = nn.Linear(latent_dims, 64 * 13)
 
@@ -662,7 +662,7 @@ class Conv1DVariationalDecoder(nn.Module):
             32, 16, kernel_size=4, stride=2, padding=2, output_padding=1
         )
         self.deconv4 = nn.ConvTranspose1d(
-            16, 1, kernel_size=3, stride=2, padding=2, output_padding=1
+            16, num_tracts, kernel_size=3, stride=2, padding=2, output_padding=1
         )
 
         self.relu = nn.ReLU()
@@ -678,7 +678,7 @@ class Conv1DVariationalDecoder(nn.Module):
 
 
 class Conv1DDecoder(nn.Module):
-    def __init__(self, latent_dims=20):
+    def __init__(self, num_tracts, latent_dims=20):
         super().__init__()
         self.deconv1 = nn.ConvTranspose1d(
             latent_dims, 64, kernel_size=5, stride=2, padding=2, output_padding=1
@@ -690,7 +690,7 @@ class Conv1DDecoder(nn.Module):
             32, 16, kernel_size=4, stride=2, padding=2, output_padding=1
         )
         self.deconv4 = nn.ConvTranspose1d(
-            16, 1, kernel_size=3, stride=2, padding=2, output_padding=1
+            16, num_tracts, kernel_size=3, stride=2, padding=2, output_padding=1
         )
 
         self.relu = nn.ReLU()
@@ -930,10 +930,10 @@ class Autoencoder(nn.Module):
 
 
 class Conv1DVariationalAutoencoder(nn.Module):
-    def __init__(self, latent_dims=20, dropout=0.2):
+    def __init__(self, num_tracts, latent_dims=20, dropout=0.2):
         super().__init__()
-        self.encoder = Conv1DVariationalEncoder(latent_dims, dropout)
-        self.decoder = Conv1DVariationalDecoder(latent_dims)
+        self.encoder = Conv1DVariationalEncoder(num_tracts, latent_dims, dropout)
+        self.decoder = Conv1DVariationalDecoder(num_tracts, latent_dims)
         self.device = torch.device(
             "cuda"
             if torch.cuda.is_available()
