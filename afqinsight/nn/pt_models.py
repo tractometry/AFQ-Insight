@@ -704,6 +704,19 @@ class Conv1DDecoder(nn.Module):
 
 
 class VariationalAutoencoder(nn.Module):
+    """
+    Variational Autoencoder (VAE) model.
+
+    Parameters
+    ----------
+    input_shape : int
+        The number of features in the input data.
+    latent_dims : int
+        The number of dimensions in the latent space.
+    dropout : float
+        The dropout rate.
+    """
+
     def __init__(self, input_shape=100, latent_dims=20, dropout=0.2):
         super().__init__()
         self.encoder = VariationalEncoder(input_shape, latent_dims, dropout=dropout)
@@ -716,7 +729,46 @@ class VariationalAutoencoder(nn.Module):
             else "cpu"
         )
 
+    def reparameterize(self, mean, logvar):
+        """
+        Reparameterization trick to separate random
+        and deterministic parts of the latent space.
+
+        Parameters
+        ----------
+        mean : torch.Tensor
+            The mean of the latent space.
+        logvar : torch.Tensor
+            The log variance of the latent space.
+
+        Returns
+        -------
+        z : torch.Tensor
+            The reparameterized latent space.
+        """
+        std = torch.exp(0.5 * logvar)
+        eps = torch.randn_like(std)
+        z = mean + eps * std
+        return z
+
     def forward(self, x):
+        """
+        Forward pass of the VAE model.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            The input data.
+
+        Returns
+        -------
+        x_hat: torch.Tensor
+            The reconstructed data.
+        mean: torch.Tensor
+            The mean of the latent space.
+        logvar: torch.Tensor
+            The log variance of the latent space.
+        """
         mean, logvar = self.encoder(x)
 
         z = self.reparameterize(mean, logvar)
@@ -724,11 +776,6 @@ class VariationalAutoencoder(nn.Module):
         x_hat = self.decoder(z)
 
         return x_hat, mean, logvar
-
-    def reparameterize(self, mean, logvar):
-        std = torch.exp(0.5 * logvar)
-        eps = torch.randn_like(std)
-        return mean + eps * std
 
     def fit(self, train_data, epochs=500, lr=0.001, kl_weight=0.001):
         self.train()
@@ -829,6 +876,19 @@ class VariationalAutoencoder(nn.Module):
 
 
 class Autoencoder(nn.Module):
+    """
+    Autoencoder model.
+
+    Parameters
+    ----------
+    input_shape : int
+        The number of features in the input data.
+    latent_dims : int
+        The number of dimensions in the latent space.
+    dropout : float
+        The dropout rate.
+    """
+
     def __init__(self, input_shape=100, latent_dims=20, dropout=0.2):
         super().__init__()
         self.encoder = Encoder(input_shape, latent_dims, dropout=dropout)
@@ -930,6 +990,19 @@ class Autoencoder(nn.Module):
 
 
 class Conv1DVariationalAutoencoder(nn.Module):
+    """
+    Convolutional Variational Autoencoder (VAE) model.
+
+    Parameters
+    ----------
+    num_tracts : int
+        The number of tracts in the input data.
+    latent_dims : int
+        The number of dimensions in the latent space.
+    dropout : float
+        The dropout rate.
+    """
+
     def __init__(self, num_tracts=48, latent_dims=20, dropout=0.2):
         super().__init__()
         self.encoder = Conv1DVariationalEncoder(num_tracts, latent_dims, dropout)
@@ -943,21 +1016,52 @@ class Conv1DVariationalAutoencoder(nn.Module):
         )
 
     def reparameterize(self, mean, logvar):
+        """
+        Reparameterization trick to separate random and
+        deterministic parts of the latent space.
+
+        Parameters
+        ----------
+        mean : torch.Tensor
+            The mean of the latent space.
+        logvar : torch.Tensor
+            The log variance of the latent space.
+
+        Returns
+        -------
+        z : torch.Tensor
+            The reparameterized latent space.
+        """
         std = torch.exp(0.5 * logvar)
         eps = torch.randn_like(std)
         z = mean + eps * std
         return z
 
     def forward(self, x):
-        (
-            mean,
-            logvar,
-        ) = self.encoder(x)
+        """
+        Forward pass of the Convolutional VAE model.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            The input data.
+
+        Returns
+        -------
+        x_hat: torch.Tensor
+            The reconstructed data.
+        mean: torch.Tensor
+            The mean of the latent space.
+        logvar: torch.Tensor
+            The log variance of the latent space.
+        """
+
+        mean, logvar = self.encoder(x)
 
         z = self.reparameterize(mean, logvar)
 
-        x_prime = self.decoder(z)
-        return x_prime, mean, logvar
+        x_hat = self.decoder(z)
+        return x_hat, mean, logvar
 
     def fit(self, train_data, epochs=500, lr=0.001, kl_weight=0.001):
         self.train()
@@ -1056,6 +1160,19 @@ class Conv1DVariationalAutoencoder(nn.Module):
 
 
 class Conv1DAutoencoder(nn.Module):
+    """
+    Convolutional Autoencoder model.
+
+    Parameters
+    ----------
+    num_tracts : int
+        The number of tracts in the input data.
+    latent_dims : int
+        The number of dimensions in the latent space.
+    dropout : float
+        The dropout rate.
+    """
+
     def __init__(self, num_tracts=48, latent_dims=20, dropout=0.2):
         super().__init__()
         self.encoder = Conv1DEncoder(num_tracts, latent_dims, dropout)
