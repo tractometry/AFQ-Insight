@@ -549,7 +549,7 @@ def cnn_resnet_pt(input_shape, n_classes):
 
 
 class BaseEncoder(nn.Module):
-    def __init__(self, input_shape, latent_dims=20, dropout=0.2):
+    def __init__(self, input_shape=100, latent_dims=20, dropout=0.2):
         super(BaseEncoder, self).__init__()
         self.linear1 = nn.Linear(input_shape, 50)
         self.dropout = nn.Dropout(dropout)
@@ -564,7 +564,7 @@ class BaseEncoder(nn.Module):
 
 
 class Encoder(BaseEncoder):
-    def __init__(self, input_shape, latent_dims=20, dropout=0.2):
+    def __init__(self, input_shape=100, latent_dims=20, dropout=0.2):
         super(Encoder, self).__init__(input_shape, latent_dims, dropout)
         self.linear2 = nn.Linear(50, latent_dims)
 
@@ -575,7 +575,7 @@ class Encoder(BaseEncoder):
 
 
 class VariationalEncoder(BaseEncoder):
-    def __init__(self, input_shape, latent_dims=20, dropout=0.2):
+    def __init__(self, input_shape=100, latent_dims=20, dropout=0.2):
         super(VariationalEncoder, self).__init__(input_shape, latent_dims, dropout)
         self.mean = nn.Linear(50, latent_dims)
         self.logvar = nn.Linear(50, latent_dims)
@@ -588,7 +588,7 @@ class VariationalEncoder(BaseEncoder):
 
 
 class Decoder(nn.Module):
-    def __init__(self, input_shape, latent_dims=20):
+    def __init__(self, input_shape=100, latent_dims=20):
         super(Decoder, self).__init__()
         self.linear1 = nn.Linear(latent_dims, 50)
         self.relu = nn.ReLU()
@@ -704,7 +704,7 @@ class Conv1DDecoder(nn.Module):
 
 
 class VariationalAutoencoder(nn.Module):
-    def __init__(self, input_shape, latent_dims, dropout):
+    def __init__(self, input_shape=100, latent_dims=20, dropout=0.2):
         super().__init__()
         self.encoder = VariationalEncoder(input_shape, latent_dims, dropout=dropout)
         self.decoder = Decoder(input_shape, latent_dims)
@@ -829,7 +829,7 @@ class VariationalAutoencoder(nn.Module):
 
 
 class Autoencoder(nn.Module):
-    def __init__(self, input_shape, latent_dims, dropout):
+    def __init__(self, input_shape=100, latent_dims=20, dropout=0.2):
         super().__init__()
         self.encoder = Encoder(input_shape, latent_dims, dropout=dropout)
         self.decoder = Decoder(input_shape, latent_dims)
