@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import layers
@@ -13,7 +14,7 @@ def extract_layer_info_pytorch(layer):
     info = {}
     if isinstance(layer, nn.Conv2d):
         info["type"] = "Conv2D"
-        info["in_channels"] = layer.in_channels
+        info["in_channels"] = layer.in_channelscd
         info["out_channels"] = layer.out_channels
         info["kernel_size"] = layer.kernel_size
         info["stride"] = layer.stride
@@ -388,7 +389,7 @@ def prep_tensorflow_data(dataset):
     return train_dataset, X_test, X_train, y_test, val_dataset
 
 
-def prep_pytorch_data(dataset):
+def prep_pytorch_data(dataset, batch_size=32):
     """
     Prepares PyTorch datasets for training, testing, and validation.
 
@@ -427,10 +428,110 @@ def prep_pytorch_data(dataset):
     )
 
     train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=32, shuffle=True
+        train_dataset, batch_size=batch_size, shuffle=True
     )
     test_loader = torch.utils.data.DataLoader(
-        test_dataset, batch_size=32, shuffle=False
+        test_dataset, batch_size=batch_size, shuffle=False
     )
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=32, shuffle=False)
     return torch_dataset, train_loader, test_loader, val_loader
+
+
+def brownian_noise(
+    batch_sz, channel_sz, n_steps, delta=1.0, start=0.0, range=(0.9, 1.1)
+):
+    """
+    Generate Brownian noise for training data.
+
+    Parameters
+    ----------
+    batch_sz : int
+        The batch size.
+    channel_sz : int
+        The number of channels.
+    n_steps : int
+        The number of steps.
+    delta : float
+        The delta value.
+    start : float
+        The starting value.
+    range : tuple
+        The range of amount of noise.
+
+    Returns
+    -------
+    array:
+        The input array after applying brownian noise.
+
+    """
+    steps = np.random.normal(0, delta, size=(batch_sz, channel_sz, n_steps - 1))
+
+    path = np.cumsum(steps, axis=2)
+
+    start_values = np.full((batch_sz, channel_sz, 1), start)
+    path = np.concatenate([start_values, path + start], axis=2)
+
+    path_min = path.min(axis=(2), keepdims=True)
+    path_max = path.max(axis=(2), keepdims=True)
+    path = (path - path_min) / (path_max - path_min)
+    path = path * (range[1] - range[0]) + range[0]
+
+    return path.astype(np.float32)
+
+
+def kl_divergence_loss(mean, logvar):
+    """
+    Compute KL divergence loss for VAE
+
+    Parameters
+    ----------
+    mean : tensor
+        The mean of the latent space.
+    logvar : tensor
+        The log variance of the latent space.
+
+    Returns
+    -------
+    tensor:
+        The KL divergence loss.
+    """
+    kl_loss = -0.5 * torch.sum(1 + logvar - mean.pow(2) - logvar.exp())
+    return kl_loss
+
+
+def vae_loss(x, x_hat, mean, logvar, kl_weight=1.0, reduction="sum"):
+    """
+    Combined VAE loss: reconstruction + KL divergence
+
+    Parameters
+    ----------
+    x : tensor
+        The input tensor.
+    x_hat : tensor
+        The predicted tensor.
+    mean : tensor
+        The mean of the latent space.
+    logvar : tensor
+        The log variance of the latent space.
+    kl_weight : float
+        The weight of the KL divergence loss.
+    reduction : str
+        The reduction method (sum or mean).
+
+    Returns
+    -------
+    tuple:
+        The total loss,
+        The reconstruction loss,
+        The KL divergence loss.
+    """
+    if reduction == "sum":
+        recon_loss = F.mse_loss(x, x_hat, reduction="sum")
+    else:
+        recon_loss = F.mse_loss(x, x_hat, reduction="mean")
+
+    kl_loss = kl_divergence_loss(mean, logvar)
+
+    total_loss = recon_loss + kl_weight * kl_loss
+
+    return total_loss, recon_loss, kl_loss

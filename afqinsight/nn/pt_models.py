@@ -1,8 +1,14 @@
+import logging
 import math
 
 import torch
+import torch.nn.functional as F
 from dipy.utils.optpkg import optional_package
 from dipy.utils.tripwire import TripWire
+
+from afqinsight.nn.utils import (
+    vae_loss,
+)
 
 torch_msg = (
     "To use afqinsight's pytorch models, you need to have pytorch "
@@ -45,7 +51,7 @@ class MLP4(nn.Module):
             self.output_activation = None
 
         if verbose:
-            print(self.model)
+            logging.info(self.model)
 
     def forward(self, x):
         x = self.model(x)
@@ -68,7 +74,7 @@ class CNN_LENET(nn.Module):
         super(CNN_LENET, self).__init__()
         self.n_conv_layers = int(round(math.log(input_shape[0], 2)) - 3)
         if verbose:
-            print(f"Pooling layers: {self.n_conv_layers}")
+            logging.info(f"Pooling layers: {self.n_conv_layers}")
 
         conv_layers = []
         seq_len = input_shape[0]
@@ -540,6 +546,615 @@ class ResNetBlock(nn.Module):
 def cnn_resnet_pt(input_shape, n_classes):
     cnn_resnet_Model = CNN_RESNET(input_shape, n_classes, output_activation="softmax")
     return cnn_resnet_Model
+
+
+class BaseEncoder(nn.Module):
+    def __init__(self, input_shape=100, latent_dims=20, dropout=0.2):
+        super(BaseEncoder, self).__init__()
+        self.linear1 = nn.Linear(input_shape, 50)
+        self.dropout = nn.Dropout(dropout)
+        self.activation = nn.ReLU()
+        self.latent_dims = latent_dims
+
+    def _encode_base(self, x):
+        x = self.linear1(x)
+        x = self.activation(x)
+        x = self.dropout(x)
+        return x
+
+
+class Encoder(BaseEncoder):
+    def __init__(self, input_shape=100, latent_dims=20, dropout=0.2):
+        super(Encoder, self).__init__(input_shape, latent_dims, dropout)
+        self.linear2 = nn.Linear(50, latent_dims)
+
+    def forward(self, x):
+        x = self._encode_base(x)
+        x = self.linear2(x)
+        return x
+
+
+class VariationalEncoder(BaseEncoder):
+    def __init__(self, input_shape=100, latent_dims=20, dropout=0.2):
+        super(VariationalEncoder, self).__init__(input_shape, latent_dims, dropout)
+        self.mean = nn.Linear(50, latent_dims)
+        self.logvar = nn.Linear(50, latent_dims)
+
+    def forward(self, x):
+        x = self._encode_base(x)
+        mean = self.mean(x)
+        logvar = self.logvar(x)
+        return mean, logvar
+
+
+class Decoder(nn.Module):
+    def __init__(self, input_shape=100, latent_dims=20):
+        super(Decoder, self).__init__()
+        self.linear1 = nn.Linear(latent_dims, 50)
+        self.relu = nn.ReLU()
+        self.linear2 = nn.Linear(50, input_shape)
+
+    def forward(self, z):
+        x = self.linear1(z)
+        x = self.relu(x)
+        x = self.linear2(x)
+        return x
+
+
+class BaseConv1DEncoder(nn.Module):
+    def __init__(self, num_tracts=48, latent_dims=20, dropout=0.2):
+        super().__init__()
+        self.conv1 = nn.Conv1d(num_tracts, 16, kernel_size=5, stride=2, padding=2)
+        self.conv2 = nn.Conv1d(16, 32, kernel_size=4, stride=2, padding=2)
+        self.conv3 = nn.Conv1d(32, 64, kernel_size=5, stride=2, padding=2)
+        self.dropout = nn.Dropout(dropout)
+        self.relu = nn.ReLU()
+        self.latent_dims = latent_dims
+
+    def _encode_base(self, x):
+        x = self.relu(self.conv1(x))
+        x = self.dropout(x)
+        x = self.relu(self.conv2(x))
+        x = self.dropout(x)
+        x = self.relu(self.conv3(x))
+        x = self.dropout(x)
+        return x
+
+
+class Conv1DEncoder(BaseConv1DEncoder):
+    def __init__(self, num_tracts=48, latent_dims=20, dropout=0.2):
+        super().__init__(num_tracts, latent_dims, dropout)
+        self.conv4 = nn.Conv1d(64, latent_dims, kernel_size=5, stride=2, padding=2)
+
+    def forward(self, x):
+        x = self._encode_base(x)
+        x = self.conv4(x)
+        return x
+
+
+class Conv1DVariationalEncoder(BaseConv1DEncoder):
+    def __init__(self, num_tracts=48, latent_dims=20, dropout=0.2):
+        super().__init__(num_tracts, latent_dims, dropout)
+        self.flatten = nn.Flatten()
+        self.fc_mean = nn.Linear(64 * 13, latent_dims)
+        self.fc_logvar = nn.Linear(64 * 13, latent_dims)
+
+    def forward(self, x):
+        x = self._encode_base(x)
+        x = self.flatten(x)
+        mean = self.fc_mean(x)
+        logvar = self.fc_logvar(x)
+        return mean, logvar
+
+
+class Conv1DVariationalDecoder(nn.Module):
+    def __init__(self, num_tracts=48, latent_dims=20):
+        super().__init__()
+        self.fc = nn.Linear(latent_dims, 64 * 13)
+
+        self.deconv1 = nn.ConvTranspose1d(
+            latent_dims, 64, kernel_size=5, stride=2, padding=2, output_padding=1
+        )
+        self.deconv2 = nn.ConvTranspose1d(
+            64, 32, kernel_size=5, stride=2, padding=2, output_padding=1
+        )
+        self.deconv3 = nn.ConvTranspose1d(
+            32, 16, kernel_size=4, stride=2, padding=2, output_padding=1
+        )
+        self.deconv4 = nn.ConvTranspose1d(
+            16, num_tracts, kernel_size=3, stride=2, padding=2, output_padding=1
+        )
+
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        batch_size = x.size(0)
+        x = self.fc(x)
+        x = x.view(batch_size, 64, 13)
+        x = F.relu(self.deconv2(x))
+        x = F.relu(self.deconv3(x))
+        x = self.deconv4(x)
+        return x
+
+
+class Conv1DDecoder(nn.Module):
+    def __init__(self, num_tracts=48, latent_dims=20):
+        super().__init__()
+        self.deconv1 = nn.ConvTranspose1d(
+            latent_dims, 64, kernel_size=5, stride=2, padding=2, output_padding=1
+        )
+        self.deconv2 = nn.ConvTranspose1d(
+            64, 32, kernel_size=3, stride=2, padding=2, output_padding=1
+        )
+        self.deconv3 = nn.ConvTranspose1d(
+            32, 16, kernel_size=4, stride=2, padding=2, output_padding=1
+        )
+        self.deconv4 = nn.ConvTranspose1d(
+            16, num_tracts, kernel_size=3, stride=2, padding=2, output_padding=1
+        )
+
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        x = F.relu(self.deconv1(x))
+        x = F.relu(self.deconv2(x))
+        x = F.relu(self.deconv3(x))
+        x = self.deconv4(x)
+        return x
+
+
+class VariationalAutoencoder(nn.Module):
+    def __init__(self, input_shape=100, latent_dims=20, dropout=0.2):
+        super().__init__()
+        self.encoder = VariationalEncoder(input_shape, latent_dims, dropout=dropout)
+        self.decoder = Decoder(input_shape, latent_dims)
+        self.device = torch.device(
+            "cuda"
+            if torch.cuda.is_available()
+            else "mps"
+            if torch.backends.mps.is_available()
+            else "cpu"
+        )
+
+    def forward(self, x):
+        mean, logvar = self.encoder(x)
+
+        z = self.reparameterize(mean, logvar)
+
+        x_hat = self.decoder(z)
+
+        return x_hat, mean, logvar
+
+    def reparameterize(self, mean, logvar):
+        std = torch.exp(0.5 * logvar)
+        eps = torch.randn_like(std)
+        return mean + eps * std
+
+    def fit(self, train_data, epochs=500, lr=0.001, kl_weight=0.001):
+        self.train()
+        opt = torch.optim.Adam(self.parameters(), lr=lr)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            opt, "min", patience=5, factor=0.5
+        )
+
+        train_rmse_per_epoch = []
+        train_kl_per_epoch = []
+        train_recon_per_epoch = []
+
+        # This is the weight for the KL "annealing"
+        beta_start = 0.0
+        beta_end = 1.0
+        slope = (beta_end - beta_start) / epochs
+
+        for epoch in range(epochs):
+            running_loss = 0.0
+            running_rmse = 0.0
+            running_kl = 0.0
+            running_recon_loss = 0.0
+            items = 0
+
+            # The weight on KL changes linearly with epoch:
+            beta = beta_start + slope * epoch
+
+            for x, _ in train_data:
+                batch_size = x.size(0)
+                tract_data = x.to(self.device)
+
+                opt.zero_grad()
+
+                x_hat, mean, logvar = self(tract_data)
+
+                loss, recon_loss, kl_loss = vae_loss(
+                    tract_data, x_hat, mean, logvar, beta, reduction="sum"
+                )
+
+                batch_rmse = torch.sqrt(F.mse_loss(tract_data, x_hat, reduction="mean"))
+
+                loss.backward()
+                opt.step()
+
+                items += batch_size
+                running_loss += loss.item()
+                running_rmse += batch_rmse.item() * batch_size
+                running_kl += kl_loss.item()
+                running_recon_loss += recon_loss.item()
+
+            scheduler.step(running_loss / items)
+            avg_train_rmse = running_rmse / items
+            avg_train_kl = running_kl / items
+            avg_train_recon_loss = running_recon_loss / items
+
+            train_rmse_per_epoch.append(avg_train_rmse)
+            train_kl_per_epoch.append(avg_train_kl)
+            train_recon_per_epoch.append(avg_train_recon_loss)
+
+            logging.info(
+                f"""Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f}, KL:
+                {avg_train_kl:.4f}, Recon Loss: {avg_train_recon_loss:.4f}"""
+            )
+
+        self.history = {
+            "train_rmse_per_epoch": train_rmse_per_epoch,
+            "train_kl_per_epoch": train_kl_per_epoch,
+            "train_recon_per_epoch": train_recon_per_epoch,
+        }
+
+        return self
+
+    def transform(self, x):
+        self.eval()
+
+        if isinstance(x, torch.utils.data.DataLoader):
+            latent_vectors = []
+
+            with torch.no_grad():
+                for batch, _ in x:
+                    batch = batch.to(torch.float32).to(self.device)
+                    mean, _ = self.encoder(batch)
+                    latent_vectors.append(mean.cpu())
+
+            if latent_vectors:
+                return torch.cat(latent_vectors, dim=0)
+            return None
+
+        else:
+            with torch.no_grad():
+                x = x.to(torch.float32).to(self.device)
+                mean, _ = self.encoder(x)
+                return mean
+
+    def fit_transform(self, data, epochs=20, kl_weight=0.001):
+        self.fit(data, epochs, kl_weight=kl_weight)
+        return self.transform(data)
+
+
+class Autoencoder(nn.Module):
+    def __init__(self, input_shape=100, latent_dims=20, dropout=0.2):
+        super().__init__()
+        self.encoder = Encoder(input_shape, latent_dims, dropout=dropout)
+        self.decoder = Decoder(input_shape, latent_dims)
+        self.device = torch.device(
+            "cuda"
+            if torch.cuda.is_available()
+            else "mps"
+            if torch.backends.mps.is_available()
+            else "cpu"
+        )
+
+    def forward(self, x):
+        z = self.encoder(x)
+        return self.decoder(z)
+
+    def fit(self, train_data, epochs=500, lr=0.001):
+        opt = torch.optim.Adam(self.parameters(), lr=lr)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            opt, "min", patience=5, factor=0.5
+        )
+
+        train_loss_per_epoch = []
+        train_rmse_per_epoch = []
+        train_recon_per_epoch = []
+
+        for epoch in range(epochs):
+            self.train()
+            running_loss = 0.0
+            running_rmse = 0.0
+            running_recon_loss = 0.0
+            items = 0
+
+            for x, _ in train_data:
+                batch_size = x.size(0)
+                data = x.to(self.device)
+
+                opt.zero_grad()
+                x_hat = self(data)
+
+                recon_loss = F.mse_loss(data, x_hat, reduction="sum")
+                loss = recon_loss
+
+                batch_rmse = torch.sqrt(F.mse_loss(data, x_hat, reduction="mean"))
+
+                loss.backward()
+                opt.step()
+
+                items += batch_size
+                running_loss += loss.item()
+                running_rmse += batch_rmse.item() * batch_size
+                running_recon_loss += recon_loss.item()
+
+            scheduler.step(running_loss / items)
+            avg_train_loss = running_loss / items
+            avg_train_rmse = running_rmse / items
+            avg_train_recon_loss = running_recon_loss / items
+
+            train_loss_per_epoch.append(avg_train_loss)
+            train_rmse_per_epoch.append(avg_train_rmse)
+            train_recon_per_epoch.append(avg_train_recon_loss)
+
+            logging.info(
+                f"""Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f},
+                Recon Loss: {avg_train_recon_loss:.4f}"""
+            )
+
+        self.history = {
+            "train_loss_per_epoch": train_loss_per_epoch,
+            "train_rmse_per_epoch": train_rmse_per_epoch,
+            "train_recon_per_epoch": train_recon_per_epoch,
+        }
+
+        return self
+
+    def transform(self, x):
+        self.eval()
+
+        if isinstance(x, torch.utils.data.DataLoader):
+            latent_vectors = []
+            with torch.no_grad():
+                for batch, _ in x:
+                    z = self.encoder(batch.to(self.device))
+                    latent_vectors.append(z.cpu())
+
+            if latent_vectors:
+                return torch.cat(latent_vectors, dim=0)
+            return None
+
+        else:
+            with torch.no_grad():
+                x = x.to(self.device)
+                z = self.encoder(x)
+                return z
+
+    def fit_transform(self, data, epochs=20):
+        self.fit(data, epochs)
+        return self.transform(data)
+
+
+class Conv1DVariationalAutoencoder(nn.Module):
+    def __init__(self, num_tracts=48, latent_dims=20, dropout=0.2):
+        super().__init__()
+        self.encoder = Conv1DVariationalEncoder(num_tracts, latent_dims, dropout)
+        self.decoder = Conv1DVariationalDecoder(num_tracts, latent_dims)
+        self.device = torch.device(
+            "cuda"
+            if torch.cuda.is_available()
+            else "mps"
+            if torch.backends.mps.is_available()
+            else "cpu"
+        )
+
+    def reparameterize(self, mean, logvar):
+        std = torch.exp(0.5 * logvar)
+        eps = torch.randn_like(std)
+        z = mean + eps * std
+        return z
+
+    def forward(self, x):
+        (
+            mean,
+            logvar,
+        ) = self.encoder(x)
+
+        z = self.reparameterize(mean, logvar)
+
+        x_prime = self.decoder(z)
+        return x_prime, mean, logvar
+
+    def fit(self, train_data, epochs=500, lr=0.001, kl_weight=0.001):
+        self.train()
+        opt = torch.optim.Adam(self.parameters(), lr=lr)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            opt, "min", patience=5, factor=0.5
+        )
+
+        train_rmse_per_epoch = []
+        train_kl_per_epoch = []
+        train_recon_per_epoch = []
+
+        beta_start = 0.0
+        beta_end = 1.0
+        slope = (beta_end - beta_start) / epochs
+
+        for epoch in range(epochs):
+            running_loss = 0.0
+            running_rmse = 0.0
+            running_kl = 0.0
+            running_recon_loss = 0.0
+            items = 0
+
+            beta = beta_start + slope * epoch
+
+            for x, _ in train_data:
+                batch_size = x.size(0)
+                tract_data = x.to(self.device)
+
+                opt.zero_grad()
+
+                x_hat, mean, logvar = self(tract_data)
+
+                loss, recon_loss, kl_loss = vae_loss(
+                    tract_data, x_hat, mean, logvar, beta, reduction="sum"
+                )
+
+                batch_rmse = torch.sqrt(F.mse_loss(tract_data, x_hat, reduction="mean"))
+
+                loss.backward()
+                opt.step()
+
+                items += batch_size
+                running_loss += loss.item()
+                running_rmse += batch_rmse.item() * batch_size
+                running_kl += kl_loss.item()
+                running_recon_loss += recon_loss.item()
+
+            scheduler.step(running_loss / items)
+            avg_train_rmse = running_rmse / items
+            avg_train_kl = running_kl / items
+            avg_train_recon_loss = running_recon_loss / items
+
+            train_rmse_per_epoch.append(avg_train_rmse)
+            train_kl_per_epoch.append(avg_train_kl)
+            train_recon_per_epoch.append(avg_train_recon_loss)
+
+            logging.info(
+                f"""Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f}, KL:
+                {avg_train_kl:.4f}, Recon Loss: {avg_train_recon_loss:.4f}"""
+            )
+
+        self.history = {
+            "train_rmse_per_epoch": train_rmse_per_epoch,
+            "train_kl_per_epoch": train_kl_per_epoch,
+            "train_recon_per_epoch": train_recon_per_epoch,
+        }
+
+        return self
+
+    def transform(self, x):
+        self.eval()
+
+        if isinstance(x, torch.utils.data.DataLoader):
+            latent_vectors = []
+
+            with torch.no_grad():
+                for batch, _ in x:
+                    batch = batch.to(torch.float32).to(self.device)
+                    mean, _ = self.encoder(batch)
+                    latent_vectors.append(mean.cpu())
+
+            if latent_vectors:
+                return torch.cat(latent_vectors, dim=0)
+            return None
+
+        else:
+            with torch.no_grad():
+                x = x.to(torch.float32).to(self.device)
+                mean, _ = self.encoder(x)
+                return mean
+
+    def fit_transform(self, data, epochs=20, kl_weight=0.001):
+        self.fit(data, epochs, kl_weight=kl_weight)
+        return self.transform(data)
+
+
+class Conv1DAutoencoder(nn.Module):
+    def __init__(self, num_tracts=48, latent_dims=20, dropout=0.2):
+        super().__init__()
+        self.encoder = Conv1DEncoder(num_tracts, latent_dims, dropout)
+        self.decoder = Conv1DDecoder(num_tracts, latent_dims)
+        self.device = torch.device(
+            "cuda"
+            if torch.cuda.is_available()
+            else "mps"
+            if torch.backends.mps.is_available()
+            else "cpu"
+        )
+
+    def forward(self, x):
+        z = self.encoder(x)
+        x_prime = self.decoder(z)
+        return x_prime
+
+    def fit(self, train_data, epochs=500, lr=0.001):
+        opt = torch.optim.Adam(self.parameters(), lr=lr)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            opt, "min", patience=5, factor=0.5
+        )
+
+        train_loss_per_epoch = []
+        train_rmse_per_epoch = []
+        train_recon_per_epoch = []
+
+        for epoch in range(epochs):
+            self.train()
+            running_loss = 0.0
+            running_rmse = 0.0
+            running_recon_loss = 0.0
+            items = 0
+
+            for x, _ in train_data:
+                batch_size = x.size(0)
+                data = x.to(self.device)
+
+                opt.zero_grad()
+                x_hat = self(data)
+
+                recon_loss = F.mse_loss(data, x_hat, reduction="sum")
+                loss = recon_loss
+
+                batch_rmse = torch.sqrt(F.mse_loss(data, x_hat, reduction="mean"))
+
+                loss.backward()
+                opt.step()
+
+                items += batch_size
+                running_loss += loss.item()
+                running_rmse += batch_rmse.item() * batch_size
+                running_recon_loss += recon_loss.item()
+
+            scheduler.step(running_loss / items)
+            avg_train_loss = running_loss / items
+            avg_train_rmse = running_rmse / items
+            avg_train_recon_loss = running_recon_loss / items
+
+            train_loss_per_epoch.append(avg_train_loss)
+            train_rmse_per_epoch.append(avg_train_rmse)
+            train_recon_per_epoch.append(avg_train_recon_loss)
+
+            logging.info(
+                f"""Epoch {epoch+1}, Train RMSE: {avg_train_rmse:.4f},
+                Recon Loss: {avg_train_recon_loss:.4f}"""
+            )
+
+        self.history = {
+            "train_loss_per_epoch": train_loss_per_epoch,
+            "train_rmse_per_epoch": train_rmse_per_epoch,
+            "train_recon_per_epoch": train_recon_per_epoch,
+        }
+
+        return self
+
+    def transform(self, x):
+        self.eval()
+
+        if isinstance(x, torch.utils.data.DataLoader):
+            latent_vectors = []
+            with torch.no_grad():
+                for batch, _ in x:
+                    z = self.encoder(batch.to(self.device))
+                    latent_vectors.append(z.cpu())
+
+            if latent_vectors:
+                return torch.cat(latent_vectors, dim=0)
+            return None
+
+        else:
+            with torch.no_grad():
+                x = x.to(self.device)
+                z = self.encoder(x)
+                return z
+
+    def fit_transform(self, data, epochs=20):
+        self.fit(data, epochs)
+        return self.transform(data)
 
 
 """
