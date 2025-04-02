@@ -7,7 +7,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import layers
 
-from afqinsight.datasets import AFQDataset
 from afqinsight.neurocombat_sklearn import CombatModel
 
 
@@ -438,65 +437,6 @@ def prep_pytorch_data(dataset, batch_size=32):
     return torch_dataset, train_loader, test_loader, val_loader
 
 
-def prep_first_tract_data(dataset, batch_size=32):
-    """
-    Prepares PyTorch dataloaders for training, testing, and validation.
-    These dataloaders select the first tract ONLY.
-
-    Parameters
-    ----------
-    dataset : AFQDataset
-        The dataset to extract the first tract from.
-    batch_size : int
-        The batch size to be used.
-
-    Returns
-    -------
-    tuple:
-        PyTorch dataset,
-        New Training data loader,
-        New Test data loader,
-        New Validation data loader.
-    """
-    torch_dataset, train_loader, test_loader, val_loader = prep_pytorch_data(
-        dataset, batch_size=batch_size
-    )
-
-    class FirstTractDataset(torch.utils.data.Dataset):
-        def __init__(self, original_dataset):
-            self.original_dataset = original_dataset
-
-        def __len__(self):
-            return len(self.original_dataset)
-
-        def __getitem__(self, idx):
-            x, y = self.original_dataset[idx]
-            tract_data = x[0:1, :].clone()
-            return tract_data, y
-
-    first_tract_train_dataset = FirstTractDataset(train_loader.dataset)
-    first_tract_test_dataset = FirstTractDataset(test_loader.dataset)
-    first_tract_val_dataset = FirstTractDataset(val_loader.dataset)
-
-    # Create first tract data loaders
-    first_tract_train_loader = torch.utils.data.DataLoader(
-        first_tract_train_dataset, batch_size=batch_size, shuffle=True
-    )
-    first_tract_test_loader = torch.utils.data.DataLoader(
-        first_tract_test_dataset, batch_size=batch_size, shuffle=False
-    )
-    first_tract_val_loader = torch.utils.data.DataLoader(
-        first_tract_val_dataset, batch_size=batch_size, shuffle=False
-    )
-
-    return (
-        torch_dataset,
-        first_tract_train_loader,
-        first_tract_test_loader,
-        first_tract_val_loader,
-    )
-
-
 def brownian_noise(
     batch_sz, channel_sz, n_steps, delta=1.0, start=0.0, range=(0.9, 1.1)
 ):
@@ -516,112 +456,6 @@ def brownian_noise(
     path = path * (range[1] - range[0]) + range[0]
 
     return path.astype(np.float32)
-
-
-def prep_fa_dataset(dataset, target_labels="dki_fa", batch_size=32):
-    """
-    Extracts features that match the specified label from the provided dataset and
-    prepares the dataset for training.
-    """
-    # Can be single target or a list of targets
-    if isinstance(target_labels, str):
-        features = [target_labels]
-    else:
-        features = target_labels
-
-    fa_indices = []
-    for i, fname in enumerate(dataset.feature_names):
-        if any(feature in fname for feature in features):
-            fa_indices.append(i)
-
-    if not fa_indices:
-        available_features = sorted(
-            {fname.split("_")[0] for fname in dataset.feature_names}
-        )
-        raise ValueError(
-            f"No features found matching patterns: {features}. "
-            f"Features found: {available_features}"
-        )
-
-    X_fa = dataset.X[:, fa_indices]
-    feature_names_fa = [dataset.feature_names[i] for i in fa_indices]
-    dataset_fa = AFQDataset(
-        X=X_fa,
-        y=dataset.y,
-        groups=dataset.groups,
-        feature_names=feature_names_fa,
-        group_names=dataset.group_names,
-        target_cols=dataset.target_cols,
-        subjects=dataset.subjects,
-        sessions=dataset.sessions,
-        classes=dataset.classes,
-    )
-    return prep_pytorch_data(dataset_fa, batch_size=batch_size)
-
-
-def prep_fa_flattned_data(dataset, batch_size=64):
-    """
-    Prepares PyTorch dataloaders for training, testing, and validation.
-    These dataloaders select the fa tracts ONLY and flatten them to "create" more data.
-
-    Parameters
-    ----------
-    dataset : AFQDataset
-        The dataset to extract fa tracts from and flatten
-    batch_size : int
-        The batch size to be used.
-
-    Returns
-    -------
-    tuple:
-        The FA dataset,
-        New Training data loader,
-        New Test data loader,
-        New Validation data loader.
-    """
-    torch_dataset_fa, train_loader_fa, test_loader_fa, val_loader_fa = prep_fa_dataset(
-        dataset, batch_size=batch_size
-    )
-
-    class AllTractsDataset(torch.utils.data.Dataset):
-        def __init__(self, original_dataset):
-            self.original_dataset = original_dataset
-            self.sample_count = len(original_dataset)
-            self.tract_count = original_dataset[0][0].shape[0]
-
-        def __len__(self):
-            return self.sample_count * self.tract_count
-
-        def __getitem__(self, idx):
-            sample_idx = idx // self.tract_count
-            tract_idx = idx % self.tract_count
-
-            x, y = self.original_dataset[sample_idx]
-
-            tract_data = x[tract_idx : tract_idx + 1, :].clone()
-
-            return tract_data, y
-
-    all_tracts_train_dataset = AllTractsDataset(train_loader_fa.dataset)
-    all_tracts_test_dataset = AllTractsDataset(test_loader_fa.dataset)
-    all_tracts_val_dataset = AllTractsDataset(val_loader_fa.dataset)
-
-    all_tracts_train_loader = torch.utils.data.DataLoader(
-        all_tracts_train_dataset, batch_size=batch_size, shuffle=True
-    )
-    all_tracts_test_loader = torch.utils.data.DataLoader(
-        all_tracts_test_dataset, batch_size=batch_size, shuffle=False
-    )
-    all_tracts_val_loader = torch.utils.data.DataLoader(
-        all_tracts_val_dataset, batch_size=batch_size, shuffle=False
-    )
-
-    return (
-        torch_dataset_fa,
-        all_tracts_train_loader,
-        all_tracts_test_loader,
-        all_tracts_val_loader,
-    )
 
 
 def kl_divergence_loss(mean, logvar):
