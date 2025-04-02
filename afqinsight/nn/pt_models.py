@@ -622,7 +622,7 @@ class BaseConv1DEncoder(nn.Module):
 
 
 class Conv1DEncoder(BaseConv1DEncoder):
-    def __init__(self, num_tracts, latent_dims=20, dropout=0.2):
+    def __init__(self, num_tracts=48, latent_dims=20, dropout=0.2):
         super().__init__(num_tracts, latent_dims, dropout)
         self.conv4 = nn.Conv1d(64, latent_dims, kernel_size=5, stride=2, padding=2)
 
@@ -633,7 +633,7 @@ class Conv1DEncoder(BaseConv1DEncoder):
 
 
 class Conv1DVariationalEncoder(BaseConv1DEncoder):
-    def __init__(self, num_tracts, latent_dims=20, dropout=0.2):
+    def __init__(self, num_tracts=48, latent_dims=20, dropout=0.2):
         super().__init__(num_tracts, latent_dims, dropout)
         self.flatten = nn.Flatten()
         self.fc_mean = nn.Linear(64 * 13, latent_dims)
@@ -648,7 +648,7 @@ class Conv1DVariationalEncoder(BaseConv1DEncoder):
 
 
 class Conv1DVariationalDecoder(nn.Module):
-    def __init__(self, num_tracts, latent_dims=20):
+    def __init__(self, num_tracts=48, latent_dims=20):
         super().__init__()
         self.fc = nn.Linear(latent_dims, 64 * 13)
 
@@ -678,7 +678,7 @@ class Conv1DVariationalDecoder(nn.Module):
 
 
 class Conv1DDecoder(nn.Module):
-    def __init__(self, num_tracts, latent_dims=20):
+    def __init__(self, num_tracts=48, latent_dims=20):
         super().__init__()
         self.deconv1 = nn.ConvTranspose1d(
             latent_dims, 64, kernel_size=5, stride=2, padding=2, output_padding=1
@@ -930,7 +930,7 @@ class Autoencoder(nn.Module):
 
 
 class Conv1DVariationalAutoencoder(nn.Module):
-    def __init__(self, num_tracts, latent_dims=20, dropout=0.2):
+    def __init__(self, num_tracts=48, latent_dims=20, dropout=0.2):
         super().__init__()
         self.encoder = Conv1DVariationalEncoder(num_tracts, latent_dims, dropout)
         self.decoder = Conv1DVariationalDecoder(num_tracts, latent_dims)
@@ -1056,10 +1056,10 @@ class Conv1DVariationalAutoencoder(nn.Module):
 
 
 class Conv1DAutoencoder(nn.Module):
-    def __init__(self, latent_dims=20, dropout=0.2):
+    def __init__(self, num_tracts=48, latent_dims=20, dropout=0.2):
         super().__init__()
-        self.encoder = Conv1DEncoder(latent_dims, dropout)
-        self.decoder = Conv1DDecoder(latent_dims)
+        self.encoder = Conv1DEncoder(num_tracts, latent_dims, dropout)
+        self.decoder = Conv1DDecoder(num_tracts, latent_dims)
         self.device = torch.device(
             "cuda"
             if torch.cuda.is_available()
