@@ -441,7 +441,28 @@ def brownian_noise(
     batch_sz, channel_sz, n_steps, delta=1.0, start=0.0, range=(0.9, 1.1)
 ):
     """
-    Generate Brownian noise.
+    Generate Brownian noise for training data.
+
+    Parameters
+    ----------
+    batch_sz : int
+        The batch size.
+    channel_sz : int
+        The number of channels.
+    n_steps : int
+        The number of steps.
+    delta : float
+        The delta value.
+    start : float
+        The starting value.
+    range : tuple
+        The range of amount of noise.
+
+    Returns
+    -------
+    array:
+        The input array after applying brownian noise.
+
     """
     steps = np.random.normal(0, delta, size=(batch_sz, channel_sz, n_steps - 1))
 
@@ -461,6 +482,18 @@ def brownian_noise(
 def kl_divergence_loss(mean, logvar):
     """
     Compute KL divergence loss for VAE
+
+    Parameters
+    ----------
+    mean : tensor
+        The mean of the latent space.
+    logvar : tensor
+        The log variance of the latent space.
+
+    Returns
+    -------
+    tensor:
+        The KL divergence loss.
     """
     kl_loss = -0.5 * torch.sum(1 + logvar - mean.pow(2) - logvar.exp())
     return kl_loss
@@ -469,6 +502,28 @@ def kl_divergence_loss(mean, logvar):
 def vae_loss(x, x_hat, mean, logvar, kl_weight=1.0, reduction="sum"):
     """
     Combined VAE loss: reconstruction + KL divergence
+
+    Parameters
+    ----------
+    x : tensor
+        The input tensor.
+    x_hat : tensor
+        The predicted tensor.
+    mean : tensor
+        The mean of the latent space.
+    logvar : tensor
+        The log variance of the latent space.
+    kl_weight : float
+        The weight of the KL divergence loss.
+    reduction : str
+        The reduction method (sum or mean).
+
+    Returns
+    -------
+    tuple:
+        The total loss,
+        The reconstruction loss,
+        The KL divergence loss.
     """
     if reduction == "sum":
         recon_loss = F.mse_loss(x, x_hat, reduction="sum")
