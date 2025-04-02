@@ -14,7 +14,7 @@ def extract_layer_info_pytorch(layer):
     info = {}
     if isinstance(layer, nn.Conv2d):
         info["type"] = "Conv2D"
-        info["in_channels"] = layer.in_channels
+        info["in_channels"] = layer.in_channelscd
         info["out_channels"] = layer.out_channels
         info["kernel_size"] = layer.kernel_size
         info["stride"] = layer.stride
