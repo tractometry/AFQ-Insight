@@ -662,7 +662,7 @@ class AFQDataset:
         dataset_kwargs = {
             "sarica": {
                 "dwi_metrics": ["md", "fa"],
-                "target_cols": ["class"],
+                "target_cols": ["class", "age"],
                 "label_encode_cols": ["class"],
             },
             "weston-havens": {"dwi_metrics": ["md", "fa"], "target_cols": ["Age"]},
