@@ -34,8 +34,8 @@ for ii in range(4):
     data[f"feature_{ii}"] = [*test_features[:, ii], *ctrl_features[:, ii]]
 
 
-def test_mahalonobis_dist():
-    nbrs = aim._mahalonobis_dist(test_features, ctrl_features)
+def test_mahalanobis_dist():
+    nbrs = aim._mahalanobis_dist(test_features, ctrl_features)
 
     v_inv = np.linalg.inv(
         np.cov(np.concatenate((test_features, ctrl_features), axis=0).T, ddof=0)
@@ -48,8 +48,8 @@ def test_mahalonobis_dist():
     assert_array_almost_equal(nbrs, nbrs_scipy)
 
 
-def test_mahalonobis_dist_match_df():
-    matched_df = aim.mahalonobis_dist_match(
+def test_mahalanobis_dist_match_df():
+    matched_df = aim.mahalanobis_dist_match(
         data=data,
         status_col="status",
         feature_cols=["feature_0", "feature_1", "feature_2", "feature_3"],
@@ -64,16 +64,16 @@ def test_mahalonobis_dist_match_df():
     )
 
 
-def test_mahalonobis_dist_match_df_err():
+def test_mahalanobis_dist_match_df_err():
     with pytest.raises(ValueError):  # no status column
-        aim.mahalonobis_dist_match(data=data)
+        aim.mahalanobis_dist_match(data=data)
     with pytest.raises(ValueError):  # status has more than two unique values
-        aim.mahalonobis_dist_match(data=data, status_col="feature_0")
+        aim.mahalanobis_dist_match(data=data, status_col="feature_0")
 
 
-def test_mahalonobis_dist_match_df_feauture_none():
+def test_mahalanobis_dist_match_df_feauture_none():
     data_wo_extras = data.drop(columns=["eid", "age"])
-    matched_df = aim.mahalonobis_dist_match(
+    matched_df = aim.mahalanobis_dist_match(
         data=data_wo_extras,
         status_col="status",
         threshold=1,
@@ -87,8 +87,8 @@ def test_mahalonobis_dist_match_df_feauture_none():
     )
 
 
-def test_mahalonobis_dist_match():
-    matched_df = aim.mahalonobis_dist_match(
+def test_mahalanobis_dist_match():
+    matched_df = aim.mahalanobis_dist_match(
         test=test_features, ctrl=ctrl_features, threshold=1
     )
 
@@ -103,10 +103,10 @@ def test_mahalonobis_dist_match():
     )
 
 
-def test_mahalonobis_dist_match_err():
+def test_mahalanobis_dist_match_err():
     with pytest.raises(ValueError):  # test if nan error is raised
         test_features_with_nans = test_features.copy()
         test_features_with_nans[0, 2] = np.nan
-        aim.mahalonobis_dist_match(
+        aim.mahalanobis_dist_match(
             test=test_features_with_nans, ctrl=ctrl_features, threshold=1
         )
