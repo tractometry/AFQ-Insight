@@ -4,10 +4,10 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import linear_sum_assignment
 
-__all__ = ["mahalonobis_dist_match"]
+__all__ = ["mahalanobis_dist_match"]
 
 
-def mahalonobis_dist_match(
+def mahalanobis_dist_match(
     data=None, test=None, ctrl=None, status_col=None, feature_cols=None, threshold=0.2
 ):
     """
@@ -77,12 +77,12 @@ def mahalonobis_dist_match(
             (
                 "There are NaNs in test or ctrl data. "
                 "Please replace these NaNs using interpolation or by removing "
-                "the subjects with NaNs before calling mahalonobis_dist_match. "
+                "the subjects with NaNs before calling mahalanobis_dist_match. "
             )
         )
 
-    # calculate Mahalonobis distance between test and control
-    nbrs = _mahalonobis_dist(test, ctrl)
+    # calculate Mahalanobis distance between test and control
+    nbrs = _mahalanobis_dist(test, ctrl)
 
     # assign neighbors using Munkres algorithm
     row_ind, col_ind = linear_sum_assignment(nbrs)
@@ -118,9 +118,9 @@ def mahalonobis_dist_match(
         return data.iloc[all_idx]
 
 
-def _mahalonobis_dist(arr1, arr2):
+def _mahalanobis_dist(arr1, arr2):
     """
-    Calculate the Mahalonobis distance between two 2d arrays along the first axis.
+    Calculate the Mahalanobis distance between two 2d arrays along the first axis.
 
     Parameters
     ----------
@@ -132,7 +132,7 @@ def _mahalonobis_dist(arr1, arr2):
     Returns
     -------
     nbrs : array-like of shape (n_samples1, n_samples2)
-        Mahalonobis distance between each sample in the
+        Mahalanobis distance between each sample in the
         two input arrays.
     """
     v_inv = np.linalg.inv(np.cov(np.concatenate((arr1, arr2), axis=0).T, ddof=0))
