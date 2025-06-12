@@ -1,5 +1,7 @@
 # _AFQ-Insight_ Python based statistical learning for tractometry
 
+![Project Logo](docs/_static/logo.png)
+
 [![Build Status](https://github.com/richford/AFQ-Insight/workflows/Build/badge.svg)](https://github.com/richford/AFQ-Insight/workflows/Build/badge.svg)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3585942.svg)](https://doi.org/10.5281/zenodo.3585942)
