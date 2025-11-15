@@ -4,6 +4,7 @@ import inspect
 from string import Template
 
 import groupyr as gpr
+import numpy as np
 from sklearn.base import (
     BaseEstimator,
     MetaEstimatorMixin,
@@ -19,6 +20,9 @@ from sklearn.ensemble import (
     BaggingRegressor,
 )
 from sklearn.impute import KNNImputer, SimpleImputer
+from sklearn.linear_model import LassoCV
+from sklearn.metrics import median_absolute_error, r2_score
+from sklearn.model_selection import RepeatedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import (
     MaxAbsScaler,
@@ -29,8 +33,14 @@ from sklearn.preprocessing import (
 )
 
 from ._serial_bagging import SerialBaggingClassifier, SerialBaggingRegressor
+from .covariate_regressor import CovariateRegressor
 
-__all__ = ["make_afq_classifier_pipeline", "make_afq_regressor_pipeline"]
+__all__ = [
+    "make_afq_classifier_pipeline",
+    "make_afq_regressor_pipeline",
+    "compare_brain_covariates_cv",
+    "IdentityTransformer",
+]
 
 
 def make_base_afq_pipeline(
@@ -712,3 +722,329 @@ def make_afq_regressor_pipeline(
         target_transform_inverse_func=target_transform_inverse_func,
         target_transform_check_inverse=target_transform_check_inverse,
     )
+
+
+class IdentityTransformer(BaseEstimator, TransformerMixin):
+    """A transformer that returns the input data unchanged.
+
+    This is a no-op transformer that implements the sklearn transformer
+    interface but performs no transformation on the data. Useful as a
+    placeholder in pipelines when no transformation is desired.
+
+    Examples
+    --------
+    >>> from afqinsight.pipeline import IdentityTransformer
+    >>> import numpy as np
+    >>> X = np.array([[1, 2], [3, 4]])
+    >>> transformer = IdentityTransformer()
+    >>> X_transformed = transformer.fit_transform(X)
+    >>> np.array_equal(X, X_transformed)
+    True
+    """
+
+    def fit(self, X, y=None):
+        """Fit the transformer (no-op).
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            Input data.
+        y : array-like of shape (n_samples,), default=None
+            Target values (ignored).
+
+        Returns
+        -------
+        self : object
+            Returns self.
+        """
+        return self
+
+    def transform(self, X):
+        """Transform the data (returns input unchanged).
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            Input data.
+
+        Returns
+        -------
+        X : array-like of shape (n_samples, n_features)
+            The input data, unchanged.
+        """
+        return X
+
+
+def compare_brain_covariates_cv(
+    X_brain,
+    X_covariates,
+    y,
+    groups=None,
+    n_repeats=5,
+    n_splits=10,
+    n_estimators=10,
+    feature_transformer=None,
+    feature_transformer_kwargs=None,
+    target_transform_func=None,
+    target_transform_inverse_func=None,
+    ensembler=None,
+    shuffle=False,
+    regress_covariates=True,
+    random_state=1729,
+    verbose=True,
+    n_jobs=1,
+    fit_intercept=True,
+    max_iter=10000,
+    imputer_strategy="median",
+):
+    """Cross-validate brain feature models with optional covariate regression.
+
+    This function performs cross-validation to compare the predictive performance
+    of brain features (with or without covariate regression) against covariates-only
+    models. It returns detailed results for each fold including predictions,
+    performance metrics, and model parameters.
+
+    Parameters
+    ----------
+    X_brain : array-like of shape (n_samples, n_brain_features)
+        Brain feature matrix (e.g., FA values from tractometry).
+
+    X_covariates : array-like of shape (n_samples, n_covariates)
+        Covariate matrix (e.g., age, sex, scanner type).
+
+    y : array-like of shape (n_samples,)
+        Target variable to predict.
+
+    groups : array-like of shape (n_samples,), default=None
+        Group labels for the samples (currently unused but kept for
+        future compatibility with grouped CV strategies).
+
+    n_repeats : int, default=5
+        Number of times cross-validator needs to be repeated.
+
+    n_splits : int, default=10
+        Number of folds in each repeat of cross-validation.
+
+    n_estimators : int, default=10
+        Number of estimators for ensemble methods (if ensembler is used).
+
+    feature_transformer : sklearn transformer or None, default=None
+        Optional transformer to apply to brain features.
+
+    feature_transformer_kwargs : dict, default=None
+        Keyword arguments for the feature transformer.
+
+    target_transform_func : callable, default=None
+        Function to apply to y before fitting. Must return a 2D array.
+
+    target_transform_inverse_func : callable, default=None
+        Inverse function to apply to predictions. Must return a 2D array.
+
+    ensembler : str or None, default=None
+        Ensemble method to use. Options: 'bagging', 'adaboost', 'serial-bagging'.
+
+    shuffle : bool, default=False
+        Whether to shuffle the target variable (useful for null models).
+
+    regress_covariates : bool, default=True
+        Whether to regress out covariates from brain features before modeling.
+
+    random_state : int, default=1729
+        Random state for reproducibility across CV splits and ensemble methods.
+
+    verbose : bool, default=True
+        Whether to print progress information for each CV fold.
+
+    n_jobs : int, default=1
+        Number of parallel jobs to run for estimators that support it.
+
+    fit_intercept : bool, default=True
+        Whether to fit an intercept term in the LassoCV estimators.
+
+    max_iter : int, default=10000
+        Maximum number of iterations for LassoCV convergence.
+
+    imputer_strategy : str, default="median"
+        Strategy for SimpleImputer. Options: 'mean', 'median',
+        'most_frequent', 'constant'.
+
+    Returns
+    -------
+    cv_results : dict
+        Dictionary with keys as CV fold indices and values as dictionaries containing:
+
+        - 'y_true' : array-like
+            True target values for test set
+        - 'y_pred_brain' : array-like
+            Brain model predictions for test set
+        - 'y_pred_covariates' : array-like
+            Covariates model predictions for test set
+        - 'brain_test_mae' : float
+            Median absolute error for brain model on test set
+        - 'brain_test_r2' : float
+            R² score for brain model on test set
+        - 'covariates_test_mae' : float
+            Median absolute error for covariates model on test set
+        - 'covariates_test_r2' : float
+            R² score for covariates model on test set
+        - 'brain_train_mae' : float
+            Median absolute error for brain model on training set
+        - 'brain_train_r2' : float
+            R² score for brain model on training set
+        - 'covariates_train_mae' : float
+            Median absolute error for covariates model on training set
+        - 'covariates_train_r2' : float
+            R² score for covariates model on training set
+        - 'covariates_coefs' : array-like
+            Coefficients from the covariates LassoCV model
+        - 'covariates_alpha' : float
+            Optimal alpha parameter from covariates LassoCV model
+        - 'train_idx' : array-like
+            Training set indices for this fold
+        - 'test_idx' : array-like
+            Test set indices for this fold
+    """
+    if feature_transformer_kwargs is None:
+        feature_transformer_kwargs = {}
+
+    y_fit = np.random.default_rng().permutation(y) if shuffle else np.copy(y)
+    X_brain_data = np.copy(X_brain)
+    cv = RepeatedKFold(
+        n_splits=n_splits, n_repeats=n_repeats, random_state=random_state
+    )
+    cv_results = {}
+
+    base_pipeline = Pipeline(
+        [
+            ("imputer", SimpleImputer(strategy=imputer_strategy)),
+            ("scaler", StandardScaler()),
+        ]
+    )
+
+    for cv_idx, (train_idx, test_idx) in enumerate(cv.split(X_brain_data, y_fit)):
+        X_train, X_test = X_brain_data[train_idx], X_brain_data[test_idx]
+        X_train_covariates, X_test_covariates = (
+            X_covariates[train_idx],
+            X_covariates[test_idx],
+        )
+        y_train, y_test = y_fit[train_idx], y_fit[test_idx]
+
+        covariates_pipe = Pipeline(
+            [
+                ("imputer", SimpleImputer(strategy=imputer_strategy)),
+                ("scaler", StandardScaler()),
+                (
+                    "estimator",
+                    LassoCV(
+                        verbose=False,
+                        n_jobs=n_jobs,
+                        fit_intercept=fit_intercept,
+                        max_iter=max_iter,
+                    ),
+                ),
+            ]
+        )
+
+        if regress_covariates:
+
+            class BrainTransformerCovariatesRegressed(Pipeline, TransformerMixin):
+                def __init__(self):
+                    steps = [
+                        (
+                            "covariate_regression",
+                            CovariateRegressor(
+                                X_covariates, X_brain_data, pipeline=base_pipeline
+                            ),
+                        )
+                    ]
+                    if feature_transformer is not None:
+                        steps.append(
+                            (
+                                "feature_transformer",
+                                feature_transformer(**feature_transformer_kwargs),
+                            )
+                        )
+                    else:
+                        steps.append(("identity", IdentityTransformer()))
+                    super().__init__(steps)
+
+            brain_transformer_class = BrainTransformerCovariatesRegressed
+        else:
+
+            class BrainTransformerRaw(Pipeline, TransformerMixin):
+                def __init__(self):
+                    steps = [
+                        ("imputer", SimpleImputer(strategy=imputer_strategy)),
+                        ("scaler", StandardScaler()),
+                    ]
+                    if feature_transformer is not None:
+                        steps.append(
+                            (
+                                "feature_transformer",
+                                feature_transformer(**feature_transformer_kwargs),
+                            )
+                        )
+                    else:
+                        steps.append(("identity", IdentityTransformer()))
+                    super().__init__(steps)
+
+            brain_transformer_class = BrainTransformerRaw
+
+        brain_pipe = make_base_afq_pipeline(
+            imputer=IdentityTransformer,
+            feature_transformer=brain_transformer_class,
+            feature_transformer_kwargs={},
+            scaler=IdentityTransformer,
+            estimator=LassoCV,
+            estimator_kwargs={
+                "verbose": False,
+                "n_jobs": n_jobs,
+                "max_iter": max_iter,
+                "fit_intercept": fit_intercept,
+            },
+            ensemble_meta_estimator=ensembler,
+            ensemble_meta_estimator_kwargs={
+                "n_estimators": n_estimators,
+                "n_jobs": n_jobs,
+                "oob_score": True,
+                "random_state": random_state,
+            }
+            if ensembler
+            else None,
+            target_transform_func=target_transform_func,
+            target_transform_inverse_func=target_transform_inverse_func,
+        )
+
+        covariates_pipe.fit(X_train_covariates, y_train)
+        brain_pipe.fit(X_train, y_train)
+
+        y_pred_brain_test = brain_pipe.predict(X_test)
+        y_pred_covariates_test = covariates_pipe.predict(X_test_covariates)
+        y_pred_brain_train = brain_pipe.predict(X_train)
+        y_pred_covariates_train = covariates_pipe.predict(X_train_covariates)
+
+        cv_results[cv_idx] = {
+            "y_true": y_test,
+            "y_pred_brain": y_pred_brain_test,
+            "y_pred_covariates": y_pred_covariates_test,
+            "brain_test_mae": median_absolute_error(y_test, y_pred_brain_test),
+            "brain_test_r2": r2_score(y_test, y_pred_brain_test),
+            "covariates_test_mae": median_absolute_error(
+                y_test, y_pred_covariates_test
+            ),
+            "covariates_test_r2": r2_score(y_test, y_pred_covariates_test),
+            "brain_train_mae": median_absolute_error(y_train, y_pred_brain_train),
+            "brain_train_r2": r2_score(y_train, y_pred_brain_train),
+            "covariates_train_mae": median_absolute_error(
+                y_train, y_pred_covariates_train
+            ),
+            "covariates_train_r2": r2_score(y_train, y_pred_covariates_train),
+            "covariates_coefs": covariates_pipe.named_steps["estimator"].coef_,
+            "covariates_alpha": covariates_pipe.named_steps["estimator"].alpha_,
+            "train_idx": train_idx,
+            "test_idx": test_idx,
+        }
+        if verbose:
+            print(f"CV fold {cv_idx:3d} completed")
+
+    return cv_results

@@ -1,4 +1,5 @@
 import groupyr as gpr
+import numpy as np
 import pytest
 from sklearn.base import is_classifier
 from sklearn.ensemble import (
@@ -21,7 +22,11 @@ from sklearn.preprocessing import (
 
 from afqinsight import make_afq_classifier_pipeline, make_afq_regressor_pipeline
 from afqinsight._serial_bagging import SerialBaggingClassifier, SerialBaggingRegressor
-from afqinsight.pipeline import make_base_afq_pipeline
+from afqinsight.pipeline import (
+    IdentityTransformer,
+    compare_brain_covariates_cv,
+    make_base_afq_pipeline,
+)
 
 scaler_args = [
     ("standard", StandardScaler),
@@ -210,3 +215,194 @@ def test_base_pipeline_pass_ensemble_kwargs():
     )
     ensemble_params = pipeline.named_steps["estimate"].get_params()
     assert ensemble_params["n_estimators"] == 100  # nosec
+
+
+class TestIdentityTransformer:
+    """Test the IdentityTransformer class."""
+
+    def test_fit_returns_self(self):
+        """Test that fit returns self."""
+        transformer = IdentityTransformer()
+        X = np.array([[1, 2], [3, 4]])
+        result = transformer.fit(X)
+        assert result is transformer
+
+    def test_fit_with_y_returns_self(self):
+        """Test that fit with y returns self."""
+        transformer = IdentityTransformer()
+        X = np.array([[1, 2], [3, 4]])
+        y = np.array([1, 0])
+        result = transformer.fit(X, y)
+        assert result is transformer
+
+    def test_transform_returns_input_unchanged(self):
+        """Test that transform returns input data unchanged."""
+        transformer = IdentityTransformer()
+        X = np.array([[1, 2], [3, 4]])
+        result = transformer.transform(X)
+        np.testing.assert_array_equal(result, X)
+        assert result is X
+
+    def test_fit_transform_works(self):
+        """Test that fit_transform works correctly."""
+        transformer = IdentityTransformer()
+        X = np.array([[1, 2], [3, 4]])
+        result = transformer.fit_transform(X)
+        np.testing.assert_array_equal(result, X)
+
+    def test_works_with_different_array_types(self):
+        """Test that it works with different array types."""
+        transformer = IdentityTransformer()
+
+        # List
+        X_list = [[1, 2], [3, 4]]
+        result = transformer.fit_transform(X_list)
+        assert result == X_list
+
+        # 1D array
+        X_1d = np.array([1, 2, 3])
+        result = transformer.fit_transform(X_1d)
+        np.testing.assert_array_equal(result, X_1d)
+
+
+class TestCompareBrainCovariatesCV:
+    """Test the compare_brain_covariates_cv function."""
+
+    @pytest.fixture
+    def sample_data(self):
+        """Create sample data for testing."""
+        np.random.seed(42)
+        n_samples, n_brain_features, n_covariates = 50, 20, 3
+        X_brain = np.random.randn(n_samples, n_brain_features)
+        X_covariates = np.random.randn(n_samples, n_covariates)
+        y = np.random.randn(n_samples)
+        return X_brain, X_covariates, y
+
+    def test_basic_functionality(self, sample_data):
+        """Test basic functionality with default parameters."""
+        X_brain, X_covariates, y = sample_data
+
+        results = compare_brain_covariates_cv(
+            X_brain, X_covariates, y, n_repeats=1, n_splits=3, verbose=False
+        )
+
+        # Should have 3 CV folds (1 repeat × 3 splits)
+        assert len(results) == 3
+
+        # Check that each fold has expected keys
+        expected_keys = {
+            "y_true",
+            "y_pred_brain",
+            "y_pred_covariates",
+            "brain_test_mae",
+            "brain_test_r2",
+            "covariates_test_mae",
+            "covariates_test_r2",
+            "brain_train_mae",
+            "brain_train_r2",
+            "covariates_train_mae",
+            "covariates_train_r2",
+            "covariates_coefs",
+            "covariates_alpha",
+            "train_idx",
+            "test_idx",
+        }
+
+        for _, fold_results in results.items():
+            assert set(fold_results.keys()) == expected_keys
+            assert isinstance(fold_results["y_true"], np.ndarray)
+            assert isinstance(fold_results["brain_test_r2"], (int, float))
+
+    def test_regress_covariates_false(self, sample_data):
+        """Test with regress_covariates=False."""
+        X_brain, X_covariates, y = sample_data
+
+        results = compare_brain_covariates_cv(
+            X_brain,
+            X_covariates,
+            y,
+            regress_covariates=False,
+            n_repeats=1,
+            n_splits=3,
+            verbose=False,
+        )
+
+        assert len(results) == 3
+        # Should still have all the same output structure
+        for fold_results in results.values():
+            assert "brain_test_r2" in fold_results
+            assert "covariates_test_r2" in fold_results
+
+    def test_shuffle_option(self, sample_data):
+        """Test shuffle=True option."""
+        X_brain, X_covariates, y = sample_data
+
+        results_no_shuffle = compare_brain_covariates_cv(
+            X_brain,
+            X_covariates,
+            y,
+            shuffle=False,
+            n_repeats=1,
+            n_splits=3,
+            verbose=False,
+            random_state=42,
+        )
+
+        results_shuffle = compare_brain_covariates_cv(
+            X_brain,
+            X_covariates,
+            y,
+            shuffle=True,
+            n_repeats=1,
+            n_splits=3,
+            verbose=False,
+            random_state=42,
+        )
+
+        # Results should be different when shuffling
+        r2_no_shuffle = [r["brain_test_r2"] for r in results_no_shuffle.values()]
+        r2_shuffle = [r["brain_test_r2"] for r in results_shuffle.values()]
+
+        # At least one should be different (very high probability with random data)
+        assert not np.allclose(r2_no_shuffle, r2_shuffle, rtol=1e-10)
+
+    def test_different_cv_splits(self, sample_data):
+        """Test different CV split configurations."""
+        X_brain, X_covariates, y = sample_data
+
+        # Test 2 repeats, 2 splits = 4 total folds
+        results = compare_brain_covariates_cv(
+            X_brain, X_covariates, y, n_repeats=2, n_splits=2, verbose=False
+        )
+
+        assert len(results) == 4
+
+    def test_random_state_reproducibility(self, sample_data):
+        """Test that random_state makes results reproducible."""
+        X_brain, X_covariates, y = sample_data
+
+        results1 = compare_brain_covariates_cv(
+            X_brain,
+            X_covariates,
+            y,
+            n_repeats=1,
+            n_splits=3,
+            random_state=123,
+            verbose=False,
+        )
+
+        results2 = compare_brain_covariates_cv(
+            X_brain,
+            X_covariates,
+            y,
+            n_repeats=1,
+            n_splits=3,
+            random_state=123,
+            verbose=False,
+        )
+
+        # Results should be identical
+        for fold_idx in results1.keys():
+            np.testing.assert_array_almost_equal(
+                results1[fold_idx]["y_pred_brain"], results2[fold_idx]["y_pred_brain"]
+            )
