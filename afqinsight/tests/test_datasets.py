@@ -358,7 +358,7 @@ def test_from_study(study):
             "n_subjects": 48,
             "n_features": 4000,
             "n_groups": 40,
-            "target_cols": ["class"],
+            "target_cols": ["class", "age"],
         },
         "weston-havens": {
             "n_subjects": 77,
